@@ -1,0 +1,161 @@
+<template>
+  <div class="ca-contain">
+    <div class="ca-contain__header">
+      <span  style="font-size: 16px;font-weight: 400">正在进行任务</span>
+      <el-button style="float: right; padding: 3px 0" type="text">全部</el-button>
+    </div>
+
+    <el-table
+      :data="caseInfo"
+      :show-header=false
+      style="width: 100%; height: 100%;overflow-y: scroll">
+      <el-table-column label="任务简介" min-width="32%">
+        <template slot-scope="scope">
+           <el-link :underline="false" style="font-size: 16px;font-family: 'Microsoft YaHei';font-weight: 500;line-height: 40px">{{scope.row.caseName}} - </el-link>
+           <el-link :underline="false" style="font-size: 16px;color: #2d2f33;font-family: 'Microsoft YaHei';font-weight: 500;line-height: 40px">{{scope.row.taskName}}</el-link>
+          <div style="color: #7d7d7f;font-size: 13px;line-height: 18px">{{scope.row.task_detail}}</div>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="进度" align="right" min-width="20%">
+        <template slot-scope="scope">
+          <div class="progress-item">
+            <el-progress :text-inside="true" :stroke-width="18" :percentage=scope.row.task_progress  v-if="scope.row.task_show.length ===0"></el-progress>
+            <el-progress :text-inside="true" :stroke-width="18" :percentage=scope.row.task_progress  :status = scope.row.task_show v-else></el-progress>
+          </div>
+        </template>
+      </el-table-column>
+
+
+      <el-table-column
+        label="日期"
+        align="right" min-width="18%">
+        <template slot-scope="scope">
+          <i class="el-icon-time"></i>
+          <span style="margin-left: 10px">{{ scope.row.task_timestamp }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="操作" align="right" min-width="10%">
+        <template slot-scope="scope">
+          <el-button type="text">更多</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+
+  </div>
+</template>
+
+<script>
+  import axios from 'axios'
+  import {mapState} from 'vuex'
+  import {mapGetters} from 'vuex'
+
+  const host = 'http://localhost:5000';
+  export default {
+    name: 'CaseInfo',
+    data() {
+      return {
+        caseInfo: []
+
+      }
+    },
+    computed:{
+      normalizedSize: function () {
+        return this.size.trim().toLowerCase()
+      }
+    },
+    created: function () {
+      axios.post(host + '/dashboard/caseinfo',{user_id:'14141341414141'})
+        .then((response)=>{
+
+          this.refreshCaseInfo(response.data);
+
+        })
+        .catch(function (error) {
+
+          console.log(error);
+        });
+
+    },
+    methods: {
+      refreshCaseInfo:function( data ){
+        let index = 0;
+        let cacheCaseInfo = [];
+        let task_staus_dict= new Map([["ready",10],["running",25],["complete",100],["failed",50],["canceled",0]]);
+        let task_show_dict= new Map([["ready",''],["running",''],["complete",'success'],["failed",'exception'],["canceled",'warning']]);
+        for (index in data){
+          for (let subIndex in data[index].task_list){
+            let caseItem={};
+            caseItem.caseId = data[index].case_id;
+            caseItem.caseName = data[index].case_name;
+            caseItem.caseDetail = data[index].caseDetail;
+            caseItem.taskId = data[index].task_list[subIndex].task_id;
+            caseItem.taskName = data[index].task_list[subIndex].task_name;
+            caseItem.task_detail = data[index].task_list[subIndex].task_detail;
+            caseItem.task_status = data[index].task_list[subIndex].task_status;
+            caseItem.task_progress = task_staus_dict.get(caseItem.task_status);
+
+            caseItem.task_show = task_show_dict.get(caseItem.task_status);
+            caseItem.task_timestamp = data[index].task_list[subIndex].update_ts;
+            cacheCaseInfo.push(caseItem);
+          }
+        }
+        this.caseInfo = cacheCaseInfo;
+        console.log(this.caseInfo )
+      },
+      progress_status:function(task_progress,status){
+        console.log(task_progress)
+        console.log(status)
+        return {textInside:true,strokeWidth:"18", percentage:task_progress}
+        // if (status.length ===0)
+        // {
+        //   console.log("status is empty,not bind this attribute")
+        //   return {textInside:true}
+        // }
+        // return {status:status}
+      },
+
+      handleEdit(index, row) {
+        console.log(index, row);
+      },
+      handleDelete(index, row) {
+        console.log(index, row);
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .ca-contain {
+    width: 66.6%;
+    /*width:calc(100% - ${scrollbarWidth});*/
+    border-radius: 4px;
+    border: 1px solid #e6ebf5;
+    background-color: #FFFFFF;
+    padding: 20px;
+    color: #303133;
+    transition: 0.3s;
+    flex-shrink: 1;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden
+  }
+
+
+  .ca-contain__header {
+    padding: 18px 20px;
+    border-bottom: 1px solid #e6ebf5;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  .ca-card__body {
+    padding: 8px;
+  }
+</style>
+
+

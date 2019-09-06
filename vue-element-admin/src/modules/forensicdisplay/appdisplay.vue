@@ -1,23 +1,10 @@
 <template xmlns:height="http://www.w3.org/1999/xhtml">
   <div style="width: 100%;height:100%">
-    <div style="width: 100%;height:25%;display: flex;padding-bottom: 10px; background: #F3F4F7">
-      <div style="width: 100%; background: #FFFFFF;display: flex; padding: 2px 20px 2px 20px;flex-direction: column;">
-        <h2>任务详情</h2>
-        <div style="display: flex;justify-content: space-between;padding-bottom: 20px;padding-top: 10px;font-size: 18px;color: #333333">
-          <span>任务编号:&nbsp; {{ task_name }}</span>
-          <span>任务名 : &nbsp;{{ task_name }}</span>
-          <span>所属案件:&nbsp; {{ case_name }}</span>
-          <span>状态 :&nbsp; {{ task_name }}</span>
-        </div>
-        <span style="font-size: 18px;color: #333333">详情&nbsp;&nbsp;&nbsp;&nbsp; {{ details }}</span>
-        <el-divider content-position="center" />
-      </div>
+    <div style="width: 100%;height:10%;display: flex;justify-content: space-between;padding-left:20px;padding-top: 10px;padding-right: 10px">
+      <span style="font-size: 20px;font-weight: bold">APP列表</span>
+      <el-input v-model="tableDataName" placeholder="请输入" suffix-icon="el-icon-search" style="width:360px" @input="doFilter" />
     </div>
-    <div style="width: 100%;height:5%;display: flex;justify-content: space-between;padding-left:20px;padding-top: 10px;padding-right: 10px">
-      <span style="font-size: 20px;font-weight: bold">取号列表</span>
-      <el-input v-model="tableDataName" align="right" placeholder="请输入" suffix-icon="el-icon-search" style="width:360px" @input="doFilter" />
-    </div>
-    <div style="width: 100%;height:70%;display: flex;flex-direction: column;padding:10px;">
+    <div style="width: 100%;height:90%;display: flex;flex-direction: column;padding:10px;">
       <el-table
         :data="tempList"
         :header-cell-style="{color:'#666666',font: '20px large'}"
@@ -31,8 +18,13 @@
         height="1"
       >
         <el-table-column property="phone" label="手机号" min-width="10px" align="center" />
-        <el-table-column property="imsi" label="Imsi" min-width="20px" align="center" />
-        <el-table-column property="create_time" label="时间" min-width="20px" align="center" />
+        <el-table-column property="app_list" label="应用信息" min-width="20px" align="center">
+          <template slot-scope="scope">
+            <el-link v-for="item in scope.row.app_list" :key="item" @click="jumpToAppInformation">
+              {{ item }}&nbsp;
+            </el-link>
+          </template>
+        </el-table-column>
         <!--        <el-table-column label="操作" align="center" width="80">-->
         <!--          <template slot-scope="scope">-->
         <!--            <el-button size="mini" type="danger" @click="confirmDelete(scope.$index,scope.row)">删除</el-button>-->
@@ -57,25 +49,25 @@
 <script>
 // eslint-disable-next-line no-undef,no-unused-vars
 import axios from 'axios'
-import store from '../../store'
 
 export default {
-  name: 'PhoneInformation',
+  name: 'AppDisplay',
   data() {
     return {
       total1: 0,
-      currentPage1: 1,
-      pageSize: 10,
-      bondsAllList: '',
       tempList: [],
       emptyText: '',
-      tableDataName: '',
+      currentPage1: 1,
       details: '本文用于示范，展示一些不同类型的内容，在文章中应该如何展示。包括：标题，段落，链接，附件，代码块，图片，表格内容。',
+      pageSize: 10,
+      bondsAllList: '',
+      tableDataName: '',
       tableDataEnd: '',
       filterTableDataEnd: '',
       flag: 0,
       task_name: '',
-      case_name: ''
+      case_name: '',
+      phone: ''
     }
   },
   watch: {
@@ -87,38 +79,21 @@ export default {
   methods: {
     init() {
       this.getParams()
-      // this.getMessage()
-      this.getMessageByPost()
-        this.$store.commit('forensic/getTreeCaseInfo',this.case_name)
-        this.$store.commit('forensic/getTreeTaskInfo',this.task_name)
+      this.getMessage()
     },
     getMessage() {
-      const path = 'http://localhost:5000/forensic/phoneInformation'
+      const path = 'http://localhost:5000/forensic/forensic-details/' + this.phone
       axios.get(path)
         .then((res) => {
+          // this.$message.warning('res:' + res.data)
           this.bondsAllList = res.data
-          this.tableDataName = []
+          this.tableDataName = ''
           this.getCreateTable()
         })
         .catch((error) => {
           alert(error)
         })
     },
-      getMessageByPost() {
-          const path = 'http://10.10.100.59:5000/forensic/phoneInformation'
-          const list = {
-              task_id:"10001"
-          }
-          axios.post(path,list)
-              .then((res) => {
-                  this.bondsAllList = res.data
-                  this.tableDataName = ''
-                  this.getCreateTable()
-              })
-              .catch((error) => {
-                  alert(error)
-              })
-      },
     handleSizeChange1: function(pageSize) { // 每页条数切换
       // eslint-disable-next-line eqeqeq
       if (this.flag === 1) {
@@ -179,12 +154,20 @@ export default {
     getParams() {
       this.task_name = this.$route.query.taskName
       this.case_name = this.$route.query.caseName
+      this.phone = this.$route.query.phone
     },
     jumpToCaseDisplay() {
       this.$router.push(
         {
           name: 'casedisplay'
         })
+    },
+    jumpToAppInformation() {
+      this.$router.push(
+        {
+          name: 'appinformation'
+        }
+      )
     }
   }
 }

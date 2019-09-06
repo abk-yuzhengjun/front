@@ -1,0 +1,372 @@
+<template xmlns:height="http://www.w3.org/1999/xhtml">
+  <div style="width: 100%;height:100%;display: flex;align-items: stretch; padding: 10px; background:#F3F4F7;">
+    <!--    <div class="nav" style="flex-shrink: 3;width: 100%;height: 100%">-->
+    <!--      <table height="103px" width="100%" />-->
+    <div style="width:17%; background:#FFFFFF; padding:10px">
+      <el-tree ref="tree" :data="treeData" :props="defaultProps" node-key="id"
+               :default-expanded-keys="[1,10,11,12,13,14]" highlight-current @node-click="handelNodeClick">
+        <span slot-scope="{ node,data}">
+          <span style="font-size: 14px">{{ node.label }}</span>
+          <span>
+            <el-tag v-if="data.id.toString().length === 4 && data.evidence === 1" type="danger" size="mini">取证</el-tag>
+            <el-tag v-if="data.id.toString().length === 4 && data.evidence === 0" type="primary" size="mini">取号</el-tag>
+          </span>
+        </span>
+      </el-tree>
+    </div>
+    <div style="width:1%; height: 100%; background:#F3F4F7;"/>
+    <!--    </div>-->
+    <div style="width:82%; height: 100%; background:#FFFFFF;">
+      <router-view/>
+    </div>
+  </div>
+</template>
+
+<script>
+    // eslint-disable-next-line no-undef,no-unused-vars
+    import axios from 'axios'
+    import store from '../../store'
+
+    export default {
+        name: 'TreeDisplay',
+        data() {
+            return {
+                taskTableData: '',
+                tableDataEnd: '',
+                treeExpand: [1],
+                treeData: [],
+                treeLabelData: [],
+                defaultProps: {
+                    children: 'children',
+                    label: 'label'
+                }
+            }
+        },
+        watch: {
+            getVuexTreeCaseInfo() {
+                console.log('getVuexTreeCaseInfo watch refresh')
+                this.highLightShowTree()
+            },
+            getVuexTreeTaskInfo() {
+                console.log('getVuexTreeTaskInfo watch refresh')
+                this.highLightShowTree()
+            }
+        },
+        computed: {
+            key() {
+                return this.$route.path
+            },
+            getVuexTreeCaseInfo() {
+                console.log('getVuexTreeCaseInfo computed refresh')
+                return this.$store.state.forensic.case_name
+            },
+            getVuexTreeTaskInfo() {
+                console.log('getVuexTreeTaskInfo computed refresh')
+                return this.$store.state.forensic.task_name
+            }
+        },
+        created() {
+            console.log('treedisplay reinit')
+            // this.getMessage()
+            // this.getMessageByPost()
+            this.getMessageByPost2()
+            // this.$nextTick(function(){
+            //         this.$refs.tree.setCurrentKey(1011)
+            //     })
+        },
+        methods: {
+            getMessage() {
+                const path2 = 'http://10.10.100.59:5000/forensic/getTreeData/yuzhengjun'
+                axios.get(path2)
+                    .then((res) => {
+                        this.taskTableData = res.data
+                        this.getTreeData()
+                        this.setCurrentKey()
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
+            },
+            getMessageByPost2() {
+                const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
+                const param = {
+                    user_id: '14141341414141'
+                }
+                axios.post(path2, JSON.stringify(param))
+                    .then((res) => {
+                        // this.taskTableData = res.data
+                        this.taskTableData = res.data
+                        console.log('tree get data')
+                        this.getTreeData()
+                        this.highLightShowTree()
+                        this.$store.commit('forensic/getCaseInfo', this.taskTableData)
+                        //this.getTreeData()
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
+            },
+            highLightShowTree() {
+                console.log('highLightShowTree' + this.$store.state.forensic.case_name + ' ' + this.$store.state.forensic.task_name)
+                if(this.$store.state.forensic.case_name === '' && this.$store.state.forensic.task_name === '') {
+                    this.$refs.tree.setCurrentKey(1)
+                }else {
+                    for(var i = 0; i < this.treeLabelData.length; i++)
+                    {
+                        if(this.$store.state.forensic.task_name === this.treeLabelData[i]){
+                            this.$refs.tree.setCurrentKey(i)
+                            return
+                        }
+                    }
+                    for(var i = 0; i < this.treeLabelData.length; i++)
+                    {
+                        if(this.$store.state.forensic.case_name === this.treeLabelData[i]){
+                            this.$refs.tree.setCurrentKey(i)
+                            return
+                        }
+                    }
+                }
+            },
+            jumpToEvidenceDisplayByTree(caseName, caseId) {
+                this.$router.push(
+                    {
+                        name: 'evidencedisplay',
+                        query: {
+                            caseName: caseName,
+                            caseId: caseId
+                        }
+                    })
+            },
+            jumpToCaseDisplay() {
+                this.$router.push(
+                    {
+                        name: 'casedisplay'
+                    }
+                )
+            },
+            jumpToEvidenceInformation(caseName, taskName) {
+                this.$router.push(
+                    {
+                        name: 'evidenceinformation',
+                        query: {
+                            caseName: caseName,
+                            taskName: taskName
+                        }
+                    }
+                )
+            },
+            jumpToPhoneInformation(caseName, taskName) {
+                this.$router.push(
+                    {
+                        name: 'phoneinformation',
+                        query: {
+                            caseName: caseName,
+                            taskName: taskName
+                        }
+                    }
+                )
+            },
+            jumpToAppDisplay(caseName, taskName, phone) {
+                this.$router.push(
+                    {
+                        name: 'appdisplay',
+                        query: {
+                            caseName: caseName,
+                            taskName: taskName,
+                            phone: phone
+                        }
+                    }
+                )
+            },
+            jumpToAppInformation() {
+                this.$router.push(
+                    {
+                        name: 'appinformation'
+                    }
+                )
+            },
+            getTreeData() {
+                const temp_list = []
+                const index = {
+                    label: '案件信息',
+                    id: 1,
+                    children: []
+                }
+                for (var i = 0; i < this.taskTableData.length; i++) {
+                    const obj = {
+                        label: this.taskTableData[i].case_name,
+                        case_id: this.taskTableData[i].case_id,
+                        id: i + 10,
+                        children: []
+                    }
+                    this.treeLabelData[obj.id] = obj.label
+                    if (this.taskTableData[i].hasOwnProperty('task_list') && this.taskTableData[i].task_list.length >= 1) {
+                        let temp = this.taskTableData[i].task_list.length
+                        while (temp > 0) {
+                            // eslint-disable-next-line no-unused-vars
+                            const obj_child = {
+                                label: this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].task_name,
+                                id: obj.id * 100 + 10 + this.taskTableData[i].task_list.length - temp,
+                                evidence: 0,
+                                children: []
+                            }
+                            if (this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].task_type === 2) {
+                                obj_child.evidence = 1
+                            }
+                            this.treeLabelData[obj_child.id] = obj_child.label
+                            if (this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].hasOwnProperty('evidence_content') && this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content.length >= 1) {
+                                const evidence_length = this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content.length
+                                let temp_length = this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content.length
+                                // eslint-disable-next-line no-unmodified-loop-condition
+                                while (temp_length > 0) {
+                                    const obj_child_child = {
+                                        label: this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].phone,
+                                        id: obj_child.id * 100 + 10 + evidence_length - temp_length,
+                                        children: []
+                                    }
+                                    this.treeLabelData[obj_child_child.id] = obj_child_child.label
+                                    if (this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].hasOwnProperty('app_list') && this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list.length >= 1) {
+                                        const phone_length = this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list.length
+                                        let temp_phone_length = this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list.length
+                                        while (temp_phone_length > 0) {
+                                            const obj_child_child_child = {
+                                                label: this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list[phone_length - temp_phone_length],
+                                                id: obj_child_child.id * 100 + 10 + phone_length - temp_phone_length
+                                            }
+                                            this.treeLabelData[obj_child_child_child.id] = obj_child_child_child.label
+                                            temp_phone_length--
+                                            obj_child_child.children.push(obj_child_child_child)
+                                        }
+                                    }
+                                    temp_length--
+                                    obj_child.children.push(obj_child_child)
+                                }
+                            }
+                            temp--
+                            obj.children.push(obj_child)
+                        }
+                    }
+                    index.children.push(obj)
+                    // temp_list.push(obj)
+                }
+                temp_list.push(index)
+                this.treeData = temp_list
+                console.log('tree data end')
+            },
+            handelNodeClick(data) {
+                let tempCaseName = []
+                let tempTaskName = []
+                let tempPhone = []
+                let tempAppName = []
+                let tempCaseId = []
+                const length = data.id.toString().length
+                if (length === 2) {
+                    const temp = data.id.toString().substring(0, 2)
+                    tempCaseName = this.treeLabelData[parseInt(temp)]
+                    console.log('123' + data.case_id)
+                    this.jumpToEvidenceDisplayByTree(tempCaseName, data.case_id)
+                } else if (length === 4) {
+                    const temp1 = data.id.toString().substring(0, 2)
+                    tempCaseName = this.treeLabelData[parseInt(temp1)]
+                    const temp2 = data.id.toString().substring(0, 4)
+                    tempTaskName = this.treeLabelData[parseInt(temp2)]
+                    if (data.evidence === 1) {
+                        this.jumpToEvidenceInformation(tempCaseName, tempTaskName)
+                    } else if (data.evidence === 0) {
+                        this.jumpToPhoneInformation(tempCaseName, tempTaskName)
+                    }
+                } else if (length === 6) {
+                    const temp3 = data.id.toString().substring(0, 2)
+                    tempCaseName = this.treeLabelData[parseInt(temp3)]
+                    const temp4 = data.id.toString().substring(0, 4)
+                    tempTaskName = this.treeLabelData[parseInt(temp4)]
+                    const temp5 = data.id.toString().substring(0, 6)
+                    tempPhone = this.treeLabelData[parseInt(temp5)]
+                    this.jumpToAppDisplay(tempCaseName, tempTaskName, tempPhone)
+                } else if (length === 8) {
+                    const temp6 = data.id.toString().substring(0, 2)
+                    tempCaseName = this.treeLabelData[parseInt(temp6)]
+                    const temp7 = data.id.toString().substring(0, 4)
+                    tempTaskName = this.treeLabelData[parseInt(temp7)]
+                    const temp8 = data.id.toString().substring(0, 6)
+                    tempPhone = this.treeLabelData[parseInt(temp8)]
+                    const temp9 = data.id.toString().substring(0, 8)
+                    tempAppName = this.treeLabelData[parseInt(temp9)]
+                    this.jumpToAppInformation()
+                } else if (length === 1) {
+                    this.jumpToCaseDisplay()
+                }
+                console.log(tempCaseName + ' ' + tempTaskName + ' ' + tempPhone + ' ' + tempAppName + ' ' + data.evidence)
+            }
+        }
+    }
+</script>
+
+<style scoped>
+  .header {
+    background: #F3F4F7;
+    width: 100%;
+    padding: 5px;
+    float: right;
+  }
+
+  .nav {
+    background: #F3F4F7;
+    height: 1024px;
+    width: 10%;
+    float: left;
+    padding: 5px;
+  }
+
+  .section {
+    background: #F3F4F7;
+    width: 100%;
+    /*float:left;*/
+    padding: 10px;
+  }
+
+  #section2 {
+    width: 150px;
+    float: left;
+    padding: 10px;
+  }
+
+  #section3 {
+    width: 260px;
+    float: left;
+    padding: 10px;
+  }
+
+  .footer {
+    background: #F3F4F7;
+    clear: both;
+    text-align: center;
+    padding: 5px;
+  }
+
+  .demo-table-expand {
+    font-size: 0;
+  }
+
+  .demo-table-expand label {
+    width: 60px;
+    color: #99a9bf;
+  }
+
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 100%;
+  }
+
+  .el-tree--highlight-current /deep/ .el-tree-node.is-checked > .el-tree-node__content {
+    background-color: #F3F4F7;
+    color: rgb(64, 158, 255);
+  }
+
+  .el-tree--highlight-current /deep/ .el-tree-node.is-current > .el-tree-node__content {
+    background-color: #F3F4F7;
+    color: rgb(0, 158, 255);
+  }
+</style>
+

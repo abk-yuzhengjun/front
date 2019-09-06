@@ -5,7 +5,7 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
-
+import treedisplay from '../modules/forensicdisplay/treedisplay'
 
 
 /* Router Modules */
@@ -116,41 +116,95 @@ export const constantRoutes = [
     children: [
       {
         path: 'case-creator',
-        component: () => import('@/modules/casemanager/index'),
+        component: () => import('@/modules/casemanager/createcase'),
         name: 'CaseCreator',
         meta: { title: '案件创建' }
       },
       {
         path: 'task-creator',
-        component: () => import('@/modules/casemanager/index'),
+        component: () => import('@/modules/casemanager/creattask'),
         name: 'TaskCreator',
         meta: { title: '任务创建' }
+      },
+      {
+        path: 'case-info',
+        component: () => import('@/modules/casemanager/caseInfo'),
+        name: 'case-info',
+        meta: { title: '案件信息' },
+        hidden: false
       }
     ]
   },
   {
     path: '/forensicDisplay',
     component: Layout,
-    redirect: '/forensicDisplay/phone-number-details',
     name: 'forensicDisplay',
+    redirect: '/treedisplay',
     meta: {
       title: '信息展示',
       icon: 'table'
     },
     children: [
       {
-        path: 'phone-number-details',
-        component: () => import('@/modules/forensicdisplay/index'),
-        name: 'PhoneNumberDetails',
-        meta: { title: '取号信息' }
-      },
-      {
-        path: 'forensic-details',
-        component: () => import('@/modules/forensicdisplay/index'),
-        name: 'ForensicDetails',
-        meta: { title: '取证信息' }
+        path: '/treedisplay',
+        component: treedisplay,
+        name: 'treedisplay',
+        breadcrumb: true,
+        hidden: false,
+        redirect: '/treedisplay/casedisplay',
+        meta: { title: '案件展示' },
+        children: [
+          {
+            path: 'casedisplay',
+            component: () => import('@/modules/forensicdisplay/casedisplay'),
+            name: 'casedisplay',
+            meta: {title: '案件信息'},
+            hidden: false
+          },
+          {
+            path: 'evidencedisplay',
+            component: () => import('@/modules/forensicdisplay/evidencedisplay'),
+            name: 'evidencedisplay',
+            // meta: {title: '取证任务'},
+            hidden: true,
+            breadcrumb: false
+          },
+          {
+            path: 'evidenceinformation',
+            component: () => import('@/modules/forensicdisplay/evidenceinformation'),
+            name: 'evidenceinformation',
+            // meta: { title: '取证信息' },
+            breadcrumb: false,
+            hidden: true
+          },
+          {
+            path: 'phoneinformation',
+            component: () => import('@/modules/forensicdisplay/index'),
+            name: 'phoneinformation',
+            hidden: true,
+            breadcrumb: false,
+            // meta: { title: '取号信息' }
+          },
+          {
+            path: 'appdisplay',
+            component: () => import('@/modules/forensicdisplay/appdisplay'),
+            name: 'appdisplay',
+            hidden: true,
+            breadcrumb: false,
+            // meta: { title: 'APP信息' }
+          },
+          {
+            path: 'appinformation',
+            component: () => import('@/modules/forensicdisplay/appinformation'),
+            name: 'appinformation',
+            hidden: true,
+            breadcrumb: false,
+            // meta: { title: 'APP信息' }
+          }
+        ]
       }
     ]
+
   }
 ]
 

@@ -14,7 +14,7 @@
       </div>
     </div>
     <div style="width: 100%;height:5%;display: flex;justify-content: space-between;padding-left:20px;padding-top: 10px;padding-right: 10px">
-      <span style="font-size: 20px;font-weight: bold">取号列表</span>
+      <span style="font-size: 20px;font-weight: bold">取证列表</span>
       <el-input v-model="tableDataName" align="right" placeholder="请输入" suffix-icon="el-icon-search" style="width:360px" @input="doFilter" />
     </div>
     <div style="width: 100%;height:70%;display: flex;flex-direction: column;padding:10px;">
@@ -33,6 +33,11 @@
         <el-table-column property="phone" label="手机号" min-width="10px" align="center" />
         <el-table-column property="imsi" label="Imsi" min-width="20px" align="center" />
         <el-table-column property="create_time" label="时间" min-width="20px" align="center" />
+        <el-table-column label="应用信息" min-width="20px" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.app_list[0] }} {{ scope.row.app_list[1] }} {{ scope.row.app_list[2] }} {{ scope.row.app_list[3] }}</span>
+          </template>
+        </el-table-column>
         <!--        <el-table-column label="操作" align="center" width="80">-->
         <!--          <template slot-scope="scope">-->
         <!--            <el-button size="mini" type="danger" @click="confirmDelete(scope.$index,scope.row)">删除</el-button>-->
@@ -60,17 +65,17 @@ import axios from 'axios'
 import store from '../../store'
 
 export default {
-  name: 'PhoneInformation',
+  name: 'EvidenceInformation',
   data() {
     return {
       total1: 0,
-      currentPage1: 1,
-      pageSize: 10,
-      bondsAllList: '',
       tempList: [],
       emptyText: '',
-      tableDataName: '',
+      currentPage1: 1,
       details: '本文用于示范，展示一些不同类型的内容，在文章中应该如何展示。包括：标题，段落，链接，附件，代码块，图片，表格内容。',
+      pageSize: 10,
+      bondsAllList: '',
+      tableDataName: '',
       tableDataEnd: '',
       filterTableDataEnd: '',
       flag: 0,
@@ -93,11 +98,12 @@ export default {
         this.$store.commit('forensic/getTreeTaskInfo',this.task_name)
     },
     getMessage() {
-      const path = 'http://localhost:5000/forensic/phoneInformation'
+      const path = 'http://10.10.100.59:5000/forensic/forensic-details'
       axios.get(path)
         .then((res) => {
+          // this.$message.warning('res:' + res.data)
           this.bondsAllList = res.data
-          this.tableDataName = []
+          this.tableDataName = ''
           this.getCreateTable()
         })
         .catch((error) => {
@@ -105,9 +111,9 @@ export default {
         })
     },
       getMessageByPost() {
-          const path = 'http://10.10.100.59:5000/forensic/phoneInformation'
+          const path = 'http://localhost:5000/forensic/forensic-details'
           const list = {
-              task_id:"10001"
+              task_id : '10000'
           }
           axios.post(path,list)
               .then((res) => {
