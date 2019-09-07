@@ -15,7 +15,7 @@
           <i v-else-if="data.node_ind==='task_evidence'" class="el-icon-s-data"></i>
 
           <i v-else-if="data.node_ind==='phone'" class="el-icon-phone"></i>
-<!--          <i v-else-if="data.node_ind==='app'" class="el-icon-folder"></i>-->
+          <!--          <i v-else-if="data.node_ind==='app'" class="el-icon-folder"></i>-->
           <template v-else-if="data.node_ind==='app'">
             <svg-icon v-if="data.label==='微信'" icon-class="wechat" />
             <svg-icon v-else-if="data.label==='微博'" icon-class="weibo" />
@@ -54,6 +54,7 @@
                 treeExpand: [1],
                 treeData: [],
                 treeLabelData: [],
+                treeIdData: [],
                 defaultProps: {
                     children: 'children',
                     label: 'label'
@@ -128,32 +129,31 @@
                     })
             },
             highLightShowTree() {
-                console.log('highLightShowTree' + this.$store.state.forensic.case_name + ' ' + this.$store.state.forensic.task_name)
-                if(this.$store.state.forensic.case_name === '' && this.$store.state.forensic.task_name === '') {
+                console.log('highLightShowTree enter :' + this.$store.state.forensic.case_name + '*******' + this.$store.state.forensic.task_name+"*******" + Date.now());
+                let lastKey = 0;
+                let nowKey = 0;
+                if(this.$store.state.forensic.case_name === '' && this.$store.state.forensic.task_name === '')
+                {
                     this.$refs.tree.setCurrentKey(1)
-                }else {
-                    for(var i = 0; i < this.treeLabelData.length; i++)
-                    {
-                        if(this.$store.state.forensic.task_name === this.treeLabelData[i]){
-                            this.$refs.tree.setCurrentKey(i)
-                            return
-                        }
-                    }
-                    for(var i = 0; i < this.treeLabelData.length; i++)
-                    {
-                        if(this.$store.state.forensic.case_name === this.treeLabelData[i]){
-                            this.$refs.tree.setCurrentKey(i)
-                            return
-                        }
-                    }
                 }
+                else if(this.$store.state.forensic.case_name !== '' && this.$store.state.forensic.task_name === '')
+                {
+                    this.$refs.tree.setCurrentKey(this.treeIdData[this.$store.state.forensic.case_name + ':' + ':' +':'])
+                }
+                else if(this.$store.state.forensic.case_name !== '' && this.$store.state.forensic.task_name !== '')
+                {
+                    this.$refs.tree.setCurrentKey(this.treeIdData[this.$store.state.forensic.case_name + ':' + this.$store.state.forensic.task_name + ':' +':'])
+                }
+                console.log('highLightShowTree leave :' + this.$store.state.forensic.case_name + '*******' + this.$store.state.forensic.task_name+ "*******" + Date.now())
             },
-            jumpToEvidenceDisplayByTree(caseName, caseId) {
+            jumpToEvidenceDisplayByTree(caseId) {
+                this.$store.commit('forensic/getTreeCaseInfo', caseId)
+                this.$store.commit('forensic/getTreeTaskInfo', '')
+                console.log('caseId:' + caseId)
                 this.$router.push(
                     {
                         name: 'evidencedisplay',
                         query: {
-                            caseName: caseName,
                             caseId: caseId
                         }
                     })
@@ -165,35 +165,39 @@
                     }
                 )
             },
-            jumpToEvidenceInformation(caseName, taskName) {
+            jumpToEvidenceInformation(caseId, taskId) {
+                this.$store.commit('forensic/getTreeCaseInfo', caseId)
+                this.$store.commit('forensic/getTreeTaskInfo', taskId)
                 this.$router.push(
                     {
                         name: 'evidenceinformation',
                         query: {
-                            caseName: caseName,
-                            taskName: taskName
+                            caseId: caseId,
+                            taskId: taskId
                         }
                     }
                 )
             },
-            jumpToPhoneInformation(caseName, taskName) {
+            jumpToPhoneInformation(caseId, taskId) {
+                this.$store.commit('forensic/getTreeCaseInfo', caseId)
+                this.$store.commit('forensic/getTreeTaskInfo', taskId)
                 this.$router.push(
                     {
                         name: 'phoneinformation',
                         query: {
-                            caseName: caseName,
-                            taskName: taskName
+                            caseId: caseId,
+                            taskId: taskId
                         }
                     }
                 )
             },
-            jumpToAppDisplay(caseName, taskName, phone) {
+            jumpToAppDisplay(caseId, taskId, phone) {
                 this.$router.push(
                     {
                         name: 'appdisplay',
                         query: {
-                            caseName: caseName,
-                            taskName: taskName,
+                            caseId: caseId,
+                            taskId: taskId,
                             phone: phone
                         }
                     }
@@ -207,6 +211,7 @@
                 )
             },
             getTreeData() {
+              let treeId = 1
                 const temp_list = []
                 const index = {
                     label: '案件信息',
@@ -222,6 +227,7 @@
                         node_ind:'case',
                         children: []
                     }
+                    this.treeIdData[this.taskTableData[i].case_id + ':' + ':' +':'] = obj.id
                     this.treeLabelData[obj.id] = obj.label
                     if (this.taskTableData[i].hasOwnProperty('task_list') && this.taskTableData[i].task_list.length >= 1) {
                         let temp = this.taskTableData[i].task_list.length
@@ -238,6 +244,7 @@
                                 obj_child.evidence = 1
                                 obj_child.node_ind = 'task_evidence'
                             }
+                            this.treeIdData[this.taskTableData[i].case_id + ':' +this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].task_id + ':' +':'] = obj_child.id
                             this.treeLabelData[obj_child.id] = obj_child.label
                             if (this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].hasOwnProperty('evidence_content') && this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content.length >= 1) {
                                 const evidence_length = this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content.length
@@ -250,6 +257,7 @@
                                         node_ind:'phone',
                                         children: []
                                     }
+                                    this.treeIdData[this.taskTableData[i].case_id + ':' +this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].task_id + ':' +obj_child_child.label +':'] = obj_child_child.id
                                     this.treeLabelData[obj_child_child.id] = obj_child_child.label
                                     if (this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].hasOwnProperty('app_list') && this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list.length >= 1) {
                                         const phone_length = this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list.length
@@ -260,6 +268,7 @@
                                                 id: obj_child_child.id * 100 + 10 + phone_length - temp_phone_length,
                                                 node_ind:'app',
                                             }
+                                            this.treeIdData[this.taskTableData[i].case_id + ':' +this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].task_id + ':' +obj_child_child.label +':' + obj_child_child_child.label] = obj_child_child_child.id
                                             this.treeLabelData[obj_child_child_child.id] = obj_child_child_child.label
                                             temp_phone_length--
                                             obj_child_child.children.push(obj_child_child_child)
@@ -281,49 +290,92 @@
                 console.log('tree data end')
             },
             handelNodeClick(data) {
-                let tempCaseName = []
-                let tempTaskName = []
-                let tempPhone = []
-                let tempAppName = []
-                let tempCaseId = []
-                const length = data.id.toString().length
-                if (length === 2) {
-                    const temp = data.id.toString().substring(0, 2)
-                    tempCaseName = this.treeLabelData[parseInt(temp)]
-                    console.log('123' + data.case_id)
-                    this.jumpToEvidenceDisplayByTree(tempCaseName, data.case_id)
-                } else if (length === 4) {
-                    const temp1 = data.id.toString().substring(0, 2)
-                    tempCaseName = this.treeLabelData[parseInt(temp1)]
-                    const temp2 = data.id.toString().substring(0, 4)
-                    tempTaskName = this.treeLabelData[parseInt(temp2)]
-                    if (data.evidence === 1) {
-                        this.jumpToEvidenceInformation(tempCaseName, tempTaskName)
-                    } else if (data.evidence === 0) {
-                        this.jumpToPhoneInformation(tempCaseName, tempTaskName)
+                console.log('click tree node')
+                let treeCaseId = []
+                let treeTaskId = []
+                let treePhone = []
+                let treeApp = []
+                for(let index in this.treeIdData)
+                {
+                    if(data.id === this.treeIdData[index])
+                    {
+                        console.log('data: ' + index + this.treeIdData[index])
+                        let tempStr = index.split(":")
+                        treeCaseId = tempStr[0]
+                        treeTaskId = tempStr[1]
+                        treePhone = tempStr[2]
+                        treeApp = tempStr[3]
+                        console.log(treeCaseId + '***** ' + treeTaskId + ' *****' + treePhone +  '*****  ' + treeApp)
                     }
-                } else if (length === 6) {
-                    const temp3 = data.id.toString().substring(0, 2)
-                    tempCaseName = this.treeLabelData[parseInt(temp3)]
-                    const temp4 = data.id.toString().substring(0, 4)
-                    tempTaskName = this.treeLabelData[parseInt(temp4)]
-                    const temp5 = data.id.toString().substring(0, 6)
-                    tempPhone = this.treeLabelData[parseInt(temp5)]
-                    this.jumpToAppDisplay(tempCaseName, tempTaskName, tempPhone)
-                } else if (length === 8) {
-                    const temp6 = data.id.toString().substring(0, 2)
-                    tempCaseName = this.treeLabelData[parseInt(temp6)]
-                    const temp7 = data.id.toString().substring(0, 4)
-                    tempTaskName = this.treeLabelData[parseInt(temp7)]
-                    const temp8 = data.id.toString().substring(0, 6)
-                    tempPhone = this.treeLabelData[parseInt(temp8)]
-                    const temp9 = data.id.toString().substring(0, 8)
-                    tempAppName = this.treeLabelData[parseInt(temp9)]
-                    this.jumpToAppInformation()
-                } else if (length === 1) {
+                }
+                if(treeCaseId === '' || data.id === 1)//主页
+                {
                     this.jumpToCaseDisplay()
                 }
-                console.log(tempCaseName + ' ' + tempTaskName + ' ' + tempPhone + ' ' + tempAppName + ' ' + data.evidence)
+                else if(treeTaskId === '')//案件
+                {
+                    this.jumpToEvidenceDisplayByTree(treeCaseId)
+                }
+                else if(treePhone === '')//任务
+                {
+                    if (data.evidence === 1) {
+                        this.jumpToEvidenceInformation(treeCaseId,treeTaskId)
+                    } else if (data.evidence === 0) {
+                        this.jumpToPhoneInformation(treeCaseId, treeTaskId)
+                    }
+                }
+                else if(treeApp === '')//手机号
+                {
+                    this.jumpToAppDisplay(treeCaseId, treeTaskId, treePhone)
+                }
+                else
+                {
+                    this.jumpToAppInformation()
+                }
+
+                // let tempCaseName = []
+                // let tempTaskName = []
+                // let tempPhone = []
+                // let tempAppName = []
+                // let tempCaseId = []
+                // const length = data.id.toString().length
+                // if (length === 2) {
+                //     const temp = data.id.toString().substring(0, 2)
+                //     tempCaseName = this.treeLabelData[parseInt(temp)]
+                //     console.log('123' + data.case_id)
+                //     this.jumpToEvidenceDisplayByTree(tempCaseName, data.case_id)
+                // } else if (length === 4) {
+                //     const temp1 = data.id.toString().substring(0, 2)
+                //     tempCaseName = this.treeLabelData[parseInt(temp1)]
+                //     const temp2 = data.id.toString().substring(0, 4)
+                //     tempTaskName = this.treeLabelData[parseInt(temp2)]
+                //     if (data.evidence === 1) {
+                //         this.jumpToEvidenceInformation(tempCaseName, tempTaskName)
+                //     } else if (data.evidence === 0) {
+                //         this.jumpToPhoneInformation(tempCaseName, tempTaskName)
+                //     }
+                // } else if (length === 6) {
+                //     const temp3 = data.id.toString().substring(0, 2)
+                //     tempCaseName = this.treeLabelData[parseInt(temp3)]
+                //     const temp4 = data.id.toString().substring(0, 4)
+                //     tempTaskName = this.treeLabelData[parseInt(temp4)]
+                //     const temp5 = data.id.toString().substring(0, 6)
+                //     tempPhone = this.treeLabelData[parseInt(temp5)]
+                //     this.jumpToAppDisplay(tempCaseName, tempTaskName, tempPhone)
+                // } else if (length === 8) {
+                //     const temp6 = data.id.toString().substring(0, 2)
+                //     tempCaseName = this.treeLabelData[parseInt(temp6)]
+                //     const temp7 = data.id.toString().substring(0, 4)
+                //     tempTaskName = this.treeLabelData[parseInt(temp7)]
+                //     const temp8 = data.id.toString().substring(0, 6)
+                //     tempPhone = this.treeLabelData[parseInt(temp8)]
+                //     const temp9 = data.id.toString().substring(0, 8)
+                //     tempAppName = this.treeLabelData[parseInt(temp9)]
+                //     this.jumpToAppInformation()
+                // } else if (length === 1) {
+                //     this.jumpToCaseDisplay()
+                // }
+                // console.log(tempCaseName + ' ' + tempTaskName + ' ' + tempPhone + ' ' + tempAppName + ' ' + data.evidence)
             }
         }
     }

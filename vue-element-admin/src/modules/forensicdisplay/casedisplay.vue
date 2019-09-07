@@ -2,7 +2,7 @@
   <div style="width: 100%;height:100%">
     <div style="width: 100%;display: flex;justify-content: space-between;padding:10px;">
       <el-button align="left" type="primary" width="320px" @click="jumpToCase">+创建案件</el-button>
-      <el-input v-model="tableDataName" align="right" placeholder="请输入" suffix-icon="el-icon-search" style="width:360px"
+      <el-input v-model="tableDataName" align="right" placeholder="请输入案件名" suffix-icon="el-icon-search" style="width:360px"
                 @input="doFilter"/>
     </div>
     <div style="width: 100%;height:90%;display: flex;flex-direction: column; padding:10px;">
@@ -21,7 +21,7 @@
         <!--        <el-table-column type="index" :index="indexMethod" label=" " min-width="100px" align="center" />-->
         <el-table-column type="expand" min-width="5px">
           <template slot-scope="props">
-            <el-form v-for="item in props.row.task_list" :key="item" label-position="left" inline
+            <el-form v-for="(item,index) in props.row.task_list" :key="index" label-position="left" inline
                      class="demo-table-expand">
               <el-form-item label="任务">
                 <span> {{ item.task_name }} </span>
@@ -112,9 +112,7 @@
         methods: {
             init() {
                 this.bondsAllList = this.$store.state.forensic.case_info
-                console.log('init casedisplay1')
                 if (this.bondsAllList !== '') {
-                    console.log('init casedisplay2')
                     this.getCreateTable()
                     this.$store.commit('forensic/getTreeCaseInfo','')
                     this.$store.commit('forensic/getTreeTaskInfo','')
@@ -136,7 +134,7 @@
             },
             handleSizeChange1: function (pageSize) { // 每页条数切换
                 // eslint-disable-next-line eqeqeq
-                if (this.flag == 1) {
+                if (this.flag === 1) {
                     return
                 }
                 this.pageSize = pageSize
@@ -145,7 +143,7 @@
             handleCurrentChange1: function (currentPage) { // 页码切换
                 this.currentPage1 = currentPage
                 // eslint-disable-next-line eqeqeq
-                if (this.flag == 0) {
+                if (this.flag === 0) {
                     this.currentChangePage(this.bondsAllList, currentPage)
                 } else {
                     this.currentChangePage(this.filterTableDataEnd, currentPage)
@@ -169,15 +167,15 @@
             },
             doFilter() {
                 // eslint-disable-next-line eqeqeq
-                if (this.tableDataName == '') {
+                if (this.tableDataName === '') {
                     this.getCreateTable()
                     return
                 }
                 this.tableDataEnd = []
                 this.filterTableDataEnd = []
                 this.bondsAllList.forEach((value, index) => {
-                    if (value.case_id) {
-                        if (value.case_id.indexOf(this.tableDataName) >= 0) {
+                    if (value.case_name) {
+                        if (value.case_name.indexOf(this.tableDataName) >= 0) {
                             this.filterTableDataEnd.push(value)
                         }
                     }
@@ -233,6 +231,7 @@
                     })
             },
             jumpToEvidenceDisplay(index, row) {
+                this.$store.commit('forensic/getTreeCaseInfo',row.case_id)
                 this.$router.push(
                     {
                         name: 'evidencedisplay',

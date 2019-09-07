@@ -4,10 +4,10 @@
       <div style="width: 100%; background: #FFFFFF;display: flex; padding: 2px 20px 2px 20px;flex-direction: column;">
         <h2>任务详情</h2>
         <div style="display: flex;justify-content: space-between;padding-bottom: 20px;padding-top: 10px;font-size: 18px;color: #333333">
-          <span>任务编号:&nbsp; {{ task_name }}</span>
+          <span>任务编号:&nbsp; {{ task_id }}</span>
           <span>任务名 : &nbsp;{{ task_name }}</span>
           <span>所属案件:&nbsp; {{ case_name }}</span>
-          <span>状态 :&nbsp; {{ task_name }}</span>
+          <span>状态 :&nbsp; {{ status }}</span>
         </div>
         <span style="font-size: 18px;color: #333333">详情&nbsp;&nbsp;&nbsp;&nbsp; {{ details }}</span>
         <el-divider content-position="center" />
@@ -70,12 +70,14 @@ export default {
       tempList: [],
       emptyText: '',
       tableDataName: '',
-      details: '本文用于示范，展示一些不同类型的内容，在文章中应该如何展示。包括：标题，段落，链接，附件，代码块，图片，表格内容。',
+      details: '',
+      status: '',
       tableDataEnd: '',
       filterTableDataEnd: '',
       flag: 0,
       task_name: '',
-      case_name: ''
+      case_name: '',
+      task_id: ''
     }
   },
   watch: {
@@ -89,8 +91,19 @@ export default {
       this.getParams()
       // this.getMessage()
       this.getMessageByPost()
-        this.$store.commit('forensic/getTreeCaseInfo',this.case_name)
-        this.$store.commit('forensic/getTreeTaskInfo',this.task_name)
+      // this.$store.commit('forensic/getTreeCaseInfo','')
+      // this.$store.commit('forensic/getTreeTaskInfo',this.task_id)
+      let task_show_dict= new Map([["ready",'准备中'],["running",'运行中'],["complete",'已完成'],["failed",'失败'],["canceled",'已取消']]);
+      for(var i = 0; i < this.$store.state.forensic.case_info.length; i++) {
+          if(this.$store.state.forensic.case_info[i].hasOwnProperty('task_list')) {
+              for (var j = 0; j < this.$store.state.forensic.case_info[i].task_list.length; j++) {
+                  if (this.$store.state.forensic.case_info[i].task_list[j].task_id === this.task_id) {
+                      this.details = this.$store.state.forensic.case_info[i].task_list[j].task_detail
+                      this.status = task_show_dict.get(this.$store.state.forensic.case_info[i].task_list[j].task_status)
+                  }
+              }
+          }
+      }
     },
     getMessage() {
       const path = 'http://localhost:5000/forensic/phoneInformation'
@@ -105,7 +118,7 @@ export default {
         })
     },
       getMessageByPost() {
-          const path = 'http://10.10.100.59:5000/forensic/phoneInformation'
+          const path = 'http://localhost:5000/forensic/phoneInformation'
           const list = {
               task_id:"10001"
           }
@@ -179,6 +192,7 @@ export default {
     getParams() {
       this.task_name = this.$route.query.taskName
       this.case_name = this.$route.query.caseName
+      this.task_id = this.$route.query.taskID
     },
     jumpToCaseDisplay() {
       this.$router.push(

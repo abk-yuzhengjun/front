@@ -10,6 +10,17 @@ const getters = {
   introduction: state => state.user.introduction,
   roles: state => state.user.roles,
   permission_routes: state => state.permission.routes,
-  errorLogs: state => state.errorLog.logs
+  errorLogs: state => state.errorLog.logs,
+  caseInfo:state => {
+    console.log('taskList Getter refresh')
+    console.log(state.forensic.case_name)
+    for (let index in state.forensic.case_info) {
+      if (state.forensic.case_info[index].case_id === state.forensic.case_name) {
+        console.log(state.forensic.case_info[index]);
+        return state.forensic.case_info[index];
+      }
+    }
+  }
+
 }
 export default getters
