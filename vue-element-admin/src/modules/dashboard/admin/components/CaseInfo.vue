@@ -9,8 +9,11 @@
       :data="caseInfo"
       :show-header=false
       style="width: 100%; height: 100%;overflow-y: scroll">
-      <el-table-column label="任务简介" min-width="32%">
+      <el-table-column label="任务简介" min-width="28%">
         <template slot-scope="scope">
+          <el-tag effect="plain">
+            取号
+          </el-tag>
            <el-link :underline="false" style="font-size: 16px;font-family: 'Microsoft YaHei';font-weight: 500;line-height: 40px">{{scope.row.caseName}} - </el-link>
            <el-link :underline="false" style="font-size: 16px;color: #2d2f33;font-family: 'Microsoft YaHei';font-weight: 500;line-height: 40px">{{scope.row.taskName}}</el-link>
           <div style="color: #7d7d7f;font-size: 13px;line-height: 18px">{{scope.row.task_detail}}</div>
@@ -31,8 +34,8 @@
         label="日期"
         align="right" min-width="18%">
         <template slot-scope="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.task_timestamp }}</span>
+<!--          <i class="el-icon-time"></i>-->
+          <span style="letter-spacing: 0.1em;">{{ timeAllFormat(scope.row.task_timestamp) }}</span>
         </template>
       </el-table-column>
 
@@ -115,6 +118,21 @@
         //   return {textInside:true}
         // }
         // return {status:status}
+      },
+      timeAllFormat:function(timeStamp){
+
+        let tarData = new Date(timeStamp*1000);
+        let year = tarData.getFullYear();
+        let month = tarData.getMonth()+1;
+        let day = new Date(timeStamp*1000).getDate();
+        let hh =tarData.getHours();
+        let mm =tarData.getMinutes();
+        let ss = tarData.getSeconds();
+        let hour =hh < 10? "0" + hh: hh;
+        let min =mm < 10? "0" + mm: mm;
+        let sec =ss < 10? "0" + ss: ss;
+
+        return year +'-' +month+'-' + day +'  ' +hour + ':' + min + ':' + sec;
       },
 
       handleEdit(index, row) {
