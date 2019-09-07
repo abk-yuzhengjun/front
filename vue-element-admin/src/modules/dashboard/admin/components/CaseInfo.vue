@@ -69,7 +69,6 @@
     created: function () {
       axios.post(host + '/dashboard/caseinfo',{user_id:'14141341414141'})
         .then((response)=>{
-
           this.refreshCaseInfo(response.data);
 
         })
@@ -122,7 +121,8 @@
       },
       handleDelete(index, row) {
         console.log(index, row);
-      }
+      },
+
     }
   }
 </script>

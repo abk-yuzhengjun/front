@@ -160,6 +160,7 @@ export default {
       //   this.$refs.password.focus()
       // })
     },
+
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
@@ -172,6 +173,7 @@ export default {
             .catch(() => {
               this.loading = false
             })
+            this.getUsrInfo()
         } else {
           console.log('error submit!!')
           return false
