@@ -2,7 +2,7 @@
   <div style="width:100%;display: flex;align-items: center;justify-content: center">
     <el-form ref="form" :model="form" label-width="200px">
       <el-form-item label="所属案件：" class="grid-case-ascription">
-        <el-select v-model="case_info.case.case_id" class="grid-case-ascription-options"
+        <el-select v-model="case_info.case.case_name" class="grid-case-ascription-options"
                    v-bind:disabled="pluginControl.case_name">
           <el-option
             v-for="(item,index) in form.case_list"
@@ -11,15 +11,18 @@
             :value="item.case_id" >
             <span style="float: left">{{ item.case_name }}</span>
             <span style="float: right; color: #8492a6; font-size: 13px">{{ item.case_id }}</span>
-
           </el-option>
-
         </el-select>
       </el-form-item>
       <el-form-item label="任务名称：" class="grid-case-ascription">
-        <el-input v-model="form.task_info.task_name" class="grid-case-ascription-options" placeholder="请输入案件名称"
+        <el-input v-model="form.task_info.task_name" class="grid-case-ascription-options" placeholder="请输入任务名称"
                   v-bind:disabled="pluginControl.task_name">
           {{form.task_info.task_name}}
+        </el-input>
+      </el-form-item>
+      <el-form-item label="任务详情：" class="grid-case-ascription">
+        <el-input v-model="form.task_info.task_detail" class="grid-case-detail" placeholder="请输入任务详情">
+          {{form.task_info.task_detail}}
         </el-input>
       </el-form-item>
       <el-form-item label="设备列表：" class="grid-case-ascription">
@@ -159,15 +162,32 @@
         },
 
         methods: {
-            getCase(case_id){
+            taskJump(){
+                console.log("case_id：",this.form.task_info.case_id)
+                console.log("task_id：",this.form.task_info.task_id)
+                if(2 === this.form.task_info.task_type) {
 
-            },
-            handleClose() {
-                this.$confirm('确认关闭？')
-                    .then(_ => {
-                        done();
-                    })
-                    .catch(_ => {});
+                    this.$router.push(
+                        {
+                            name: 'evidenceinformation',  //取证任务
+                            query: {
+                                caseId: this.form.task_info.case_id,
+                                taskId: this.form.task_info.task_id
+                            }
+                        }
+                    )
+                }
+                else {
+                    this.$router.push(
+                        {
+                            name: 'phoneinformation',  //取号任务
+                            query: {
+                                caseId: this.form.task_info.case_id,
+                                taskId: this.form.task_info.task_id
+                            }
+                        }
+                    )
+                }
             },
             onSubmit() {
                 this.$confirm('确认提交此任务？', '提示', {
@@ -180,8 +200,7 @@
                         type: 'success',
                         message: '成功!'
                     });
-                      // this.case_info.user_id = this.$store.getters.user_id;
-                     this.$router.push({path: '/caseManager/case-info/', query: {info: this.case_info}})
+
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -198,7 +217,9 @@
                 console.log("submit task",this.form.task_info)
 
                 axios.post(host + '/caseManage/creatTask/submitTask', this.form.task_info)
-                    .then(function (response) {
+                    .then(response=> {
+                        this.form.task_info.task_id = response.data.task_id
+                        this.taskJump()
                         console.log(response)
                     })
                     .catch(function (error) {
@@ -262,11 +283,18 @@
                 }
                 else if(1 === this.form.type){
                     this.pluginControl.task_name = false
-                    this.pluginControl.case_name = true
+                    this.pluginControl.case_name = true;
+                    this.case_info.case.case_id =this.form.task_info.case_id;
+                    this.case_info.case.case_name =this.form.task_info.case_name;
+                    this.form.task_info.number_content.imsi_black_list =[''];
+                    this.form.task_info.dev_list=[];
+                    console.log('dialogshow   ------------------------1')
                 }
                 else if(2 === this.form.type){
                     this.pluginControl.task_name = true
                     this.pluginControl.case_name = true
+                    this.case_info.case.case_id =this.form.task_info.case_id;
+                    this.case_info.case.case_name =this.form.task_info.case_name;
                 }
                 console.log("form", this.form)
                 // console.log("this.pluginControl.task_name",this.pluginControl.task_name)
@@ -274,12 +302,7 @@
             }
 
         },
-        // beforeUpdate: function () {
-        //     if (this.type == 1) {
-        //         this.form = this.$store.state.caseInfo.RowData;
-        //         // console.log("update")
-        //     }
-        // },
+
         created: function () {
 
             this.form = this.taskData
@@ -287,37 +310,6 @@
             this.dialogshow()
             this.modeChose()
 
-            // const host = 'http://localhost:5000'
-            // console.log('query case!')
-            //
-            // this.form.user_id = this.$store.getters.name
-            //
-            // axios.post(host + '/caseManage/queryallcase', this.form)
-            //     .then(response => {
-            //             this.options = response.data;
-            //             console.log("option", this.options);
-            //             this.dialogshow();
-            //         }
-            //     )
-            //     .catch(function (error) {
-            //         console.log(error)
-            //     })
-            //     .finally(function () {
-            //         console.log('get request finally')
-            //     });
-            //
-            // axios.post(host + '/caseManage/querydevinfo', this.form)
-            //     .then(response => {
-            //             this.dev_list = response.data;
-            //             console.log(this.dev_list );
-            //         }
-            //     )
-            //     .catch(function (error) {
-            //         console.log(error)
-            //     })
-            //     .finally(function () {
-            //         console.log('get request finally')
-            //     })
         }
     }
 
@@ -339,6 +331,10 @@
 
   .grid-case-ascription-options {
     width: 500px;
+  }
+  .grid-case-detail {
+    width: 500px;
+
   }
 
   .grid-device-manage {

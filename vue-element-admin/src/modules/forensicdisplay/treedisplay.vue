@@ -2,9 +2,15 @@
   <div style="width: 100%;height:100%;display: flex;align-items: stretch; padding: 10px; background:#F3F4F7;">
     <!--    <div class="nav" style="flex-shrink: 3;width: 100%;height: 100%">-->
     <!--      <table height="103px" width="100%" />-->
-    <div style="width:17%; background:#FFFFFF; padding:10px">
+    <div style="width:17%; height:100%; background:#FFFFFF; padding:10px">
+      <el-scrollbar style="height: 100%">
+        <el-input
+          placeholder="输入关键字进行过滤"
+          v-model="filterText" size="mini">
+        </el-input>
       <el-tree ref="tree" :data="treeData" :props="defaultProps" node-key="id"
-               :default-expanded-keys="[1,10,11,12,13,14]" highlight-current @node-click="handelNodeClick">
+               :default-expanded-keys="treeExpandAddr" :expand-on-click-node="false"
+               :filter-node-method="filterNode" highlight-current @node-click="handelNodeClick" >
         <span slot-scope="{ node,data}">
 
           <i v-if="data.node_ind==='home'" class="el-icon-house" ></i>
@@ -30,11 +36,12 @@
 <!--          </span>-->
         </span>
       </el-tree>
+      </el-scrollbar>
     </div>
     <div style="width:1%; height: 100%; background:#F3F4F7;"/>
     <!--    </div>-->
     <div style="width:82%; height: 100%; background:#FFFFFF;">
-      <router-view/>
+        <router-view/>
     </div>
   </div>
 </template>
@@ -49,9 +56,10 @@
         name: 'TreeDisplay',
         data() {
             return {
+                filterText: '',
                 taskTableData: '',
                 tableDataEnd: '',
-                treeExpand: [1],
+                treeExpandAddr: [1],
                 treeData: [],
                 treeLabelData: [],
                 treeIdData: [],
@@ -69,6 +77,9 @@
             getVuexTreeTaskInfo() {
                 console.log('getVuexTreeTaskInfo watch refresh')
                 this.highLightShowTree()
+            },
+            filterText(val) {
+                this.$refs.tree.filter(val);
             }
         },
         computed: {
@@ -128,8 +139,12 @@
                         alert(error)
                     })
             },
+            filterNode(value, treeData) {
+                if (!value) return true;
+                return treeData.label.indexOf(value) !== -1;
+            },
             highLightShowTree() {
-                console.log('highLightShowTree enter :' + this.$store.state.forensic.case_name + '*******' + this.$store.state.forensic.task_name+"*******" + Date.now());
+                console.log('highLightShowTree enter :' + this.$store.state.forensic.case_name + '*******' + this.$store.state.forensic.task_name+"*******");
                 let lastKey = 0;
                 let nowKey = 0;
                 if(this.$store.state.forensic.case_name === '' && this.$store.state.forensic.task_name === '')
@@ -138,13 +153,19 @@
                 }
                 else if(this.$store.state.forensic.case_name !== '' && this.$store.state.forensic.task_name === '')
                 {
-                    this.$refs.tree.setCurrentKey(this.treeIdData[this.$store.state.forensic.case_name + ':' + ':' +':'])
+                    let treeId = this.treeIdData[this.$store.state.forensic.case_name + ':' + ':' +':']
+                    console.log('expand Case: ' + treeId)
+                    this.treeExpandAddr.push(treeId)
+                    this.$refs.tree.setCurrentKey(treeId)
                 }
                 else if(this.$store.state.forensic.case_name !== '' && this.$store.state.forensic.task_name !== '')
                 {
-                    this.$refs.tree.setCurrentKey(this.treeIdData[this.$store.state.forensic.case_name + ':' + this.$store.state.forensic.task_name + ':' +':'])
+                    let treeId = this.treeIdData[this.$store.state.forensic.case_name + ':' + this.$store.state.forensic.task_name + ':' +':']
+                    console.log('expand Task: ' + treeId)
+                    this.treeExpandAddr.push(treeId)
+                    this.$refs.tree.setCurrentKey(treeId)
                 }
-                console.log('highLightShowTree leave :' + this.$store.state.forensic.case_name + '*******' + this.$store.state.forensic.task_name+ "*******" + Date.now())
+                console.log('highLightShowTree leave :' + this.$store.state.forensic.case_name + '*******' + this.$store.state.forensic.task_name+ "*******")
             },
             jumpToEvidenceDisplayByTree(caseId) {
                 this.$store.commit('forensic/getTreeCaseInfo', caseId)
@@ -170,7 +191,7 @@
                 this.$store.commit('forensic/getTreeTaskInfo', taskId)
                 this.$router.push(
                     {
-                        name: 'evidenceinformation',
+                        name: 'evidenceinformation',  //取证任务
                         query: {
                             caseId: caseId,
                             taskId: taskId
@@ -183,7 +204,7 @@
                 this.$store.commit('forensic/getTreeTaskInfo', taskId)
                 this.$router.push(
                     {
-                        name: 'phoneinformation',
+                        name: 'phoneinformation',   //取号任务
                         query: {
                             caseId: caseId,
                             taskId: taskId
@@ -211,7 +232,7 @@
                 )
             },
             getTreeData() {
-              let treeId = 1
+              let treeId = 2
                 const temp_list = []
                 const index = {
                     label: '案件信息',
@@ -223,7 +244,7 @@
                     const obj = {
                         label: this.taskTableData[i].case_name,
                         case_id: this.taskTableData[i].case_id,
-                        id: i + 10,
+                        id: treeId++,
                         node_ind:'case',
                         children: []
                     }
@@ -235,7 +256,7 @@
                             // eslint-disable-next-line no-unused-vars
                             const obj_child = {
                                 label: this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].task_name,
-                                id: obj.id * 100 + 10 + this.taskTableData[i].task_list.length - temp,
+                                id: treeId++,
                                 evidence: 0,
                                 node_ind:'task_number',
                                 children: []
@@ -253,7 +274,7 @@
                                 while (temp_length > 0) {
                                     const obj_child_child = {
                                         label: this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].phone,
-                                        id: obj_child.id * 100 + 10 + evidence_length - temp_length,
+                                        id: treeId++,
                                         node_ind:'phone',
                                         children: []
                                     }
@@ -265,7 +286,7 @@
                                         while (temp_phone_length > 0) {
                                             const obj_child_child_child = {
                                                 label: this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list[phone_length - temp_phone_length],
-                                                id: obj_child_child.id * 100 + 10 + phone_length - temp_phone_length,
+                                                id: treeId++,
                                                 node_ind:'app',
                                             }
                                             this.treeIdData[this.taskTableData[i].case_id + ':' +this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].task_id + ':' +obj_child_child.label +':' + obj_child_child_child.label] = obj_child_child_child.id
@@ -297,9 +318,9 @@
                 let treeApp = []
                 for(let index in this.treeIdData)
                 {
+                    console.log('data: ' + index + this.treeIdData[index])
                     if(data.id === this.treeIdData[index])
                     {
-                        console.log('data: ' + index + this.treeIdData[index])
                         let tempStr = index.split(":")
                         treeCaseId = tempStr[0]
                         treeTaskId = tempStr[1]
