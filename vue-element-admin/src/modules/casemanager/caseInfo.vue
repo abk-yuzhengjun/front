@@ -92,11 +92,13 @@
               v-model="scope.row.visible">
               <p>  进度选择</p>
               <div style="text-align: right; margin: 0">
-                <el-button size="mini" class="grid-form-state" @click="taskStateChange(0)" round>未开始</el-button>
-                <el-button type="danger" class="grid-form-state" size="mini" @click="taskStateChange(1)" round>进行中</el-button>
-                <el-button type="success" class="grid-form-state" size="mini" @click="taskStateChange(2)" round>完成</el-button>
+                <el-button size="mini" class="grid-form-state" @click="taskStateChange('ready',scope.$index)" round>未开始</el-button>
+                <el-button type="warning" class="grid-form-state" size="mini" @click="taskStateChange('running',scope.$index)" round>进行中</el-button>
+                <el-button type="success" class="grid-form-state" size="mini" @click="taskStateChange('complete',scope.$index)" round>完成</el-button>
+                <el-button type="danger" class="grid-form-state" size="mini" @click="taskStateChange('failed',scope.$index)" round>失败</el-button>
+                <el-button  type="info" class="grid-form-state" size="mini" @click="taskStateChange('canceled',scope.$index)" round>放弃</el-button>
               </div>
-              <el-button type="primary" slot="reference" style="width:80px">{{ taskStateShow(scope.row.task_state) }}</el-button>
+              <el-button type="primary" slot="reference" style="width:80px">{{ taskStateShow(scope.row.task_status) }}</el-button>
             </el-popover>
           </template>
         </el-table-column>
@@ -240,6 +242,12 @@ export default {
               }
           ]
        },
+        taskStatusChange:{
+            user_id:'',
+            case_id: '',
+            task_id:'',
+            task_status:''
+        },
       formLabelWidth: '120px',
 
     }
@@ -315,14 +323,21 @@ export default {
             }
         },
         taskStateShow(type){
-            if (type === 0){
+            console.log("taskStateShow",type)
+            if (type === 'ready'){
                 return '未开始'
             }
-            else if(type === 1){
+            else if(type === 'running'){
                 return '进行中'
             }
-            else if(type === 2){
+            else if(type === 'complete'){
                 return '完成'
+            }
+            else if(type === 'failed'){
+                return '失败'
+            }
+            else if(type === 'canceled'){
+                return '放弃'
             }
             else {
                 return '错误状态'
@@ -330,9 +345,14 @@ export default {
         },
         taskStateSubmit(){
             const host = 'http://localhost:5000'
+            this.taskStatusChange.case_id = this.tableData.case_id
+            this.taskStatusChange.user_id = this.tableData.user_id
+            this.taskStatusChange.task_id = this.currentRow.task_id
+            this.taskStatusChange.task_status = this.currentRow.task_status
 
-            console.log("taskStateSubmit")
-            axios.post(host + '/caseManage/caseInfo/taskStateSubmit', this.currentRow)
+            console.log("taskStateSubmit",this.taskStatusChange)
+
+            axios.post(host + '/caseManage/caseInfo/taskStateSubmit', this.taskStatusChange)
                 .then(function (response){
                     console.log(response)
                     }
@@ -344,10 +364,11 @@ export default {
                     console.log('get request finally')
                 })
         },
-        taskStateChange(type){
-            this.currentRow.visible = false
-            this.currentRow.task_state = type
-            console.log("task_state:",this.currentRow.task_state)
+        taskStateChange(type,index){
+
+            this.tableData.task_list[index].visible =!this.tableData.task_list[index].visible
+            this.tableData.task_list[index].task_status = type
+            console.log("taskStateChange:",this.tableData.task_list[index])
             this.taskStateSubmit()
             // scope.row.visible = false
         },
