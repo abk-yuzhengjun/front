@@ -166,7 +166,7 @@
                     update_ts: ''
                 },
                 dialogPropTask: {
-                    type: '',
+                    type: 0,
                     dev_list: [],
                     oper_list: [],
                     case_list: [],
@@ -177,6 +177,8 @@
                         task_id: 1,
                         task_name: '',
                         task_detail: '',
+                        dev_list:[],
+                        oper_list:[],
                         create_ts: '',
                         task_type: '',
                         number_content: {
@@ -231,7 +233,6 @@
                 console.log('watch bondsAllList.......');
                 this.updateTable()
             }
-
         },
         computed: {
             ...mapGetters({ caseInfo:'caseInfo'}),
@@ -241,13 +242,24 @@
                 return percentage === 100 ? '准备中' : `${percentage}%`;
             },
             updateTable(){
+                this.getParams()
                 this.$store.commit('forensic/getTreeCaseInfo', this.case_id)
-                this.bondsAllList = this.caseInfo.task_list
+                if( this.caseInfo ===undefined)
+                {
+                    return
+                }
+                console.log('after commit' + this.case_id)
+                console.log('caseInfo: ' + this.caseInfo)
+                this.bondsAllList = ''
+                this.tempList = []
                 this.details = this.caseInfo.case_detail;
                 this.case_name = this.caseInfo.case_name;
-                console.log('updateTable ALL table')
-                if (this.bondsAllList !== undefined && this.bondsAllList !== '') {
-                    this.getCreateTable()
+                if(this.caseInfo.hasOwnProperty('task_list')) {
+                    this.bondsAllList = this.caseInfo.task_list
+                    console.log('updateTable ALL table')
+                    if (this.bondsAllList !== undefined && this.bondsAllList !== '') {
+                        this.getCreateTable()
+                    }
                 }
             },
             init() {
@@ -376,9 +388,12 @@
             },
             editTaskInfo(index, row) {
                 this.dialogFormVisible = !this.dialogFormVisible
-                this.dialogPropTask.type = '2'
+                this.dialogPropTask.type = 2
+                this.dialogPropTask.dev_list = this.$store.state.baseInfo.dev_list
+                this.dialogPropTask.app_list = this.$store.state.baseInfo.app_list
+                this.dialogPropTask.oper_list = this.$store.state.baseInfo.oper_list
                 this.dialogPropTask.task_info.task_detail = row.task_detail
-                this.dialogPropTask.dev_list = row.dev_list
+                this.dialogPropTask.task_info.dev_list = row.dev_list
                 this.dialogPropTask.task_info.task_id = row.task_id
                 this.dialogPropTask.task_info.case_id = this.case_id
                 this.dialogPropTask.task_info.case_name = this.case_name
@@ -535,18 +550,29 @@
                 )
             },
             jumpToTask() {
-                this.dialogFormVisible = !this.dialogFormVisible
-                this.dialogPropTask.type = '1'
+                this.dialogPropTask.type = 1
+                this.dialogPropTask.dev_list = this.$store.state.baseInfo.dev_list
+                this.dialogPropTask.app_list = this.$store.state.baseInfo.app_list
+                this.dialogPropTask.oper_list = this.$store.state.baseInfo.oper_list
                 this.dialogPropTask.task_info.case_id = this.case_id
-                this.dialogPropTask.task_info.case_name = this.case_name
+                this.dialogPropTask.task_info.case_name = this.caseInfo.case_name
                 this.dialogPropTask.task_info.task_detail = ''
-                this.dialogPropTask.dev_list = []
+                this.dialogPropTask.task_info.dev_list = []
+                this.dialogPropTask.task_info.app_list = []
                 this.dialogPropTask.task_info.task_id = ''
-                this.dialogPropTask.task_info.case_id = ''
                 this.dialogPropTask.task_info.task_name = ''
                 this.dialogPropTask.task_info.task_type = ''
                 this.dialogPropTask.task_info.evidence_content = []
-                this.dialogPropTask.task_info.number_content = []
+                this.dialogPropTask.task_info.number_content = {capture_mode: '',
+                    imsi_black_list: [
+                        ''
+                    ],
+                    capture_operation: '',
+                    capture_type: ''}
+                console.log(this.dialogPropTask)
+
+                this.dialogFormVisible = !this.dialogFormVisible
+
             },
             handelNodeClick(data) {
                 if (data.id > 10) {

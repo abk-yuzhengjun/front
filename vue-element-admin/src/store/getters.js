@@ -15,7 +15,8 @@ const getters = {
     console.log('taskList Getter refresh')
     console.log(state.forensic.case_name)
     for (let index in state.forensic.case_info) {
-      if (state.forensic.case_info[index].case_id === state.forensic.case_name) {
+      console.log(state.forensic.case_info[index].case_id)
+      if (state.forensic.case_info[index].case_id == state.forensic.case_name) {
         console.log(state.forensic.case_info[index]);
         return state.forensic.case_info[index];
       }
