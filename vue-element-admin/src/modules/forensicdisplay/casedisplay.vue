@@ -49,7 +49,7 @@
         <el-table-column min-width="10px" align="center">
           <template slot-scope="scope">
             <el-button size="medium" type="text" @click="jumpToEvidenceDisplay(scope.$index,scope.row)">查看案件</el-button>
-            <el-button type="text" @click="remId(scope.$index)">编辑</el-button>
+            <el-button type="text" @click="editCaseInfo(scope.$index,scope.row)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -65,6 +65,11 @@
         @current-change="handleCurrentChange1"
       />
     </div>
+    <div v-if="dialogFormVisibleCase">
+      <el-dialog title="编辑案件" :visible.sync="dialogFormVisibleCase">
+        <case_comp :compData ='dialogPropCase' />
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -72,12 +77,16 @@
     // eslint-disable-next-line no-undef,no-unused-vars
     import axios from 'axios'
     import store from '../../store'
+    import { mapGetters } from 'vuex'
+    import case_comp from '../component/case_comp'
 
     export default {
         name: 'CaseDisplay',
+        components: {case_comp},
         data() {
             return {
                 total1: 0,
+                dialogFormVisibleCase: 0,
                 tempList: [],
                 emptyText: '',
                 currentPage1: 1,
@@ -92,7 +101,15 @@
                 defaultProps: {
                     children: 'children',
                     label: 'label'
-                }
+                },
+                dialogPropCase: {
+                    type: '',
+                    case_name: '',
+                    case_detail: '',
+                    user_id: '',
+                    create_ts: '',
+                    update_ts: ''
+                },
             }
         },
         created() {
@@ -117,6 +134,17 @@
                     this.$store.commit('forensic/getTreeCaseInfo','')
                     this.$store.commit('forensic/getTreeTaskInfo','')
                 }
+            },
+            editCaseInfo(index,row) {
+                this.dialogFormVisibleCase = !this.dialogFormVisibleCase
+                this.dialogPropCase.case_name = row.case_name
+                this.dialogPropCase.case_detail = row.case_detail;
+                this.dialogPropCase.create_ts = row.create_ts;
+                this.dialogPropCase.update_ts = row.update_ts;
+                this.dialogPropCase.user_id = this.$store.getters.name
+                this.dialogPropCase.case_id = row.case_id
+                this.dialogPropCase.type = 1
+                console.log(this.dialogPropCase)
             },
             getMessageByPost2() {
                 const path2 = 'http://localhost:5000/forensic/casetaskdisplay'

@@ -1,27 +1,30 @@
 <template xmlns:height="http://www.w3.org/1999/xhtml">
   <div style="width: 100%;height:100%">
-    <div style="width: 100%;height:25%;display: flex;padding-bottom: 10px; background: #F3F4F7">
-      <div style="width: 100%; background: #FFFFFF;display: flex; padding: 2px 20px 2px 20px;flex-direction: column;">
-        <h2>任务详情</h2>
-        <div style="display: flex;justify-content: space-between;padding-bottom: 20px;padding-top: 10px;font-size: 18px;color: #333333">
-          <span>任务编号:&nbsp; {{ task_id }}</span>
+    <div style="width: 100%;display: flex;padding-bottom: 5px; background: #F3F4F7">
+      <div style="width: 100%; background: #FFFFFF;display: flex; padding: 10px 20px 0px 20px;flex-direction: column;">
+        <span style="font-size: 16px;color: #333333; font-weight: bold">任务详情</span>
+        <div style="display: flex;justify-content: space-between;padding-bottom: 10px;padding-top: 10px;font-size: 16px;color: #333333">
           <span>任务名 : &nbsp;{{ task_name }}</span>
           <span>所属案件:&nbsp; {{ case_name }}</span>
+          <span>任务编号:&nbsp; {{ task_id }}</span>
           <span>状态 :&nbsp; {{ status }}</span>
         </div>
-        <span style="font-size: 18px;color: #333333">详情&nbsp;&nbsp;&nbsp;&nbsp; {{ details }}</span>
+        <div style="display: flex;justify-content: space-between; height: 10px">
+          <span style="font-size: 16px;color: #333333">详情&nbsp;&nbsp;&nbsp;&nbsp; {{ details }}</span>
+          <el-button type="text" style="text-decoration: underline; font-size:16px" @click="editTaskInfo">编辑任务</el-button>
+        </div>
         <el-divider content-position="center" />
       </div>
     </div>
     <div style="width: 100%;height:5%;display: flex;justify-content: space-between;padding-left:20px;padding-top: 10px;padding-right: 10px">
-      <span style="font-size: 20px;font-weight: bold">取号列表</span>
+      <span style="font-size: 16px;font-weight: bold">取号列表</span>
       <el-input v-model="tableDataName" align="right" placeholder="请输入" suffix-icon="el-icon-search" style="width:360px" @input="doFilter" />
     </div>
     <div style="width: 100%;height:70%;display: flex;flex-direction: column;padding:10px;">
       <el-table
         :data="tempList"
-        :header-cell-style="{color:'#666666',font: '20px large'}"
-        :cell-style="{font: '16px Medium', color:'#333333',height:'50px'}"
+        :header-cell-style="{color:'#666666',font: '14px Base'}"
+        :cell-style="{font: '14px Base', color:'#333333'}"
         stripe
         style="margin-bottom:14px;"
         :empty-text="emptyText"
@@ -51,6 +54,11 @@
         @current-change="handleCurrentChange1"
       />
     </div>
+    <div v-if="dialogFormVisible">
+      <el-dialog title="编辑任务" :visible.sync="dialogFormVisible">
+        <task_comp :taskData ='dialogPropTask' />
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -58,12 +66,16 @@
 // eslint-disable-next-line no-undef,no-unused-vars
 import axios from 'axios'
 import store from '../../store'
+import task_comp from '../component/task_comp'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'PhoneInformation',
+  components: {task_comp},
   data() {
     return {
       total1: 0,
+      dialogFormVisible: 0,
       currentPage1: 1,
       pageSize: 10,
       bondsAllList: '',
@@ -77,34 +89,95 @@ export default {
       flag: 0,
       task_name: '',
       case_name: '',
-      task_id: ''
+      task_id: '',
+      case_id: '',
+      dialogPropTask: {
+            type: 0,
+            dev_list: [],
+            oper_list: [],
+            case_list: [],
+            task_info: {
+                user_id: '',
+                case_name: '',
+                case_id: '',
+                task_id: 1,
+                task_name: '',
+                task_detail: '',
+                dev_list:[],
+                oper_list:[],
+                create_ts: '',
+                task_type: '',
+                number_content: {
+                    capture_mode: '',
+                    imsi_black_list: [
+                        ''
+                    ],
+                    capture_operation: '',
+                    capture_type: ''
+                },
+                evidence_content: [
+                    {
+                        phone: '',
+                        imsi: '',
+                        app_list: '',
+                    }
+                ]
+            }
+        },
     }
   },
   watch: {
-    '$route': 'init'
+    '$route': 'init',
+    caseInfo() {
+          console.log('watch evidenceInformation.......');
+          this.init()
+      }
   },
   created() {
     this.init()
   },
+    computed: {
+        ...mapGetters({ caseInfo:'caseInfo'}),
+    },
   methods: {
-    init() {
-      this.getParams()
-      // this.getMessage()
-      this.getMessageByPost()
-      // this.$store.commit('forensic/getTreeCaseInfo','')
-      // this.$store.commit('forensic/getTreeTaskInfo',this.task_id)
-      let task_show_dict= new Map([["ready",'准备中'],["running",'运行中'],["complete",'已完成'],["failed",'失败'],["canceled",'已取消']]);
-      for(var i = 0; i < this.$store.state.forensic.case_info.length; i++) {
-          if(this.$store.state.forensic.case_info[i].hasOwnProperty('task_list')) {
-              for (var j = 0; j < this.$store.state.forensic.case_info[i].task_list.length; j++) {
-                  if (this.$store.state.forensic.case_info[i].task_list[j].task_id === this.task_id) {
-                      this.details = this.$store.state.forensic.case_info[i].task_list[j].task_detail
-                      this.status = task_show_dict.get(this.$store.state.forensic.case_info[i].task_list[j].task_status)
+      init() {
+          console.log('phoneInformation init')
+          this.getParams()
+          // this.getMessage()
+          this.getMessageByPost()
+          // this.$store.commit('forensic/getTreeCaseInfo','')
+          // this.$store.commit('forensic/getTreeTaskInfo',this.task_id)
+          let task_show_dict = new Map([["ready", '准备中'], ["running", '运行中'], ["complete", '已完成'], ["failed", '失败'], ["canceled", '已取消']]);
+          if(this.caseInfo !== undefined) {
+              this.case_name = this.caseInfo.case_name
+              for (var j = 0; j < this.caseInfo.task_list.length; j++) {
+                  if (this.caseInfo.task_list[j].task_id === this.task_id) {
+                      this.details = this.caseInfo.task_list[j].task_detail
+                      this.status = task_show_dict.get(this.caseInfo.task_list[j].task_status)
+                      this.task_name = this.caseInfo.task_list[j].task_name
+                      this.task_info = this.caseInfo.task_list[j]
                   }
               }
           }
-      }
-    },
+      },
+      editTaskInfo() {
+          this.dialogFormVisible = !this.dialogFormVisible
+          this.dialogPropTask.type = 2
+          this.dialogPropTask.dev_list = this.$store.state.baseInfo.dev_list
+          this.dialogPropTask.app_list = this.$store.state.baseInfo.app_list
+          this.dialogPropTask.oper_list = this.$store.state.baseInfo.oper_list
+          this.dialogPropTask.task_info.task_detail = this.task_info.task_detail
+          this.dialogPropTask.task_info.dev_list = this.task_info.dev_list
+          this.dialogPropTask.task_info.task_id = this.task_info.task_id
+          this.dialogPropTask.task_info.case_id = this.case_id
+          this.dialogPropTask.task_info.case_name = this.case_name
+          this.dialogPropTask.task_info.task_name = this.task_info.task_name
+          this.dialogPropTask.task_info.task_type = this.task_info.task_type
+          this.dialogPropTask.task_info.evidence_content = this.task_info.evidence_content
+          this.dialogPropTask.task_info.number_content = this.task_info.number_content
+          console.log(this.dialogPropTask)
+          console.log('task dialog')
+      },
     getMessage() {
       const path = 'http://localhost:5000/forensic/phoneInformation'
       axios.get(path)
@@ -190,9 +263,10 @@ export default {
       this.getCreateTable()
     },
     getParams() {
-      this.task_name = this.$route.query.taskName
-      this.case_name = this.$route.query.caseName
-      this.task_id = this.$route.query.taskID
+        this.case_id = this.$route.query.caseId
+        this.task_id = this.$route.query.taskId
+        this.$store.commit('forensic/getTreeCaseInfo', this.case_id)
+        this.$store.commit('forensic/getTreeTaskInfo', this.task_id)
     },
     jumpToCaseDisplay() {
       this.$router.push(

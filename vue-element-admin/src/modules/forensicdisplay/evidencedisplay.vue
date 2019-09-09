@@ -1,38 +1,37 @@
 <template xmlns:height="http://www.w3.org/1999/xhtml">
   <div style="width: 100%;height:100%">
-    <div style="width: 100%;display: flex;padding-bottom: 10px; background: #F3F4F7">
-      <div style="width: 100%; background: #FFFFFF;display: flex; padding: 2px 20px 2px 20px;flex-direction: column;">
-        <h2>案件详情</h2>
+    <div style="width: 100%;display: flex;padding-bottom: 5px; background: #F3F4F7">
+      <div style="width: 100%; background: #FFFFFF;display: flex; padding: 10px 20px 4px 20px;flex-direction: column;">
+        <span style="font-size: 16px;color: #333333; font-weight: bold">案件详情</span>
         <div
-          style="display: flex;justify-content: space-between;padding-bottom: 20px;padding-top: 10px;font-size: 18px;color: #333333">
-          <span>案件编号:&nbsp; {{ case_id }}</span>
+          style="display: flex;justify-content: space-between;padding-bottom: 10px;padding-top: 10px;font-size: 16px;color: #333333">
           <span>案件名 : &nbsp;{{ case_name }}</span>
-          <span>
-            <!--            <el-button type="text" @click="remId(scope.$index)">创建案件</el-button>-->
-            <el-button type="text" style="text-decoration: underline; font-size:18px" @click="editCaseInfo">编辑案件</el-button>
-          </span>
+          <span>案件编号:&nbsp; {{ case_id }}</span>
         </div>
-        <span style="font-size: 18px;color: #333333">详情&nbsp;&nbsp;&nbsp;&nbsp;{{ details }}</span>
+        <div style="display: flex;justify-content: space-between; height: 10px">
+          <span style="font-size: 16px;color: #333333">详情&nbsp;&nbsp;&nbsp;&nbsp; {{ details }}</span>
+          <el-button type="text" style="text-decoration: underline; font-size:16px" @click="editCaseInfo">编辑案件</el-button>
+        </div>
         <el-divider content-position="center"/>
       </div>
     </div>
     <div
-      style="width: 100%;display: flex;justify-content: space-between;padding-left:20px;padding-top: 10px;padding-right: 10px">
-      <span style="font-size: 20px;font-weight: bold">任务列表</span>
+      style="width: 100%;display: flex;justify-content: space-between;padding: 10px 10px 10px 20px;">
+      <span style="font-size: 16px;font-weight: bold">任务列表</span>
       <el-input v-model="tableDataName" placeholder="请输入任务名" suffix-icon="el-icon-search" style="width:360px"
                 @input="doFilter"/>
     </div>
     <div style="width:100%;padding-left:20px;justify-content: flex-start">
-      <el-button type="primary" @click="jumpToTask">+创建任务</el-button>
+      <el-button type="primary" size="mini" @click="jumpToTask">+创建任务</el-button>
     </div>
     <!--    <div class="nav">-->
     <!--      <el-tree ref="tree" :data="treeData" :props="defaultProps" default-expand-all="false" @node-click="handelNodeClick" />-->
     <!--    </div>-->
-    <div style="width: 100%;height:65%; display: flex;flex-direction: column;padding:10px;">
+    <div style="width: 100%;height: 65%; display: flex;flex-direction: column;padding:20px;">
       <el-table
         :data="tempList"
-        :header-cell-style="{color:'#666666',font: '18px large'}"
-        :cell-style="{font: '16px Medium',color:'#333333'}"
+        :header-cell-style="{color:'#666666',font: '14px Base'}"
+        :cell-style="{font: '14px Base',color:'#333333'}"
         stripe
         style="margin-bottom:14px;"
         :empty-text="emptyText"
@@ -65,14 +64,17 @@
             <el-button type="text" @click="jumpToEvidenceInformation(scope.$index,scope.row)">{{scope.row.task_id}}</el-button>
           </template>
         </el-table-column>
+
         <el-table-column label="任务名" min-width="13px" align="left">
           <template slot-scope="scope">
+            <el-tooltip class="item" effect="dark" placement="top-start">
+              <div slot="content" v-if="scope.row.task_detail === ''">暂无任务信息</div>
+              <div slot="content" v-else>暂无任务信息</div>
             <span>{{scope.row.task_name}}</span>
+            </el-tooltip>
             <el-button type="text" class="el-icon-edit-outline" @click="editTaskInfo(scope.$index,scope.row)"></el-button>
-            <div>{{scope.row.task_detail}}</div>
           </template>
         </el-table-column>
-
         <!--        <el-table-column property="evidence_content[0].phone" label="手机号" min-width="200px" align="center" />-->
         <el-table-column label="创建时间" min-width="10px" align="left">
           <template slot-scope="scope">
@@ -82,18 +84,16 @@
         <el-table-column label="状态" min-width="14px" align="left">
           <template slot-scope="scope">
 <!--            <el-tag v-if="scope.row.task_status === 'ready'" size="medium" type="primary">准备中</el-tag>-->
-            <el-progress  :percentage="100"  :format="format" >准备中</el-progress>
 <!--            <el-tag v-else-if="scope.row.task_status === 'running'" size="medium" type="warning">进行中</el-tag>-->
 <!--            <el-tag v-else-if="scope.row.task_status === 'complete'" size="medium" type="success">已完成</el-tag>-->
 <!--            <el-tag v-else-if="scope.row.task_status === 'failed'" size="medium" type="danger">失败</el-tag>-->
 <!--            <el-tag v-else-if="scope.row.task_status === 'canceled'" size="medium" type="info">已取消</el-tag>-->
-<!--            <el-progress :percentage="0" v-if="scope.row.task_progress === ''"></el-progress>-->
-<!--            <el-progress :percentage="25" v-else-if="scope.row.task_progress === 'step1'"></el-progress>-->
-<!--            <el-progress :percentage="50" v-else-if="scope.row.task_progress === 'step2'"></el-progress>-->
-<!--            <el-progress :percentage="75" v-else-if="scope.row.task_progress === 'step3'"></el-progress>-->
-<!--            <el-progress :percentage="100" status="success"-->
-<!--                         v-else-if="scope.row.task_progress === 'step4'"></el-progress>-->
-<!--            <el-progress :percentage="0" v-else></el-progress>-->
+            <el-progress :percentage="1" color="#409eff" v-if="scope.row.task_status === 'ready'" :format="format">准备中</el-progress>
+            <el-progress :percentage="25" color="#e6a23c" v-else-if="scope.row.task_status === 'running'" :format="format"></el-progress>
+            <el-progress :percentage="100" color="#5cb87a" v-else-if="scope.row.task_status === 'complete'" :format="format"></el-progress>
+            <el-progress :percentage="50" color="#f56c6c" v-else-if="scope.row.task_status === 'failed'" :format="format"></el-progress>
+            <el-progress :percentage="0" color="#909399" v-else-if="scope.row.task_status === 'canceled'" :format="format"></el-progress>
+            <el-progress :percentage="1" color="#409eff" v-else :format="format"></el-progress>
           </template>
         </el-table-column>
         <!--        <el-table-column label="" align="center" min-width="10px">-->
@@ -109,9 +109,12 @@
         <!--        </el-table-column>-->
         <el-table-column label="" align="center" min-width="8px">
           <template slot-scope="scope">
-            <i class="el-icon-loading" v-if="scope.row.task_status !== 'ready'"></i>
+<!--            <i class="el-icon-loading" v-if="scope.row.task_status !== 'ready'"></i>-->
             <el-button size="mini" type="primary" @click="handelTaskStatus(scope.$index,scope.row)" v-if="scope.row.task_status === 'ready'">开始</el-button>
-            <el-button size="mini" type="danger" @click="handelTaskStatus(scope.$index,scope.row)" v-else>结束</el-button>
+<!--            <el-button size="mini" type="primary" @click="handelTaskStatus(scope.$index,scope.row)" v-if="scope.row.task_status === 'running'">结束</el-button>-->
+            <el-button size="mini" type="warning" @click="handelTaskStatus(scope.$index,scope.row)" v-else-if="scope.row.task_status === 'failed'">重新开始</el-button>
+            <el-button size="mini" type="danger" @click="handelTaskStatus(scope.$index,scope.row)" v-else-if="scope.row.task_status === 'complete'">结束</el-button>
+            <i class="el-icon-loading" v-else></i>
 <!--            <el-button size="mini" type="danger">结束</el-button>-->
           </template>
         </el-table-column>
@@ -159,6 +162,7 @@
                 dialogFormVisibleCase: 0,
                 dialogPropCase: {
                     type: '',
+                    case_id: '',
                     case_name: '',
                     case_detail: '',
                     user_id: '',
@@ -239,17 +243,37 @@
         },
         methods: {
             format(percentage) {
-                return percentage === 100 ? '准备中' : `${percentage}%`;
+                let taskStatus =''
+                if(percentage === 100)
+                {
+                    taskStatus = '已完成'
+                }
+                else if(percentage === 25)
+                {
+                    taskStatus = '进行中'
+                }
+                else if(percentage === 1)
+                {
+                    taskStatus = '准备中'
+                }
+                else if(percentage === 50)
+                {
+                    taskStatus = '已失败'
+                }
+                else if(percentage === 0)
+                {
+                    taskStatus = '已取消'
+                }
+                return taskStatus
             },
             updateTable(){
                 this.getParams()
                 this.$store.commit('forensic/getTreeCaseInfo', this.case_id)
+                this.$store.commit('forensic/getTreeTaskInfo', '')
                 if( this.caseInfo ===undefined)
                 {
                     return
                 }
-                console.log('after commit' + this.case_id)
-                console.log('caseInfo: ' + this.caseInfo)
                 this.bondsAllList = ''
                 this.tempList = []
                 this.details = this.caseInfo.case_detail;
@@ -412,7 +436,7 @@
                 this.dialogPropCase.update_ts = this.caseInfo.update_ts;
                 this.dialogPropCase.user_id = this.$store.getters.name
                 this.dialogPropCase.case_id = this.caseInfo.case_id
-                this.dialogPropCase.type = '1'
+                this.dialogPropCase.type = 1
                 console.log(this.dialogPropCase)
             },
             getCreateTable() {
@@ -484,7 +508,7 @@
                     row.task_status = 'ready'
                 }
                 const param = {
-                    user_id: '123',
+                    user_id: this.$store.state.user.name,
                     case_id: this.case_id,
                     task_id: row.task_id,
                     task_status: row.task_status
@@ -515,9 +539,8 @@
                         {
                             name: 'evidenceinformation',
                             query: {
-                                taskID: row.task_id,
-                                taskName: row.task_name,
-                                caseName: this.case_name
+                                taskId: row.task_id,
+                                caseId: this.case_id
                             }
                         })
                 } else if (row.task_type === 1) {
@@ -525,9 +548,8 @@
                         {
                             name: 'phoneinformation',
                             query: {
-                                taskID: row.task_id,
-                                taskName: row.task_name,
-                                caseName: this.case_name
+                                taskId: row.task_id,
+                                caseId: this.case_id
                             }
                         })
                 } else {
@@ -535,9 +557,8 @@
                         {
                             name: 'evidenceinformation',
                             query: {
-                                taskID: row.task_id,
-                                taskName: row.task_name,
-                                caseName: this.case_name
+                                taskId: row.task_id,
+                                caseId: this.case_id
                             }
                         })
                 }
