@@ -92,11 +92,13 @@
               v-model="scope.row.visible">
               <p>  进度选择</p>
               <div style="text-align: right; margin: 0">
-                <el-button size="mini" class="grid-form-state" @click="taskStateChange(0)" round>未开始</el-button>
-                <el-button type="danger" class="grid-form-state" size="mini" @click="taskStateChange(1)" round>进行中</el-button>
-                <el-button type="success" class="grid-form-state" size="mini" @click="taskStateChange(2)" round>完成</el-button>
+                <el-button size="mini" class="grid-form-state" @click="taskStateChange('ready',scope.$index)" round>未开始</el-button>
+                <el-button type="warning" class="grid-form-state" size="mini" @click="taskStateChange('running',scope.$index)" round>进行中</el-button>
+                <el-button type="success" class="grid-form-state" size="mini" @click="taskStateChange('complete',scope.$index)" round>完成</el-button>
+                <el-button type="danger" class="grid-form-state" size="mini" @click="taskStateChange('failed',scope.$index)" round>失败</el-button>
+                <el-button  type="info" class="grid-form-state" size="mini" @click="taskStateChange('canceled',scope.$index)" round>放弃</el-button>
               </div>
-              <el-button type="primary" slot="reference" style="width:80px">{{ taskStateShow(scope.row.task_state) }}</el-button>
+              <el-button type="primary" slot="reference" style="width:80px">{{ taskStateShow(scope.row.task_status) }}</el-button>
             </el-popover>
           </template>
         </el-table-column>
@@ -143,8 +145,8 @@
     </el-dialog>
       </div>
     <div v-if="dialogcaseInfoVisible">
-      <el-dialog title="编辑案件" :visible.sync="dialogcaseInfoVisible" show-close=true>
-        <case_comp :compData='tableData'></case_comp>
+      <el-dialog title="编辑案件" :visible.sync="dialogcaseInfoVisible" >
+        <case_comp :compData='caseEditInfo'></case_comp>
       </el-dialog>
     </div>
   </el-form>
@@ -189,6 +191,15 @@ export default {
             user_id:'',
             case_name:'',
             case_id:''},
+        caseEditInfo:{
+            user_id:'',
+            case_id: '',
+            case_name: '',
+            case_detail: '',
+            create_ts: '',
+            update_ts: '',
+            type: ''
+        },
       tableData:{
             user_id:'',
             case_id: '',
@@ -231,6 +242,12 @@ export default {
               }
           ]
        },
+        taskStatusChange:{
+            user_id:'',
+            case_id: '',
+            task_id:'',
+            task_status:''
+        },
       formLabelWidth: '120px',
 
     }
@@ -250,32 +267,21 @@ export default {
     methods: {
         caseInfoEdit(){
 
+            this.caseEditInfo.type = 1
+            this.caseEditInfo.case_name = this.tableData.case_name
+            this.caseEditInfo.case_detail = this.tableData.case_detail
+            this.caseEditInfo.case_id = this.tableData.case_id
+            this.caseEditInfo.user_id = this.tableData.user_id
             this.dialogcaseInfoVisible = !this.dialogcaseInfoVisible
 
 
         },
         getUsrInfo(){
-            const axios = require('axios')
-            const host = 'http://localhost:5000'
-            var data={user_id:''}
-            data.user_id = this.$store.getters.name
-
-            axios.post(host + '/login/usrInfoGet', data)
-                .then(response=>{
-                    this.tableData.dev_list = response.data.res.dev_list
-                    this.tableData.app_list = response.data.res.app_list
-                    this.tableData.oper_list = response.data.res.oper_list
-                    this.tableData.case_list = response.data.res.case_list
-
-                })
-                .catch(function(error) {
-                    // handle error
-                    console.log(error)
-                })
-                .finally(function() {
-                    console.log('get request finally')
-                })
-
+            console.log("store:",this.$store.state)
+            this.tableData.dev_list = this.$store.state.baseInfo.dev_list
+            this.tableData.app_list = this.$store.state.baseInfo.app_list
+            this.tableData.oper_list = this.$store.state.baseInfo.oper_list
+            this.tableData.case_list = this.$store.state.baseInfo.case_list
         },
         dialogSubmit(){
 
@@ -285,13 +291,13 @@ export default {
            console.log("dialogShow called");
 
            console.log("info:",this.tableData.task_list[this.cid])
+           this.form.dev_list = this.tableData.dev_list
+           this.form.app_list = this.tableData.app_list
+           this.form.oper_list = this.tableData.oper_list
+           this.form.case_list = this.tableData.case_list
            this.form.task_info = this.tableData.task_list[id]
            this.dialogFormVisible = !this.dialogFormVisible;
        },
-        dialogFlase:function(){
-            this.dialogFormVisible = !this.dialogFormVisible;
-
-        },
         taskTypeShow(type){
             if (type === 1){
                 return '取号'
@@ -301,14 +307,21 @@ export default {
             }
         },
         taskStateShow(type){
-            if (type === 0){
+            console.log("taskStateShow",type)
+            if (type === 'ready'){
                 return '未开始'
             }
-            else if(type === 1){
+            else if(type === 'running'){
                 return '进行中'
             }
-            else if(type === 2){
+            else if(type === 'complete'){
                 return '完成'
+            }
+            else if(type === 'failed'){
+                return '失败'
+            }
+            else if(type === 'canceled'){
+                return '放弃'
             }
             else {
                 return '错误状态'
@@ -316,9 +329,14 @@ export default {
         },
         taskStateSubmit(){
             const host = 'http://localhost:5000'
+            this.taskStatusChange.case_id = this.tableData.case_id
+            this.taskStatusChange.user_id = this.tableData.user_id
+            this.taskStatusChange.task_id = this.currentRow.task_id
+            this.taskStatusChange.task_status = this.currentRow.task_status
 
-            console.log("taskStateSubmit")
-            axios.post(host + '/caseManage/caseInfo/taskStateSubmit', this.currentRow)
+            console.log("taskStateSubmit",this.taskStatusChange)
+
+            axios.post(host + '/caseManage/caseInfo/taskStateSubmit', this.taskStatusChange)
                 .then(function (response){
                     console.log(response)
                     }
@@ -330,10 +348,11 @@ export default {
                     console.log('get request finally')
                 })
         },
-        taskStateChange(type){
-            this.currentRow.visible = false
-            this.currentRow.task_state = type
-            console.log("task_state:",this.currentRow.task_state)
+        taskStateChange(type,index){
+
+            this.tableData.task_list[index].visible =!this.tableData.task_list[index].visible
+            this.tableData.task_list[index].task_status = type
+            console.log("taskStateChange:",this.tableData.task_list[index])
             this.taskStateSubmit()
             // scope.row.visible = false
         },

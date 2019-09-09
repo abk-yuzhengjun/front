@@ -28,7 +28,7 @@ export default {
             axios.post(host + '/login/usrInfoGet', data)
                 .then(response=>{
                     console.log("resoinse",response.data)
-
+                    this.$store.commit('baseInfo/setCaseList',response.data.res.case_list);
                     this.$store.commit('baseInfo/setDevList',response.data.res.dev_list);
                     this.$store.commit('baseInfo/setAppList',response.data.res.app_list);
                     this.$store.commit('baseInfo/setOperList',response.data.res.oper_list);
