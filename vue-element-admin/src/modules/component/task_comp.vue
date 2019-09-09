@@ -2,7 +2,7 @@
   <div style="width:100%;display: flex;align-items: center;justify-content: center">
     <el-form ref="form" :model="form" label-width="200px">
       <el-form-item label="所属案件：" class="grid-case-ascription">
-        <el-select v-model="case_info.case.case_id" class="grid-case-ascription-options"
+        <el-select v-model="case_info.case.case_name" class="grid-case-ascription-options"
                    v-bind:disabled="pluginControl.case_name">
           <el-option
             v-for="(item,index) in form.case_list"
@@ -283,11 +283,18 @@
                 }
                 else if(1 === this.form.type){
                     this.pluginControl.task_name = false
-                    this.pluginControl.case_name = true
+                    this.pluginControl.case_name = true;
+                    this.case_info.case.case_id =this.form.task_info.case_id;
+                    this.case_info.case.case_name =this.form.task_info.case_name;
+                    this.form.task_info.number_content.imsi_black_list =[''];
+                    this.form.task_info.dev_list=[];
+                    console.log('dialogshow   ------------------------1')
                 }
                 else if(2 === this.form.type){
                     this.pluginControl.task_name = true
                     this.pluginControl.case_name = true
+                    this.case_info.case.case_id =this.form.task_info.case_id;
+                    this.case_info.case.case_name =this.form.task_info.case_name;
                 }
                 console.log("form", this.form)
                 // console.log("this.pluginControl.task_name",this.pluginControl.task_name)
