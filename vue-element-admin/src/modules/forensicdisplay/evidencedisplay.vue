@@ -69,7 +69,7 @@
           <template slot-scope="scope">
             <el-tooltip class="item" effect="dark" placement="top-start">
               <div slot="content" v-if="scope.row.task_detail === ''">暂无任务信息</div>
-              <div slot="content" v-else>暂无任务信息</div>
+              <div slot="content" v-else>{{scope.row.task_detail}}</div>
             <span>{{scope.row.task_name}}</span>
             </el-tooltip>
             <el-button type="text" class="el-icon-edit-outline" @click="editTaskInfo(scope.$index,scope.row)"></el-button>
