@@ -4,7 +4,7 @@
       <div style="width: 100%; background: #FFFFFF;display: flex; padding: 10px 20px 4px 20px;flex-direction: column;">
         <span style="font-size: 16px;color: #333333; font-weight: bold">案件详情</span>
         <div
-          style="display: flex;justify-content: space-between;padding-bottom: 10px;padding-top: 10px;font-size: 16px;color: #333333">
+          style="display: flex;justify-content: space-between;padding-bottom: 15px;padding-top: 20px;font-size: 16px;color: #333333">
           <span>案件名 : &nbsp;{{ case_name }}</span>
           <span>案件编号:&nbsp; {{ case_id }}</span>
         </div>
@@ -135,12 +135,12 @@
     </div>
     <div v-if="dialogFormVisible">
       <el-dialog title="编辑任务" :visible.sync="dialogFormVisible">
-        <task_comp :taskData ='dialogPropTask' />
+        <task_comp :taskData ='dialogPropTask' v-on:closeTaskDialog="closeTaskDialog"/>
       </el-dialog>
     </div>
     <div v-if="dialogFormVisibleCase">
-      <el-dialog title="编辑案件" :visible.sync="dialogFormVisibleCase">
-        <case_comp :compData ='dialogPropCase' />
+      <el-dialog  title="编辑案件" :visible.sync="dialogFormVisibleCase">
+        <case_comp :compData ='dialogPropCase' v-on:closeCaseDialog="closeCaseDialog"/>
       </el-dialog>
     </div>
   </div>
@@ -160,6 +160,7 @@
             return {
                 dialogFormVisible: 0,
                 dialogFormVisibleCase: 0,
+                editCaseFinish: 0,
                 dialogPropCase: {
                     type: '',
                     case_id: '',
@@ -265,6 +266,31 @@
                     taskStatus = '已取消'
                 }
                 return taskStatus
+            },
+            closeCaseDialog() {
+                console.log('------------Case-----------------')
+                this.dialogFormVisibleCase = !this.dialogFormVisibleCase
+                this.getTreeMessage()
+            },
+            closeTaskDialog() {
+                console.log('-------------Task----------------')
+                this.dialogFormVisible = !this.dialogFormVisible
+                this.getTreeMessage()
+            },
+            getTreeMessage() {
+                const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
+                const param = {
+                    user_id: this.$store.state.user.name
+                }
+                console.log('12345')
+                axios.post(path2, JSON.stringify(param))
+                    .then((res) => {
+                        this.$store.commit('forensic/getCaseInfo', res.data)
+                        //this.getTreeData()
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
             },
             updateTable(){
                 this.getParams()

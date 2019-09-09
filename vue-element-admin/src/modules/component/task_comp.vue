@@ -219,6 +219,7 @@
                 axios.post(host + '/caseManage/creatTask/submitTask', this.form.task_info)
                     .then(response=> {
                         this.form.task_info.task_id = response.data.task_id
+                        this.$emit('closeTaskDialog')
                         this.taskJump()
                         console.log(response)
                     })
