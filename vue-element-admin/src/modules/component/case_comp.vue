@@ -83,6 +83,10 @@ export default {
     created() {
         console.log("compData",this.compData)
         this.form = this.compData
+        if(1 === this.form.type) {
+            this.caseShow = false
+
+        }
     }
 }
 </script>

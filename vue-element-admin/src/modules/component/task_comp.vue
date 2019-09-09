@@ -135,6 +135,7 @@
                         task_name: '',
                         task_detail:'',
                         create_ts: '',
+                        update_ts: '',
                         task_type: '',
                         dev_list: [],
                         number_content: {
@@ -192,8 +193,8 @@
 
                 this.form.task_info.case_name = this.case_info.case.case_name
                 this.form.task_info.case_id = this.case_info.case.case_id
-                this.form.task_info.user_id =this.$store.getters.name;
-                this.form.task_info.type =this.form.type;
+                this.form.task_info.user_id = this.$store.getters.name
+                this.form.task_info.type = this.form.type
                 console.log("submit task",this.form.task_info)
 
                 axios.post(host + '/caseManage/creatTask/submitTask', this.form.task_info)
@@ -261,18 +262,11 @@
                 }
                 else if(1 === this.form.type){
                     this.pluginControl.task_name = false
-                    this.pluginControl.case_name = true;
-                    this.case_info.case.case_id =this.form.task_info.case_id;
-                    this.case_info.case.case_name =this.form.task_info.case_name;
-                    this.form.task_info.number_content.imsi_black_list =[''];
-                    this.form.task_info.dev_list=[];
-                    console.log('dialogshow   ------------------------1')
+                    this.pluginControl.case_name = true
                 }
                 else if(2 === this.form.type){
                     this.pluginControl.task_name = true
                     this.pluginControl.case_name = true
-                    this.case_info.case.case_id =this.form.task_info.case_id;
-                    this.case_info.case.case_name =this.form.task_info.case_name;
                 }
                 console.log("form", this.form)
                 // console.log("this.pluginControl.task_name",this.pluginControl.task_name)
@@ -288,7 +282,7 @@
         // },
         created: function () {
 
-            this.form = this.taskData;
+            this.form = this.taskData
             console.log("taskData:",this.form)
             this.dialogshow()
             this.modeChose()

@@ -143,8 +143,8 @@
     </el-dialog>
       </div>
     <div v-if="dialogcaseInfoVisible">
-      <el-dialog title="编辑案件" :visible.sync="dialogcaseInfoVisible" show-close=true>
-        <case_comp :compData='tableData'></case_comp>
+      <el-dialog title="编辑案件" :visible.sync="dialogcaseInfoVisible" >
+        <case_comp :compData='caseEditInfo'></case_comp>
       </el-dialog>
     </div>
   </el-form>
@@ -189,6 +189,15 @@ export default {
             user_id:'',
             case_name:'',
             case_id:''},
+        caseEditInfo:{
+            user_id:'',
+            case_id: '',
+            case_name: '',
+            case_detail: '',
+            create_ts: '',
+            update_ts: '',
+            type: ''
+        },
       tableData:{
             user_id:'',
             case_id: '',
@@ -250,6 +259,11 @@ export default {
     methods: {
         caseInfoEdit(){
 
+            this.caseEditInfo.type = 1
+            this.caseEditInfo.case_name = this.tableData.case_name
+            this.caseEditInfo.case_detail = this.tableData.case_detail
+            this.caseEditInfo.case_id = this.tableData.case_id
+            this.caseEditInfo.user_id = this.tableData.user_id
             this.dialogcaseInfoVisible = !this.dialogcaseInfoVisible
 
 
@@ -285,13 +299,13 @@ export default {
            console.log("dialogShow called");
 
            console.log("info:",this.tableData.task_list[this.cid])
+           this.form.dev_list = this.tableData.dev_list
+           this.form.app_list = this.tableData.app_list
+           this.form.oper_list = this.tableData.oper_list
+           this.form.case_list = this.tableData.case_list
            this.form.task_info = this.tableData.task_list[id]
            this.dialogFormVisible = !this.dialogFormVisible;
        },
-        dialogFlase:function(){
-            this.dialogFormVisible = !this.dialogFormVisible;
-
-        },
         taskTypeShow(type){
             if (type === 1){
                 return '取号'
