@@ -1,7 +1,8 @@
 const state = {
   dev_list: [],
   app_list: [],
-  oper_list: []
+  oper_list: [],
+  case_list:[]
 }
 const mutations = {
   setDevList: (state, data) => {
@@ -16,7 +17,10 @@ const mutations = {
   setOperList: (state, data) => {
       state.oper_list = data;
 
-    }
+    },
+  setCaseList: (state, data) => {
+    state.case_list = data;
+  }
 
 }
 // const actions = {

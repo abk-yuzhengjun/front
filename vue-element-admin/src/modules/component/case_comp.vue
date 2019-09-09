@@ -67,8 +67,14 @@ export default {
                     this.case_info.case.case_id=response.data.content.caseid
                     this.case_info.user_id = this.form.user_id
                     this.case_info.case.case_name = this.form.case_name
-                    this.$router.push({ path: '/caseManager/case-info/', query: {info: this.case_info}})
-
+                    // this.$router.push({ path: '/caseManager/case-info/', query: {info: this.case_info}})
+                    this.$router.push(
+                        {
+                            name: 'evidencedisplay',
+                            query: {
+                                caseId: this.case_info.case.case_id
+                            }
+                        })
                     console.log("caseid",response.data.content.caseid)
                 })
                 .catch(function(error) {

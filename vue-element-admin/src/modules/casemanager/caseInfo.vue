@@ -277,27 +277,11 @@ export default {
 
         },
         getUsrInfo(){
-            const axios = require('axios')
-            const host = 'http://localhost:5000'
-            var data={user_id:''}
-            data.user_id = this.$store.getters.name
-
-            axios.post(host + '/login/usrInfoGet', data)
-                .then(response=>{
-                    this.tableData.dev_list = response.data.res.dev_list
-                    this.tableData.app_list = response.data.res.app_list
-                    this.tableData.oper_list = response.data.res.oper_list
-                    this.tableData.case_list = response.data.res.case_list
-
-                })
-                .catch(function(error) {
-                    // handle error
-                    console.log(error)
-                })
-                .finally(function() {
-                    console.log('get request finally')
-                })
-
+            console.log("store:",this.$store.state)
+            this.tableData.dev_list = this.$store.state.baseInfo.dev_list
+            this.tableData.app_list = this.$store.state.baseInfo.app_list
+            this.tableData.oper_list = this.$store.state.baseInfo.oper_list
+            this.tableData.case_list = this.$store.state.baseInfo.case_list
         },
         dialogSubmit(){
 
