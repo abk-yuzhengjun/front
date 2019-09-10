@@ -55,6 +55,22 @@ export default {
             this.submitLoading = true
             this.submitData()
         },
+        updateCaseList(){
+
+            axios.post(host + '/caseManage/caseInfo/getListInfoGet', this.form)
+                .then(response=> {
+                    console.log("update caseList",response)
+                    this.$store.commit('baseInfo/setCaseList',response.data.res.case_list);
+
+                })
+                .catch(function(error) {
+                    // handle error
+                    console.log(error)
+                })
+                .finally(function() {
+                    console.log('get request finally')
+                })
+        },
         submitData() {
 
             this.form.user_id = this.$store.getters.name
@@ -68,6 +84,8 @@ export default {
                     this.case_info.user_id = this.form.user_id
                     this.case_info.case.case_name = this.form.case_name
                     // this.$router.push({ path: '/caseManager/case-info/', query: {info: this.case_info}})
+                    this.updateCaseList()
+
                     this.$router.push(
                         {
                             name: 'evidencedisplay',
@@ -75,7 +93,7 @@ export default {
                                 caseId: this.case_info.case.case_id
                             }
                         })
-                    console.log("caseid",response.data.content.caseid)
+
                 })
                 .catch(function(error) {
                     // handle error

@@ -266,11 +266,12 @@
                 }
             },
             blackList() {
-                // console.log("v-show capture_typr",this.form.number_content.capture_mode)
+                // console.log("v-show capture_type",this.form.number_content.capture_mode)
                 if (1=== this.form.task_info.task_type  && 2 === this.form.task_info.number_content.capture_mode ) {
 
                     this.pluginControl.blackList = true
-                } else {
+                }
+                else {
                     this.pluginControl.blackList = false
                 }
                 // console.log("v-show blackList",this.pluginControl.blackList)
@@ -291,7 +292,7 @@
                     console.log('dialogshow   ------------------------1')
                 }
                 else if(2 === this.form.type){
-                    this.pluginControl.task_name = true
+                    this.pluginControl.task_name = false
                     this.pluginControl.case_name = true
                     this.case_info.case.case_id =this.form.task_info.case_id;
                     this.case_info.case.case_name =this.form.task_info.case_name;
@@ -307,6 +308,10 @@
 
             this.form = this.taskData
             console.log("taskData:",this.form)
+            if(0 === this.form.type)
+            {
+                this.form.task_info.task_type = 2
+            }
             this.dialogshow()
             this.modeChose()
 
