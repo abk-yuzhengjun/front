@@ -5,10 +5,12 @@
       <el-button style="float: right; padding: 3px 0" type="text" @click="routeTAllcase">全部</el-button>
     </div>
 
+  <!-- //BUG 太多，隐藏表头和高度一起设置时，将会出现未定义错误，暂时规避，待官方修复-->
     <el-table
       :data="caseInfo"
-      :show-header=false
-      style="width: 100%; height: 100%">
+      :show-header=true
+      height="100%"
+      width="100%">
       <el-table-column label="任务简介" min-width="28%">
         <template slot-scope="scope">
 <!--          <el-tag effect="plain">-->
@@ -34,9 +36,9 @@
       <el-table-column label="进度" align="right" min-width="20%">
         <template slot-scope="scope">
           <div class="progress-item">
-            <el-progress :text-inside="true" :stroke-width="18" :percentage=scope.row.task_progress
+            <el-progress   :percentage=scope.row.task_progress
                          v-if="scope.row.task_show.length ===0"></el-progress>
-            <el-progress :text-inside="true" :stroke-width="18" :percentage=scope.row.task_progress
+            <el-progress   :percentage=scope.row.task_progress
                          :status=scope.row.task_show v-else></el-progress>
           </div>
         </template>
@@ -208,6 +210,7 @@
   }
 </script>
 
+
 <style scoped>
   .ca-contain {
     width: 66.6%;
@@ -215,7 +218,7 @@
     border-radius: 4px;
     border: 1px solid #e6ebf5;
     background-color: #FFFFFF;
-    padding: 20px;
+    padding: 8px 0px 0px 8px;
     color: #303133;
     transition: 0.3s;
     flex-shrink: 1;
@@ -238,11 +241,15 @@
     padding: 8px;
   }
 
-  >>> .el-table__body-wrapper{
-    overflow-y: auto;
-    height: 100%;
-  }
+  /*>>> .el-table__body-wrapper{*/
+  /*  overflow-y: auto;*/
+  /*  height: 100%;*/
+  /*}*/
 
+
+  >>>.el-table__header-wrapper{
+    display: none;
+  }
 
   >>> .el-table__body-wrapper::-webkit-scrollbar { /*滚动条整体样式*/
     width: 6px; /*高宽分别对应横竖滚动条的尺寸*/
