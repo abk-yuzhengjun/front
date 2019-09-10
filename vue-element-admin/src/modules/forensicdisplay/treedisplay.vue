@@ -2,12 +2,12 @@
   <div style="width: 100%;height:100%;display: flex;align-items: stretch; padding: 10px; background:#F3F4F7;">
     <!--    <div class="nav" style="flex-shrink: 3;width: 100%;height: 100%">-->
     <!--      <table height="103px" width="100%" />-->
-    <div style="width:17%; height:100%; background:#FFFFFF; padding:10px">
+    <div style="width:17%; height:100%; background:#FFFFFF; padding: 10px 10px 40px;">
       <el-input
         placeholder="输入关键字进行过滤"
         v-model="filterText" size="mini">
       </el-input>
-      <el-scrollbar style="height: 100%">
+      <el-scrollbar style="height: 100%;width: 100%;">
       <el-tree ref="tree" :data="treeData" :props="defaultProps" node-key="id"
                :default-expanded-keys="treeExpandAddr" :expand-on-click-node="false"
                :filter-node-method="filterNode" highlight-current @node-click="handelNodeClick" >
@@ -61,6 +61,7 @@
                 tableDataEnd: '',
                 treeExpandAddr: [1],
                 treeData: [],
+                lastTreeId : 0,
                 treeLabelData: [],
                 treeIdData: [],
                 defaultProps: {
@@ -84,6 +85,12 @@
             },
             filterText(val) {
                 this.$refs.tree.filter(val);
+            },
+            treeData() {
+                console.log('treeData watch refresh222')
+                this.$nextTick(function(){
+                    this.highLightShowTree()
+                });
             }
         },
         computed: {
@@ -111,6 +118,9 @@
             // this.$nextTick(function(){
             //         this.$refs.tree.setCurrentKey(1011)
             //     })
+        },
+        updated(){
+          // console.log('upodated  test hilighted')  ;
         },
         methods: {
           appIconGen(appname){
@@ -153,27 +163,26 @@
             },
             highLightShowTree() {
                 console.log('highLightShowTree enter :' + this.$store.state.forensic.case_name + '*******' + this.$store.state.forensic.task_name+"*******");
-                let lastKey = 0;
-                let nowKey = 0;
+                let treeId = 1;
                 if(this.$store.state.forensic.case_name === '' && this.$store.state.forensic.task_name === '')
                 {
-                    this.$refs.tree.setCurrentKey(1)
+                    console.log('highLightShowTree: default status ... ' );
                 }
                 else if(this.$store.state.forensic.case_name !== '' && this.$store.state.forensic.task_name === '')
                 {
-                    let treeId = this.treeIdData[this.$store.state.forensic.case_name + ':' + ':' +':']
+                    treeId = this.treeIdData[this.$store.state.forensic.case_name + ':' + ':' +':']
                     console.log('expand Case: ' + treeId)
-                    this.treeExpandAddr.push(treeId)
-                    this.$refs.tree.setCurrentKey(treeId)
                 }
                 else if(this.$store.state.forensic.case_name !== '' && this.$store.state.forensic.task_name !== '')
                 {
-                    let treeId = this.treeIdData[this.$store.state.forensic.case_name + ':' + this.$store.state.forensic.task_name + ':' +':']
+                    treeId = this.treeIdData[this.$store.state.forensic.case_name + ':' + this.$store.state.forensic.task_name + ':' +':']
                     console.log('expand Task: ' + treeId)
-                    this.treeExpandAddr.push(treeId)
-                    this.$refs.tree.setCurrentKey(treeId)
                 }
+                this.treeExpandAddr.push(treeId)
+                this.$refs.tree.setCurrentKey(treeId)
                 console.log('highLightShowTree leave :' + this.$store.state.forensic.case_name + '*******' + this.$store.state.forensic.task_name+ "*******")
+                this.lastTreeId = treeId
+                return treeId
             },
             jumpToEvidenceDisplayByTree(caseId) {
                 this.$store.commit('forensic/getTreeCaseInfo', caseId)
@@ -467,6 +476,17 @@
     margin-right: 0;
     margin-bottom: 0;
     width: 100%;
+  }
+
+  .tree{
+    overflow-y: hidden;
+    overflow-x: scroll;
+    width:80px;
+    height: 500px;
+  }
+  .el-tree {
+    min-width: 100%;
+    display:inline-block !important;
   }
 
   .el-tree--highlight-current /deep/ .el-tree-node.is-checked > .el-tree-node__content {

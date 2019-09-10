@@ -31,7 +31,11 @@
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column property="case_id" label="案件编号" min-width="15px" align="left"/>
+        <el-table-column label="案件编号" min-width="15px" align="left">
+          <template slot-scope="scope">
+            <el-button size="medium" type="text" @click="jumpToEvidenceDisplay(scope.$index,scope.row)">{{scope.row.case_id}}</el-button>
+          </template>
+        </el-table-column>
         <el-table-column property="case_name" label="案件名" min-width="10px" align="center"/>
         <el-table-column property="case_detail" label="案件信息" min-width="20px" align="center"/>
         <el-table-column label="创建时间" min-width="20px" align="center">
@@ -48,8 +52,8 @@
         <!--        </el-table-column>-->
         <el-table-column min-width="10px" align="center">
           <template slot-scope="scope">
-            <el-button size="medium" type="text" @click="jumpToEvidenceDisplay(scope.$index,scope.row)">查看案件</el-button>
             <el-button type="text" @click="editCaseInfo(scope.$index,scope.row)">编辑</el-button>
+            <el-button type="text" @click="deleteCaseInfo(scope.$index,scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -124,7 +128,7 @@
             taskData() {
                 console.log('casedisplay computed run')
                 return this.$store.state.forensic.case_info
-            }
+            },
         },
         methods: {
             init() {
@@ -165,6 +169,23 @@
                 this.dialogPropCase.case_id = row.case_id
                 this.dialogPropCase.type = 1
                 console.log(this.dialogPropCase)
+            },
+            deleteCaseInfo(index,row) {
+                return
+                this.$confirm('确认删除?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                })
+                    .then(() => {
+                        this.handleDelete(index, row)
+                    })
+                    .catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除！'
+                        })
+                    })
             },
             getMessageByPost2() {
                 const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
@@ -244,10 +265,6 @@
                     type: 'warning'
                 })
                     .then(() => {
-                        this.$message({
-                            type: 'success',
-                            message: '开始删除'
-                        })
                         this.handleDelete(index, row)
                     })
                     .catch(() => {
@@ -258,15 +275,29 @@
                     })
             },
             handleDelete(index, row) {
-                const path = 'http://10.10.100.59:5000/forensic/forensic-details/1'
-                axios.post(path, row)
+                const path = 'http://localhost:5000/caseManage/deleteCase'
+                const param = {
+                    user_id:this.$store.getters.name,
+                    case_id:row.case_id
+                }
+                axios.post(path, param)
                     .then(res => {
-                        this.$message.warning('删除成功！')
-                        this.bondsAllList = res.data
-                        this.getCreateTable()
+                        if(res.data.result === 'success')
+                        {
+                            this.$message.success('删除成功！')
+                        }
+                        else
+                        {
+                            this.$message.warning('删除失败！请刷新后再试！')
+                        }
+                        this.getTreeMessage()
+
                     })
                     .catch((error) => {
                         alert(error)
+                    })
+                    .finally(function () {
+                        console.log('delete case_info, update tree!')
                     })
             },
             jumpToPhoneDisplay(index, row) {
