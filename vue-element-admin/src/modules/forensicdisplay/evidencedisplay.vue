@@ -110,10 +110,11 @@
         <el-table-column label="" align="center" min-width="8px">
           <template slot-scope="scope">
 <!--            <i class="el-icon-loading" v-if="scope.row.task_status !== 'ready'"></i>-->
+            <i class="el-icon-loading" v-if="scope.row.task_status === 'running'"></i>
             <el-button size="mini" type="primary" @click="handelTaskStatus(scope.$index,scope.row)" v-if="scope.row.task_status === 'ready'">开始</el-button>
-<!--            <el-button size="mini" type="primary" @click="handelTaskStatus(scope.$index,scope.row)" v-if="scope.row.task_status === 'running'">结束</el-button>-->
+            <el-button size="mini" type="danger" @click="handelTaskStatus(scope.$index,scope.row)" v-else-if="scope.row.task_status === 'running'">结束</el-button>
             <el-button size="mini" type="warning" @click="handelTaskStatus(scope.$index,scope.row)" v-else-if="scope.row.task_status === 'failed'">重新开始</el-button>
-            <el-button size="mini" type="danger" @click="handelTaskStatus(scope.$index,scope.row)" v-else-if="scope.row.task_status === 'complete'">结束</el-button>
+            <el-button size="mini" type="success" @click="handelTaskStatus(scope.$index,scope.row)" v-else-if="scope.row.task_status === 'complete'">已完成</el-button>
             <i class="el-icon-loading" v-else></i>
 <!--            <el-button size="mini" type="danger">结束</el-button>-->
           </template>
@@ -419,6 +420,7 @@
             handleCurrentChange1: function (currentPage) { // 页码切换
                 this.currentPage1 = currentPage
                 // eslint-disable-next-line eqeqeq
+                console.log('flag: ' + this.flag)
                 if (this.flag === 0) {
                     this.currentChangePage(this.bondsAllList, currentPage)
                 } else {
@@ -466,6 +468,7 @@
                 console.log(this.dialogPropCase)
             },
             getCreateTable() {
+                console.log(this.bondsAllList)
                 this.total1 = this.bondsAllList.length
                 this.flag = 0
                 this.handleCurrentChange1(this.currentPage1)
@@ -528,25 +531,28 @@
             },
             handelTaskStatus(index, row) {
                 const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'
+                let taskStatus = 'ready'
                 if(row.task_status === 'ready') {
-                    row.task_status = 'running'
+                    taskStatus = 'running'
                 } else if(row.task_status === 'running') {
-                    row.task_status = 'ready'
+                    taskStatus = 'ready'
                 }
                 const param = {
                     user_id: this.$store.state.user.name,
                     case_id: this.case_id,
                     task_id: row.task_id,
-                    task_status: row.task_status
+                    task_status: taskStatus
                 }
                 console.log(param)
                 axios.post(path2, param)
                     .then((res) => {
                         console.log(res.data)
+                        this.getTreeMessage()
                     })
                     .catch((error) => {
                         alert(error)
                     })
+
             },
             jumpToPhoneDisplay(index, row) {
                 this.$router.push(
