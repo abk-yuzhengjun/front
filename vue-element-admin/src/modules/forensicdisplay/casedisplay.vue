@@ -67,7 +67,7 @@
     </div>
     <div v-if="dialogFormVisibleCase">
       <el-dialog title="编辑案件" :visible.sync="dialogFormVisibleCase">
-        <case_comp :compData ='dialogPropCase' />
+        <case_comp :compData ='dialogPropCase' v-on:closeCaseDialog="closeCaseDialog" />
       </el-dialog>
     </div>
   </div>
@@ -134,6 +134,26 @@
                     this.$store.commit('forensic/getTreeCaseInfo','')
                     this.$store.commit('forensic/getTreeTaskInfo','')
                 }
+            },
+            closeCaseDialog() {
+                console.log('------------Case-----------------')
+                this.dialogFormVisibleCase = !this.dialogFormVisibleCase
+                this.getTreeMessage()
+            },
+            getTreeMessage() {
+                const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
+                const param = {
+                    user_id: this.$store.state.user.name
+                }
+                console.log('12345')
+                axios.post(path2, JSON.stringify(param))
+                    .then((res) => {
+                        this.$store.commit('forensic/getCaseInfo', res.data)
+                        //this.getTreeData()
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
             },
             editCaseInfo(index,row) {
                 this.dialogFormVisibleCase = !this.dialogFormVisibleCase

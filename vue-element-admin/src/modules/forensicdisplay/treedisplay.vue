@@ -3,11 +3,11 @@
     <!--    <div class="nav" style="flex-shrink: 3;width: 100%;height: 100%">-->
     <!--      <table height="103px" width="100%" />-->
     <div style="width:17%; height:100%; background:#FFFFFF; padding:10px">
+      <el-input
+        placeholder="输入关键字进行过滤"
+        v-model="filterText" size="mini">
+      </el-input>
       <el-scrollbar style="height: 100%">
-        <el-input
-          placeholder="输入关键字进行过滤"
-          v-model="filterText" size="mini">
-        </el-input>
       <el-tree ref="tree" :data="treeData" :props="defaultProps" node-key="id"
                :default-expanded-keys="treeExpandAddr" :expand-on-click-node="false"
                :filter-node-method="filterNode" highlight-current @node-click="handelNodeClick" >
@@ -78,6 +78,10 @@
                 console.log('getVuexTreeTaskInfo watch refresh')
                 this.highLightShowTree()
             },
+            getVuexTreeInfo() {
+                console.log('treeData watch refresh')
+                this.getTreeData()
+            },
             filterText(val) {
                 this.$refs.tree.filter(val);
             }
@@ -93,6 +97,10 @@
             getVuexTreeTaskInfo() {
                 console.log('getVuexTreeTaskInfo computed refresh')
                 return this.$store.state.forensic.task_name
+            },
+            getVuexTreeInfo() {
+                console.log('123 computed refresh')
+                return this.$store.state.forensic.case_info
             }
         },
         created() {
@@ -130,9 +138,9 @@
                         // this.taskTableData = res.data
                         this.taskTableData = res.data
                         console.log('tree get data')
+                        this.$store.commit('forensic/getCaseInfo', this.taskTableData)
                         this.getTreeData()
                         this.highLightShowTree()
-                        this.$store.commit('forensic/getCaseInfo', this.taskTableData)
                         //this.getTreeData()
                     })
                     .catch((error) => {
@@ -232,6 +240,8 @@
                 )
             },
             getTreeData() {
+              this.taskTableData = this.$store.state.forensic.case_info
+                console.log(this.taskTableData)
               let treeId = 2
                 const temp_list = []
                 const index = {
