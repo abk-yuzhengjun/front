@@ -4,7 +4,7 @@
       <div style="width: 100%; background: #FFFFFF;display: flex; padding: 10px 20px 4px 20px;flex-direction: column;">
         <span style="font-size: 16px;color: #333333; font-weight: bold">案件详情</span>
         <div
-          style="display: flex;justify-content: space-between;padding-bottom: 10px;padding-top: 10px;font-size: 16px;color: #333333">
+          style="display: flex;justify-content: space-between;padding-bottom: 15px;padding-top: 20px;font-size: 16px;color: #333333">
           <span>案件名 : &nbsp;{{ case_name }}</span>
           <span>案件编号:&nbsp; {{ case_id }}</span>
         </div>
@@ -69,7 +69,7 @@
           <template slot-scope="scope">
             <el-tooltip class="item" effect="dark" placement="top-start">
               <div slot="content" v-if="scope.row.task_detail === ''">暂无任务信息</div>
-              <div slot="content" v-else>暂无任务信息</div>
+              <div slot="content" v-else>{{scope.row.task_detail}}</div>
             <span>{{scope.row.task_name}}</span>
             </el-tooltip>
             <el-button type="text" class="el-icon-edit-outline" @click="editTaskInfo(scope.$index,scope.row)"></el-button>
@@ -110,11 +110,9 @@
         <el-table-column label="" align="center" min-width="8px">
           <template slot-scope="scope">
 <!--            <i class="el-icon-loading" v-if="scope.row.task_status !== 'ready'"></i>-->
-            <el-button size="mini" type="primary" @click="handelTaskStatus(scope.$index,scope.row)" v-if="scope.row.task_status === 'ready'">开始</el-button>
-<!--            <el-button size="mini" type="primary" @click="handelTaskStatus(scope.$index,scope.row)" v-if="scope.row.task_status === 'running'">结束</el-button>-->
-            <el-button size="mini" type="warning" @click="handelTaskStatus(scope.$index,scope.row)" v-else-if="scope.row.task_status === 'failed'">重新开始</el-button>
-            <el-button size="mini" type="danger" @click="handelTaskStatus(scope.$index,scope.row)" v-else-if="scope.row.task_status === 'complete'">结束</el-button>
-            <i class="el-icon-loading" v-else></i>
+<!--            <i class="el-icon-loading" v-if="scope.row.task_status === 'running'"></i>-->
+            <el-button size="mini" :type="task_show_dict.get(scope.row.task_status)" :loading="isloading[scope.$index]" @click="handelTaskStatus(scope.$index,scope.row)" >{{task_status_dict.get(scope.row.task_status)}}</el-button>
+<!--            <i class="el-icon-loading" v-else></i>-->
 <!--            <el-button size="mini" type="danger">结束</el-button>-->
           </template>
         </el-table-column>
@@ -135,12 +133,12 @@
     </div>
     <div v-if="dialogFormVisible">
       <el-dialog title="编辑任务" :visible.sync="dialogFormVisible">
-        <task_comp :taskData ='dialogPropTask' />
+        <task_comp :taskData ='dialogPropTask' v-on:closeTaskDialog="closeTaskDialog"/>
       </el-dialog>
     </div>
     <div v-if="dialogFormVisibleCase">
-      <el-dialog title="编辑案件" :visible.sync="dialogFormVisibleCase">
-        <case_comp :compData ='dialogPropCase' />
+      <el-dialog  title="编辑案件" :visible.sync="dialogFormVisibleCase">
+        <case_comp :compData ='dialogPropCase' v-on:closeCaseDialog="closeCaseDialog"/>
       </el-dialog>
     </div>
   </div>
@@ -159,7 +157,9 @@
         data() {
             return {
                 dialogFormVisible: 0,
+                isloading: [],
                 dialogFormVisibleCase: 0,
+                editCaseFinish: 0,
                 dialogPropCase: {
                     type: '',
                     case_id: '',
@@ -221,7 +221,9 @@
                 defaultProps: {
                     children: 'children',
                     label: 'label'
-                }
+                },
+                task_status_dict: new Map([["ready", "开始"], ["running", "结束"], ["complete", "已完成"], ["failed", "已失败"], ["canceled", "已取消"]]),
+                task_show_dict: new Map([["ready", 'primary'], ["running", "danger"], ["complete", 'success'], ["failed", 'warning'], ["canceled", 'info']])
             }
         },
         created() {
@@ -243,28 +245,33 @@
         },
         methods: {
             format(percentage) {
-                let taskStatus =''
-                if(percentage === 100)
-                {
-                    taskStatus = '已完成'
+                let taskStatus = new Map([[100, "已完成"], [25, "进行中"], [1, "准备中"], [50, "已失败"], [0, "已取消"]])
+                return taskStatus.get(percentage)
+            },
+            closeCaseDialog() {
+                console.log('------------Case-----------------')
+                this.dialogFormVisibleCase = !this.dialogFormVisibleCase
+                this.getTreeMessage()
+            },
+            closeTaskDialog() {
+                console.log('-------------Task----------------')
+                this.dialogFormVisible = !this.dialogFormVisible
+                this.getTreeMessage()
+            },
+            getTreeMessage() {
+                const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
+                const param = {
+                    user_id: this.$store.state.user.name
                 }
-                else if(percentage === 25)
-                {
-                    taskStatus = '进行中'
-                }
-                else if(percentage === 1)
-                {
-                    taskStatus = '准备中'
-                }
-                else if(percentage === 50)
-                {
-                    taskStatus = '已失败'
-                }
-                else if(percentage === 0)
-                {
-                    taskStatus = '已取消'
-                }
-                return taskStatus
+                console.log('12345')
+                axios.post(path2, JSON.stringify(param))
+                    .then((res) => {
+                        this.$store.commit('forensic/getCaseInfo', res.data)
+                        //this.getTreeData()
+                    })
+                    .catch((error) => {
+                        alert(error)
+                    })
             },
             updateTable(){
                 this.getParams()
@@ -393,6 +400,7 @@
             handleCurrentChange1: function (currentPage) { // 页码切换
                 this.currentPage1 = currentPage
                 // eslint-disable-next-line eqeqeq
+                console.log('flag: ' + this.flag)
                 if (this.flag === 0) {
                     this.currentChangePage(this.bondsAllList, currentPage)
                 } else {
@@ -440,6 +448,7 @@
                 console.log(this.dialogPropCase)
             },
             getCreateTable() {
+                console.log(this.bondsAllList)
                 this.total1 = this.bondsAllList.length
                 this.flag = 0
                 this.handleCurrentChange1(this.currentPage1)
@@ -502,25 +511,40 @@
             },
             handelTaskStatus(index, row) {
                 const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'
+                this.isloading[index] = true
+                let taskStatus = 'ready'
+                // let status = new Map([[0, "ready"], [1, "running"], [2, "complete"], [3, "failed"], [4, "canceled"]])
+                // let taskStatus = status.get((indexStatus + 1 ) % 5)
                 if(row.task_status === 'ready') {
-                    row.task_status = 'running'
+                    taskStatus = 'running'
                 } else if(row.task_status === 'running') {
-                    row.task_status = 'ready'
+                    taskStatus = 'complete'
+                }else if(row.task_status === 'complete') {
+                    taskStatus = 'failed'
+                }else if(row.task_status === 'failed') {
+                    taskStatus = 'canceled'
+                }else if(row.task_status === 'canceled') {
+                    taskStatus = 'ready'
                 }
+
                 const param = {
                     user_id: this.$store.state.user.name,
                     case_id: this.case_id,
                     task_id: row.task_id,
-                    task_status: row.task_status
+                    task_status: taskStatus
                 }
                 console.log(param)
                 axios.post(path2, param)
                     .then((res) => {
                         console.log(res.data)
+                        this.getTreeMessage()
+                        this.isloading[index] = false
                     })
                     .catch((error) => {
                         alert(error)
+                        this.isloading[index] = false
                     })
+
             },
             jumpToPhoneDisplay(index, row) {
                 this.$router.push(

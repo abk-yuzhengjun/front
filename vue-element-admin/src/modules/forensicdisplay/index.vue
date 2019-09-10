@@ -56,7 +56,7 @@
     </div>
     <div v-if="dialogFormVisible">
       <el-dialog title="编辑任务" :visible.sync="dialogFormVisible">
-        <task_comp :taskData ='dialogPropTask' />
+        <task_comp :taskData ='dialogPropTask' v-on:closeTaskDialog="closeTaskDialog" />
       </el-dialog>
     </div>
   </div>
@@ -140,6 +140,26 @@ export default {
         ...mapGetters({ caseInfo:'caseInfo'}),
     },
   methods: {
+      closeTaskDialog() {
+          console.log('-------------Task----------------')
+          this.dialogFormVisible = !this.dialogFormVisible
+          this.getTreeMessage()
+      },
+      getTreeMessage() {
+          const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
+          const param = {
+              user_id: this.$store.state.user.name
+          }
+          console.log('12345')
+          axios.post(path2, JSON.stringify(param))
+              .then((res) => {
+                  this.$store.commit('forensic/getCaseInfo', res.data)
+                  //this.getTreeData()
+              })
+              .catch((error) => {
+                  alert(error)
+              })
+      },
       init() {
           console.log('phoneInformation init')
           this.getParams()

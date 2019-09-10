@@ -83,6 +83,7 @@ export default {
                     this.case_info.case.case_id=response.data.content.caseid
                     this.case_info.user_id = this.form.user_id
                     this.case_info.case.case_name = this.form.case_name
+                    this.$emit('closeCaseDialog')
                     // this.$router.push({ path: '/caseManager/case-info/', query: {info: this.case_info}})
                     this.updateCaseList()
 
