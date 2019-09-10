@@ -110,4 +110,20 @@
     height: 100%;
     overflow-y: scroll;
   }
+  .ca-card__body::-webkit-scrollbar { /*滚动条整体样式*/
+    width: 6px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 6px;
+  }
+
+  .ca-card__body::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+    border-radius: 6px;
+    -webkit-box-shadow: inset 0 0 5px rgba(168, 168, 168, 0.2);
+    background: rgba(168, 168, 168, 1);
+  }
+
+  .ca-card__body::-webkit-scrollbar-track { /*滚动条里面轨道*/
+    -webkit-box-shadow: inset 0 0 5px rgba(241, 241, 241, 0.2);
+    border-radius: 6px;
+    background: rgba(241, 241, 241, 1);
+  }
 </style>

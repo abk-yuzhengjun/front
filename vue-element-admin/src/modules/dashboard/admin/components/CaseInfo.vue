@@ -8,7 +8,7 @@
     <el-table
       :data="caseInfo"
       :show-header=false
-      style="width: 100%; height: 100%;overflow-y: scroll">
+      style="width: 100%; height: 100%">
       <el-table-column label="任务简介" min-width="28%">
         <template slot-scope="scope">
 <!--          <el-tag effect="plain">-->
@@ -54,7 +54,7 @@
 
       <el-table-column label="操作" align="right" min-width="10%">
         <template slot-scope="scope">
-          <el-button type="text" @click="routeTtask(scope.row)">更多</el-button>
+          <el-button type="text" @click="routeTtask(scope.row)" style="margin-right: 20px">更多</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -236,6 +236,29 @@
 
   .ca-card__body {
     padding: 8px;
+  }
+
+  >>> .el-table__body-wrapper{
+    overflow-y: auto;
+    height: 100%;
+  }
+
+
+  >>> .el-table__body-wrapper::-webkit-scrollbar { /*滚动条整体样式*/
+    width: 6px; /*高宽分别对应横竖滚动条的尺寸*/
+    height: 6px;
+  }
+
+  >>> .el-table__body-wrapper::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+    border-radius: 6px;
+    -webkit-box-shadow: inset 0 0 5px rgba(168, 168, 168, 0.2);
+    background: rgba(168, 168, 168, 1);
+  }
+
+  >>> .el-table__body-wrapper::-webkit-scrollbar-track { /*滚动条里面轨道*/
+    -webkit-box-shadow: inset 0 0 5px rgba(241, 241, 241, 0.2);
+    border-radius: 6px;
+    background: rgba(241, 241, 241, 1);
   }
 </style>
 
