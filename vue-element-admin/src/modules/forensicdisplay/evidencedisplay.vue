@@ -110,12 +110,9 @@
         <el-table-column label="" align="center" min-width="8px">
           <template slot-scope="scope">
 <!--            <i class="el-icon-loading" v-if="scope.row.task_status !== 'ready'"></i>-->
-            <i class="el-icon-loading" v-if="scope.row.task_status === 'running'"></i>
-            <el-button size="mini" type="primary" @click="handelTaskStatus(scope.$index,scope.row)" v-if="scope.row.task_status === 'ready'">开始</el-button>
-            <el-button size="mini" type="danger" @click="handelTaskStatus(scope.$index,scope.row)" v-else-if="scope.row.task_status === 'running'">结束</el-button>
-            <el-button size="mini" type="warning" @click="handelTaskStatus(scope.$index,scope.row)" v-else-if="scope.row.task_status === 'failed'">重新开始</el-button>
-            <el-button size="mini" type="success" @click="handelTaskStatus(scope.$index,scope.row)" v-else-if="scope.row.task_status === 'complete'">已完成</el-button>
-            <i class="el-icon-loading" v-else></i>
+<!--            <i class="el-icon-loading" v-if="scope.row.task_status === 'running'"></i>-->
+            <el-button size="mini" :type="task_show_dict.get(scope.row.task_status)" :loading="isloading[scope.$index]" @click="handelTaskStatus(scope.$index,scope.row)" >{{task_status_dict.get(scope.row.task_status)}}</el-button>
+<!--            <i class="el-icon-loading" v-else></i>-->
 <!--            <el-button size="mini" type="danger">结束</el-button>-->
           </template>
         </el-table-column>
@@ -160,6 +157,7 @@
         data() {
             return {
                 dialogFormVisible: 0,
+                isloading: [],
                 dialogFormVisibleCase: 0,
                 editCaseFinish: 0,
                 dialogPropCase: {
@@ -223,7 +221,9 @@
                 defaultProps: {
                     children: 'children',
                     label: 'label'
-                }
+                },
+                task_status_dict: new Map([["ready", "开始"], ["running", "结束"], ["complete", "已完成"], ["failed", "已失败"], ["canceled", "已取消"]]),
+                task_show_dict: new Map([["ready", 'primary'], ["running", "danger"], ["complete", 'success'], ["failed", 'warning'], ["canceled", 'info']])
             }
         },
         created() {
@@ -245,28 +245,8 @@
         },
         methods: {
             format(percentage) {
-                let taskStatus =''
-                if(percentage === 100)
-                {
-                    taskStatus = '已完成'
-                }
-                else if(percentage === 25)
-                {
-                    taskStatus = '进行中'
-                }
-                else if(percentage === 1)
-                {
-                    taskStatus = '准备中'
-                }
-                else if(percentage === 50)
-                {
-                    taskStatus = '已失败'
-                }
-                else if(percentage === 0)
-                {
-                    taskStatus = '已取消'
-                }
-                return taskStatus
+                let taskStatus = new Map([[100, "已完成"], [25, "进行中"], [1, "准备中"], [50, "已失败"], [0, "已取消"]])
+                return taskStatus.get(percentage)
             },
             closeCaseDialog() {
                 console.log('------------Case-----------------')
@@ -531,12 +511,22 @@
             },
             handelTaskStatus(index, row) {
                 const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'
+                this.isloading[index] = true
                 let taskStatus = 'ready'
+                // let status = new Map([[0, "ready"], [1, "running"], [2, "complete"], [3, "failed"], [4, "canceled"]])
+                // let taskStatus = status.get((indexStatus + 1 ) % 5)
                 if(row.task_status === 'ready') {
                     taskStatus = 'running'
                 } else if(row.task_status === 'running') {
+                    taskStatus = 'complete'
+                }else if(row.task_status === 'complete') {
+                    taskStatus = 'failed'
+                }else if(row.task_status === 'failed') {
+                    taskStatus = 'canceled'
+                }else if(row.task_status === 'canceled') {
                     taskStatus = 'ready'
                 }
+
                 const param = {
                     user_id: this.$store.state.user.name,
                     case_id: this.case_id,
@@ -548,9 +538,11 @@
                     .then((res) => {
                         console.log(res.data)
                         this.getTreeMessage()
+                        this.isloading[index] = false
                     })
                     .catch((error) => {
                         alert(error)
+                        this.isloading[index] = false
                     })
 
             },
