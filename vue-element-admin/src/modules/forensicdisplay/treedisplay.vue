@@ -7,7 +7,7 @@
         placeholder="输入关键字进行过滤"
         v-model="filterText" size="mini">
       </el-input>
-      <el-scrollbar style="height: 100%;width: 100%;">
+      <el-scrollbar style="height: 100%;width: 100%; padding-top: 5px">
       <el-tree ref="tree" :data="treeData" :props="defaultProps" node-key="id"
                :default-expanded-keys="treeExpandAddr" :expand-on-click-node="false"
                :filter-node-method="filterNode" highlight-current @node-click="handelNodeClick" >
@@ -180,6 +180,7 @@
                 }
                 this.treeExpandAddr.push(treeId)
                 this.$refs.tree.setCurrentKey(treeId)
+                console.log(this.treeExpandAddr)
                 console.log('highLightShowTree leave :' + this.$store.state.forensic.case_name + '*******' + this.$store.state.forensic.task_name+ "*******")
                 this.lastTreeId = treeId
                 return treeId
