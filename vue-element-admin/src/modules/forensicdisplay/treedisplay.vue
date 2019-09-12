@@ -28,7 +28,6 @@
             <svg-icon v-else-if="data.label==='支付宝'" icon-class="alipay" />
              <svg-icon v-else icon-class="app" />
           </template>
-
           <span style="font-size: 14px;padding-left: 4px">{{ node.label }}</span>
 <!--          <span>-->
 <!--            <el-tag v-if="data.id.toString().length === 4 && data.evidence === 1" type="danger" size="mini">取证</el-tag>-->

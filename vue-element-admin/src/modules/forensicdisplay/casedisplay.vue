@@ -171,7 +171,6 @@
                 console.log(this.dialogPropCase)
             },
             deleteCaseInfo(index,row) {
-                return
                 this.$confirm('确认删除?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -291,7 +290,6 @@
                             this.$message.warning('删除失败！请刷新后再试！')
                         }
                         this.getTreeMessage()
-
                     })
                     .catch((error) => {
                         alert(error)

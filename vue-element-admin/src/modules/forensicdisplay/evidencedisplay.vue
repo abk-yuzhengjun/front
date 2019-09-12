@@ -6,7 +6,7 @@
           <el-col :span="24">
             <div style="display: flex;flex-direction:row">
               <span style="font-size: 16px;color: #333333; font-weight: bold">案件详情&nbsp</span>
-              <el-button type="text" size="mini" icon="el-icon-edit" @click="editCaseInfo"></el-button>
+              <el-button type="text" size="medium" icon="el-icon-edit" @click="editCaseInfo"></el-button>
             </div>
           </el-col>
         </el-row>
@@ -164,6 +164,11 @@
             <el-button size="mini" :type="task_show_dict.get(scope.row.task_status)" :loading="isloading[scope.$index]" @click="handelTaskStatus(scope.$index,scope.row)" >{{task_status_dict.get(scope.row.task_status)}}</el-button>
 <!--            <i class="el-icon-loading" v-else></i>-->
 <!--            <el-button size="mini" type="danger">结束</el-button>-->
+          </template>
+        </el-table-column>
+        <el-table-column min-width="2px" align="center">
+          <template slot-scope="scope">
+            <el-button type="text" icon="el-icon-delete" @click="deleteTaskInfo(scope.$index,scope.row)"></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -527,6 +532,22 @@
                 this.tableDataName = []
                 this.getCreateTable()
             },
+            deleteTaskInfo(index,row) {
+                this.$confirm('确认删除?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                })
+                    .then(() => {
+                        this.handleDelete(index, row)
+                    })
+                    .catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除！'
+                        })
+                    })
+            },
             confirmDelete(index, row) {
                 this.$confirm('确认删除' + ' time: ' + row.time + '  data: ' + row.data, '删除', {
                     confirmButtonText: '确定',
@@ -548,15 +569,29 @@
                     })
             },
             handleDelete(index, row) {
-                const path = 'http://localhost:5000/forensic/forensic-details/1'
-                axios.post(path, row)
+                const path = 'http://localhost:5000/caseManage/deleteTask'
+                const param = {
+                    user_id:this.$store.getters.name,
+                    case_id:this.case_id,
+                    task_id:row.task_id
+                }
+                axios.post(path, param)
                     .then(res => {
-                        this.$message.warning('删除成功！')
-                        this.bondsAllList = res.data
-                        this.getCreateTable()
+                        if(res.data.result === 'success')
+                        {
+                            this.$message.success('删除成功！')
+                        }
+                        else
+                        {
+                            this.$message.warning('删除失败！请刷新后再试！')
+                        }
+                        this.getTreeMessage()
                     })
                     .catch((error) => {
                         alert(error)
+                    })
+                    .finally(function () {
+                        console.log('delete case_info, update tree!')
                     })
             },
             handelTaskStatus(index, row) {

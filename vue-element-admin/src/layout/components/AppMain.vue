@@ -17,31 +17,44 @@ export default {
     },
     key() {
       return this.$route.path
-    }
+    },
+      getVuexTreeInfo() {
+          console.log('AppMain computed refresh')
+          return this.$store.state.forensic.case_info
+      }
   },
+    watch:{
+        getVuexTreeInfo() {
+            console.log('AppMain watch refresh')
+            this.getData()
+        },
+    },
     created(){
-            const axios = require('axios')
-            const host = 'http://localhost:5000'
-            var data={user_id:''}
-            data.user_id = this.$store.getters.name
+      this.getData()
+    },
+    methods:{
+      getData() {
+          const axios = require('axios')
+          const host = 'http://localhost:5000'
+          var data={user_id:''}
+          data.user_id = this.$store.getters.name
 
-            axios.post(host + '/login/usrInfoGet', data)
-                .then(response=>{
-                    console.log("resoinse",response.data)
-                    this.$store.commit('baseInfo/setCaseList',response.data.res.case_list);
-                    this.$store.commit('baseInfo/setDevList',response.data.res.dev_list);
-                    this.$store.commit('baseInfo/setAppList',response.data.res.app_list);
-                    this.$store.commit('baseInfo/setOperList',response.data.res.oper_list);
-                })
-                .catch(function(error) {
-                    // handle error
-                    console.log(error)
-                })
-                .finally(function() {
-                    console.log('get request finally')
-                })
-
-
+          axios.post(host + '/login/usrInfoGet', data)
+              .then(response=>{
+                  console.log("resoinse",response.data)
+                  this.$store.commit('baseInfo/setCaseList',response.data.res.case_list);
+                  this.$store.commit('baseInfo/setDevList',response.data.res.dev_list);
+                  this.$store.commit('baseInfo/setAppList',response.data.res.app_list);
+                  this.$store.commit('baseInfo/setOperList',response.data.res.oper_list);
+              })
+              .catch(function(error) {
+                  // handle error
+                  console.log(error)
+              })
+              .finally(function() {
+                  console.log('get request finally')
+              })
+      }
     }
 }
 </script>
