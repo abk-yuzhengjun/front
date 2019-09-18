@@ -12,7 +12,6 @@
                :default-expanded-keys="treeExpandAddr" :expand-on-click-node="false"
                :filter-node-method="filterNode" highlight-current @node-click="handelNodeClick" >
         <span slot-scope="{ node,data}">
-
           <i v-if="data.node_ind==='home'" class="el-icon-house" ></i>
            <i v-else-if="data.node_ind==='case'" class="el-icon-folder"></i>
 
@@ -29,6 +28,8 @@
              <svg-icon v-else icon-class="app" />
           </template>
           <span style="font-size: 14px;padding-left: 4px">{{ node.label }}</span>
+<!--          <el-badge v-if="data.node_ind==='task_evidence'" :value="1" :max="99" class="item">-->
+<!--          </el-badge>-->
 <!--          <span>-->
 <!--            <el-tag v-if="data.id.toString().length === 4 && data.evidence === 1" type="danger" size="mini">取证</el-tag>-->
 <!--            <el-tag v-if="data.id.toString().length === 4 && data.evidence === 0" type="primary" size="mini">取号</el-tag>-->
@@ -98,11 +99,11 @@
             },
             getVuexTreeCaseInfo() {
                 console.log('getVuexTreeCaseInfo computed refresh')
-                return this.$store.state.forensic.case_name
+                return this.$store.state.forensic.case_id
             },
             getVuexTreeTaskInfo() {
                 console.log('getVuexTreeTaskInfo computed refresh')
-                return this.$store.state.forensic.task_name
+                return this.$store.state.forensic.task_id
             },
             getVuexTreeInfo() {
                 console.log('123 computed refresh')
@@ -138,7 +139,7 @@
                     })
             },
             getMessageByPost2() {
-                const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
+                const path2 = 'http://10.10.100.59:5000/forensic/casetaskdisplay'
                 const param = {
                     user_id: this.$store.state.user.name
                 }
@@ -161,28 +162,27 @@
                 return treeData.label.indexOf(value) !== -1;
             },
             highLightShowTree() {
-                console.log('highLightShowTree enter :' + this.$store.state.forensic.case_name + '*******' + this.$store.state.forensic.task_name+"*******");
+                console.log('highLightShowTree enter :' + this.$store.state.forensic.case_id + '*******' + this.$store.state.forensic.task_id+"*******");
                 let treeId = 1;
-                if(this.$store.state.forensic.case_name === '' && this.$store.state.forensic.task_name === '')
+                if(this.$store.state.forensic.case_id === '' && this.$store.state.forensic.task_id === '')
                 {
                     console.log('highLightShowTree: default status ... ' );
                 }
-                else if(this.$store.state.forensic.case_name !== '' && this.$store.state.forensic.task_name === '')
+                else if(this.$store.state.forensic.case_id !== '' && this.$store.state.forensic.task_id === '')
                 {
-                    treeId = this.treeIdData[this.$store.state.forensic.case_name + ':' + ':' +':']
+                    treeId = this.treeIdData[this.$store.state.forensic.case_id + ':' + ':' +':']
                     console.log('expand Case: ' + treeId)
                 }
-                else if(this.$store.state.forensic.case_name !== '' && this.$store.state.forensic.task_name !== '')
+                else if(this.$store.state.forensic.case_id !== '' && this.$store.state.forensic.task_id !== '')
                 {
-                    treeId = this.treeIdData[this.$store.state.forensic.case_name + ':' + this.$store.state.forensic.task_name + ':' +':']
+                    treeId = this.treeIdData[this.$store.state.forensic.case_id + ':' + this.$store.state.forensic.task_id + ':' +':']
                     console.log('expand Task: ' + treeId)
                 }
                 this.treeExpandAddr.push(treeId)
                 this.$refs.tree.setCurrentKey(treeId)
                 console.log(this.treeExpandAddr)
-                console.log('highLightShowTree leave :' + this.$store.state.forensic.case_name + '*******' + this.$store.state.forensic.task_name+ "*******")
+                console.log('highLightShowTree leave :' + this.$store.state.forensic.case_id + '*******' + this.$store.state.forensic.task_id+ "*******")
                 this.lastTreeId = treeId
-                return treeId
             },
             jumpToEvidenceDisplayByTree(caseId) {
                 this.$store.commit('forensic/getTreeCaseInfo', caseId)
@@ -250,7 +250,6 @@
             },
             getTreeData() {
               this.taskTableData = this.$store.state.forensic.case_info
-                console.log(this.taskTableData)
               let treeId = 2
                 const temp_list = []
                 const index = {
@@ -337,7 +336,6 @@
                 let treeApp = []
                 for(let index in this.treeIdData)
                 {
-                    console.log('data: ' + index + this.treeIdData[index])
                     if(data.id === this.treeIdData[index])
                     {
                         let tempStr = index.split(":")
@@ -372,50 +370,6 @@
                 {
                     this.jumpToAppInformation()
                 }
-
-                // let tempCaseName = []
-                // let tempTaskName = []
-                // let tempPhone = []
-                // let tempAppName = []
-                // let tempCaseId = []
-                // const length = data.id.toString().length
-                // if (length === 2) {
-                //     const temp = data.id.toString().substring(0, 2)
-                //     tempCaseName = this.treeLabelData[parseInt(temp)]
-                //     console.log('123' + data.case_id)
-                //     this.jumpToEvidenceDisplayByTree(tempCaseName, data.case_id)
-                // } else if (length === 4) {
-                //     const temp1 = data.id.toString().substring(0, 2)
-                //     tempCaseName = this.treeLabelData[parseInt(temp1)]
-                //     const temp2 = data.id.toString().substring(0, 4)
-                //     tempTaskName = this.treeLabelData[parseInt(temp2)]
-                //     if (data.evidence === 1) {
-                //         this.jumpToEvidenceInformation(tempCaseName, tempTaskName)
-                //     } else if (data.evidence === 0) {
-                //         this.jumpToPhoneInformation(tempCaseName, tempTaskName)
-                //     }
-                // } else if (length === 6) {
-                //     const temp3 = data.id.toString().substring(0, 2)
-                //     tempCaseName = this.treeLabelData[parseInt(temp3)]
-                //     const temp4 = data.id.toString().substring(0, 4)
-                //     tempTaskName = this.treeLabelData[parseInt(temp4)]
-                //     const temp5 = data.id.toString().substring(0, 6)
-                //     tempPhone = this.treeLabelData[parseInt(temp5)]
-                //     this.jumpToAppDisplay(tempCaseName, tempTaskName, tempPhone)
-                // } else if (length === 8) {
-                //     const temp6 = data.id.toString().substring(0, 2)
-                //     tempCaseName = this.treeLabelData[parseInt(temp6)]
-                //     const temp7 = data.id.toString().substring(0, 4)
-                //     tempTaskName = this.treeLabelData[parseInt(temp7)]
-                //     const temp8 = data.id.toString().substring(0, 6)
-                //     tempPhone = this.treeLabelData[parseInt(temp8)]
-                //     const temp9 = data.id.toString().substring(0, 8)
-                //     tempAppName = this.treeLabelData[parseInt(temp9)]
-                //     this.jumpToAppInformation()
-                // } else if (length === 1) {
-                //     this.jumpToCaseDisplay()
-                // }
-                // console.log(tempCaseName + ' ' + tempTaskName + ' ' + tempPhone + ' ' + tempAppName + ' ' + data.evidence)
             }
         }
     }

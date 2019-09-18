@@ -149,11 +149,9 @@
                 const param = {
                     user_id: this.$store.state.user.name
                 }
-                console.log('12345')
                 axios.post(path2, JSON.stringify(param))
                     .then((res) => {
                         this.$store.commit('forensic/getCaseInfo', res.data)
-                        //this.getTreeData()
                     })
                     .catch((error) => {
                         alert(error)
@@ -180,10 +178,6 @@
                         this.handleDelete(index, row)
                     })
                     .catch(() => {
-                        this.$message({
-                            type: 'info',
-                            message: '已取消删除！'
-                        })
                     })
             },
             getMessageByPost2() {

@@ -227,7 +227,7 @@ export default {
     init() {
       this.getParams()
       // this.getMessage()
-      this.getMessageByPost()
+      //this.getMessageByPost()
         // this.$store.commit('forensic/getTreeCaseInfo','')
         // this.$store.commit('forensic/getTreeTaskInfo',this.task_id)
         let task_show_dict= new Map([["ready",'准备中'],["running",'运行中'],["complete",'已完成'],["failed",'失败'],["canceled",'已取消']]);
@@ -239,22 +239,12 @@ export default {
                     this.status = task_show_dict.get(this.caseInfo.task_list[j].task_status)
                     this.task_name = this.caseInfo.task_list[j].task_name
                     this.task_info = this.caseInfo.task_list[j]
+                    this.bondsAllList = this.task_info.evidence_content
+                    this.tableDataName = ''
+                    this.getCreateTable()
                 }
             }
         }
-        // for(var i = 0; i < this.$store.state.forensic.case_info.length; i++) {
-        //     if(this.$store.state.forensic.case_info[i].case_id === this.case_id) {
-        //         for (var j = 0; j < this.$store.state.forensic.case_info[i].task_list.length; j++) {
-        //             if (this.$store.state.forensic.case_info[i].task_list[j].task_id === this.task_id) {
-        //                 this.details = this.$store.state.forensic.case_info[i].task_list[j].task_detail
-        //                 this.status = task_show_dict.get(this.$store.state.forensic.case_info[i].task_list[j].task_status)
-        //                 this.case_name = this.$store.state.forensic.case_info[i].case_name
-        //                 this.task_name = this.$store.state.forensic.case_info[i].task_list[j].task_name
-        //                 this.task_info = this.$store.state.forensic.case_info[i].task_list[j]
-        //             }
-        //         }
-        //     }
-        // }
     },
     getMessage() {
       const path = 'http://10.10.100.59:5000/forensic/forensic-details'

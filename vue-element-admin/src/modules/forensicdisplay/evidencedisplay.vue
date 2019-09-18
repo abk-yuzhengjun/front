@@ -134,6 +134,7 @@
         <el-table-column label="状态" min-width="14px" align="left">
           <template slot-scope="scope">
 <!--            <el-tag v-if="scope.row.task_status === 'ready'" size="medium" type="primary">准备中</el-tag>-->
+
 <!--            <el-tag v-else-if="scope.row.task_status === 'running'" size="medium" type="warning">进行中</el-tag>-->
 <!--            <el-tag v-else-if="scope.row.task_status === 'complete'" size="medium" type="success">已完成</el-tag>-->
 <!--            <el-tag v-else-if="scope.row.task_status === 'failed'" size="medium" type="danger">失败</el-tag>-->
@@ -161,7 +162,7 @@
           <template slot-scope="scope">
 <!--            <i class="el-icon-loading" v-if="scope.row.task_status !== 'ready'"></i>-->
 <!--            <i class="el-icon-loading" v-if="scope.row.task_status === 'running'"></i>-->
-            <el-button size="mini" :type="task_show_dict.get(scope.row.task_status)" :loading="isloading[scope.$index]" @click="handelTaskStatus(scope.$index,scope.row)" >{{task_status_dict.get(scope.row.task_status)}}</el-button>
+            <el-button size="mini" :type="task_show_dict.get(scope.row.task_status)" :loading="isloading[scope.$index]" @click="updateTaskStatus(scope.$index,scope.row)" >{{task_status_dict.get(scope.row.task_status)}}</el-button>
 <!--            <i class="el-icon-loading" v-else></i>-->
 <!--            <el-button size="mini" type="danger">结束</el-button>-->
           </template>
@@ -318,11 +319,9 @@
                 const param = {
                     user_id: this.$store.state.user.name
                 }
-                console.log('12345')
                 axios.post(path2, JSON.stringify(param))
                     .then((res) => {
                         this.$store.commit('forensic/getCaseInfo', res.data)
-                        //this.getTreeData()
                     })
                     .catch((error) => {
                         alert(error)
@@ -350,99 +349,12 @@
             },
             init() {
                 this.getParams()
-                // this.getMessage()
-                //this.getMessageByPost()
-                //  this.getMessageByPost2()
                 this.bondsAllList = ''
-                // this.tempList = []
-
-
-                // for (let i = 0; i < this.$store.state.forensic.case_info.length; i++) {
-                //     if (this.$store.state.forensic.case_info[i].case_id === this.case_id) {
-                //
-                //         this.bondsAllList = this.$store.state.forensic.case_info[i].task_list;
-                //         this.dialogPropCase.case_name = this.$store.state.forensic.case_info[i].case_name;
-                //         this.dialogPropCase.case_detail = this.$store.state.forensic.case_info[i].case_detail;
-                //         this.dialogPropCase.create_ts = this.$store.state.forensic.case_info[i].create_ts;
-                //         this.dialogPropCase.update_ts = this.$store.state.forensic.case_info[i].update_ts;
-                //         this.dialogPropCase.user_id = this.$store.getters.name
-                //         this.dialogPropCase.case_id = this.$store.state.forensic.case_info[i].case_id
-                //         this.dialogPropCase.type = '1'
-                //         break
-                //     }
-                // }
                 console.log('dialog')
                 console.log(this.dialogPropCase)
                 if (this.bondsAllList !== undefined && this.bondsAllList !== '') {
                     this.getCreateTable()
                 }
-            },
-            getMessage() {
-                const path = 'http://10.10.100.59:5000/forensic/phonedisplay/' + 2
-                axios.get(path)
-                    .then((res) => {
-                        this.bondsAllList = res.data
-                        this.getCreateTable()
-                    })
-                    .catch((error) => {
-                        alert(error)
-                    })
-            },
-            getMessageByPost() {
-                const path = 'http://10.10.100.59:5000/forensic/phonedisplay'
-                const list = {
-                    case_name: this.case_name
-                }
-                axios.post(path, list)
-                    .then((res) => {
-                        this.bondsAllList = res.data
-                        this.getCreateTable()
-                    })
-                    .catch((error) => {
-                        alert(error)
-                    })
-            },
-            getMessageByPost2() {
-                const path2 = 'http://localhost:5000/forensic/casetaskbycaseid'
-                console.log(this.case_id)
-                const param = {
-                    user_id: '14141341414141',
-                    case_id: this.case_id
-                }
-                axios.post(path2, JSON.stringify(param))
-                    .then((res) => {
-                        this.bondsAllList = res.data[0].task_list
-                        this.getCreateTable()
-                    })
-                    .catch((error) => {
-                        alert(error)
-                    })
-            },
-            getMessageByTask(task_id) {
-                const path = 'http://localhost:5000/forensic/phonedisplay/' + task_id
-                axios.get(path)
-                    .then((res) => {
-                        this.bondsAllList = res.data
-                        this.getCreateTable()
-                    })
-                    .catch((error) => {
-                        alert(error)
-                    })
-            },
-            sendMessage() {
-                const path = 'http://localhost:5000/forensic/forensic-details'
-                const list = {
-                    name: 'yzj',
-                    age: 18
-                }
-                // const jsonList = JSON.stringify(list)
-                axios.post(path, list)
-                    .then(res => {
-                        this.tableDataName = res.data.age
-                    })
-                    .catch((error) => {
-                        alert(error)
-                    })
             },
             handleSizeChange1: function (pageSize) { // 每页条数切换
                 // eslint-disable-next-line eqeqeq
@@ -542,30 +454,6 @@
                         this.handleDelete(index, row)
                     })
                     .catch(() => {
-                        this.$message({
-                            type: 'info',
-                            message: '已取消删除！'
-                        })
-                    })
-            },
-            confirmDelete(index, row) {
-                this.$confirm('确认删除' + ' time: ' + row.time + '  data: ' + row.data, '删除', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                })
-                    .then(() => {
-                        this.$message({
-                            type: 'success',
-                            message: '开始删除'
-                        })
-                        this.handleDelete(index, row)
-                    })
-                    .catch(() => {
-                        this.$message({
-                            type: 'info',
-                            message: '已取消删除！'
-                        })
                     })
             },
             handleDelete(index, row) {
@@ -593,6 +481,31 @@
                     .finally(function () {
                         console.log('delete case_info, update tree!')
                     })
+            },
+            updateTaskStatus(index,row) {
+                let taskStatus = ''
+                if(row.task_status==='ready')
+                {
+                    taskStatus = '开始'
+                }
+                else if(row.task_status === 'running')
+                {
+                    taskStatus= '结束'
+                }
+                    this.$confirm('确认' + taskStatus + '?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    })
+                        .then(() => {
+                            this.handelTaskStatus(index, row)
+                        })
+                        .catch(() => {
+                            // this.$message({
+                            //     type: 'info',
+                            //     message: '已取消!'
+                            // })
+                        })
             },
             handelTaskStatus(index, row) {
                 const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'

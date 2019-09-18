@@ -13,10 +13,8 @@ const getters = {
   errorLogs: state => state.errorLog.logs,
   caseInfo:state => {
     console.log('taskList Getter refresh')
-    console.log(state.forensic.case_name)
     for (let index in state.forensic.case_info) {
-      console.log(state.forensic.case_info[index].case_id)
-      if (state.forensic.case_info[index].case_id == state.forensic.case_name) {
+      if (state.forensic.case_info[index].case_id == state.forensic.case_id) {
         console.log(state.forensic.case_info[index]);
         return state.forensic.case_info[index];
       }
