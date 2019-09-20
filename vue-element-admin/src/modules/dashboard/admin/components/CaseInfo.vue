@@ -5,67 +5,85 @@
       <el-button style="float: right; padding: 3px 0" type="text" @click="routeTAllcase">全部</el-button>
     </div>
 
-  <!-- //BUG 太多，隐藏表头和高度一起设置时，将会出现未定义错误，暂时规避，待官方修复-->
+    <!-- //BUG 太多，隐藏表头和高度一起设置时，将会出现未定义错误，暂时规避，待官方修复-->
     <el-table
       :data="caseInfo"
       :show-header=true
       height="100%"
       width="100%">
-      <el-table-column label="任务简介" min-width="28%">
+      <el-table-column label="任务简介" min-width="50%" >
         <template slot-scope="scope">
-<!--          <el-tag effect="plain">-->
-<!--            {{case_type_trans(scope.row.taskType)}}-->
-<!--          </el-tag>-->
+          <!--          <el-tag effect="plain">-->
+          <!--            {{case_type_trans(scope.row.taskType)}}-->
+          <!--          </el-tag>-->
 
-          <div style="display: flex;align-items:center">
-          <div>
+          <div style="display: flex;align-items:center;width: 100%">
+            <div>
 
-          <svg-icon v-if="scope.row.taskType===1" icon-class="number_task" style="width: 40px;height: 40px;margin-right: 16px"/>
+              <svg-icon v-if="scope.row.taskType===1" icon-class="number_task"
+                        style="width: 40px;height: 40px;margin-right: 16px"/>
 
-          <svg-icon v-else icon-class="forensic_task" style="width: 40px;height: 40px;margin-right: 16px"/>
+              <svg-icon v-else icon-class="forensic_task" style="width: 40px;height: 40px;margin-right: 16px"/>
 
-          </div>
-          <div>
-          <el-link :underline="false"
-                   style="font-size: 14px;font-family: 'Microsoft YaHei';color: rgba(0,0,0,0.65);font-weight: 500;line-height: 22px;margin-bottom: 4px" @click="routeTcase(scope.row.caseId)">
-            {{scope.row.caseName}} -
-          </el-link>
-          <el-link :underline="false"
-                   style="font-size: 14px;color: rgba(0,0,0,0.65);font-family: 'Microsoft YaHei';font-weight: 500;line-height: 22px;margin-bottom: 4px">
-            {{scope.row.taskName}}
-          </el-link>
-          <div style="color: rgba(0,0,0,0.45);font-size: 14px;line-height: 22px">{{scope.row.task_detail}}</div>
-          </div>
+            </div>
+            <div style="width: 100%;overflow: hidden">
+              <!--          <el-link :underline="false"-->
+              <!--                   style="font-size: 14px;font-family: 'Microsoft YaHei';color: rgba(0,0,0,0.65);font-weight: 600;line-height: 22px;margin-bottom: 4px" @click="routeTcase(scope.row.caseId)">-->
+              <!--            {{scope.row.caseName}} - -->
+              <!--          </el-link>-->
+              <div style="margin-bottom: 4px">
+              <el-link :underline="false"
+                       @click="routeTtask(scope.row)"
+                       style="margin-right:4px;font-size: 14px;color: rgba(0,0,0,0.65);font-weight: 500;line-height: 22px;">
+                {{scope.row.taskName}}
+              </el-link>
+              <el-tag  hit size="mini" style="font-size: 8px">
+                取号中
+              </el-tag>
+              </div>
+              <div
+                style="color: rgba(0,0,0,0.45);font-size: 14px;line-height: 22px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                {{scope.row.task_detail}}
+              </div>
+            </div>
           </div>
         </template>
       </el-table-column>
 
-      <el-table-column label="进度" align="left" min-width="20%">
-        <template slot-scope="scope">
-          <div class="progress-item">
-            <el-progress   :percentage=scope.row.task_progress
-                         v-if="scope.row.task_show.length ===0"></el-progress>
-            <el-progress   :percentage=scope.row.task_progress
-                         :status=scope.row.task_show v-else></el-progress>
-          </div>
-        </template>
-      </el-table-column>
+<!--      <el-table-column label="进度" align="left" min-width="10%">-->
+<!--        <template slot-scope="scope">-->
+
+<!--            <el-tag style="font-size: 13px">-->
+<!--              取号中-->
+<!--            </el-tag>-->
+
+<!--&lt;!&ndash;          <div class="progress-item">&ndash;&gt;-->
+<!--&lt;!&ndash;            <el-progress :percentage=scope.row.task_progress&ndash;&gt;-->
+<!--&lt;!&ndash;                         v-if="scope.row.task_show.length ===0"></el-progress>&ndash;&gt;-->
+<!--&lt;!&ndash;            <el-progress :percentage=scope.row.task_progress&ndash;&gt;-->
+<!--&lt;!&ndash;                         :status=scope.row.task_show v-else></el-progress>&ndash;&gt;-->
+<!--&lt;!&ndash;          </div>&ndash;&gt;-->
+<!--        </template>-->
+<!--      </el-table-column>-->
 
 
       <el-table-column
         label="日期"
-        align="right" min-width="18%">
+        align="right" min-width="40%">
         <template slot-scope="scope">
           <!--          <i class="el-icon-time"></i>-->
-          <span style="color: rgba(0,0,0,0.45)">{{ timeAllFormat(scope.row.task_timestamp) }}</span>
+          <div>
+
+            <div >
+            <span style="color: rgba(0,0,0,0.45)">15802737832成功取证淘宝</span>
+<!--              <el-button type="text" @click="routeTtask(scope.row)" style="margin-right: 20px">更多</el-button>-->
+            </div>
+            <div style="color: rgba(0,0,0,0.45);font-size: 12px">{{ timeAllFormat(scope.row.task_timestamp) }}</div>
+          </div>
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" align="right" min-width="10%">
-        <template slot-scope="scope">
-          <el-button type="text" @click="routeTtask(scope.row)" style="margin-right: 20px">更多</el-button>
-        </template>
-      </el-table-column>
+
     </el-table>
 
 
@@ -141,9 +159,8 @@
         // }
         // return {status:status}
       },
-      case_type_trans:function(type){
-        if(1===type)
-        {
+      case_type_trans: function (type) {
+        if (1 === type) {
           return '取号'
         }
         return '取证'
@@ -254,7 +271,7 @@
   /*}*/
 
 
-  >>>.el-table__header-wrapper{
+  >>> .el-table__header-wrapper {
     display: none;
   }
 
