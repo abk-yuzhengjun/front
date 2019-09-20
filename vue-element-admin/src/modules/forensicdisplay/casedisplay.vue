@@ -149,11 +149,9 @@
                 const param = {
                     user_id: this.$store.state.user.name
                 }
-                console.log('12345')
                 axios.post(path2, JSON.stringify(param))
                     .then((res) => {
                         this.$store.commit('forensic/getCaseInfo', res.data)
-                        //this.getTreeData()
                     })
                     .catch((error) => {
                         alert(error)
@@ -171,7 +169,6 @@
                 console.log(this.dialogPropCase)
             },
             deleteCaseInfo(index,row) {
-                return
                 this.$confirm('确认删除?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -181,10 +178,6 @@
                         this.handleDelete(index, row)
                     })
                     .catch(() => {
-                        this.$message({
-                            type: 'info',
-                            message: '已取消删除！'
-                        })
                     })
             },
             getMessageByPost2() {
@@ -291,7 +284,6 @@
                             this.$message.warning('删除失败！请刷新后再试！')
                         }
                         this.getTreeMessage()
-
                     })
                     .catch((error) => {
                         alert(error)

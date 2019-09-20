@@ -2,24 +2,82 @@
   <div style="width: 100%;height:100%">
     <div style="width: 100%;display: flex;padding-bottom: 5px; background: #F3F4F7">
       <div style="width: 100%; background: #FFFFFF;display: flex; padding: 10px 20px 0px 20px;flex-direction: column;">
-        <span style="font-size: 16px;color: #333333; font-weight: bold">任务详情</span>
-        <div style="display: flex;justify-content: space-between;padding-bottom: 10px;padding-top: 10px;font-size: 16px;color: #333333">
-          <span>任务名 : &nbsp;{{ task_name }}</span>
-          <span>所属案件:&nbsp; {{ case_name }}</span>
-          <span>任务编号:&nbsp; {{ task_id }}</span>
-          <span>状态 :&nbsp; {{ status }}</span>
-        </div>
-        <div style="display: flex;justify-content: space-between; height: 10px">
-          <span style="font-size: 16px;color: #333333">详情&nbsp;&nbsp;&nbsp;&nbsp; {{ details }}</span>
-          <el-button type="text" style="text-decoration: underline; font-size:16px" @click="editTaskInfo">编辑任务</el-button>
-        </div>
+        <el-row>
+          <el-col :span="24">
+            <div style="display: flex;flex-direction:row">
+              <span style="font-size: 16px;color: #333333; font-weight: bold">任务详情&nbsp</span>
+              <el-button type="text" size="mini" icon="el-icon-edit" @click="editTaskInfo"></el-button>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row style="padding-bottom: 10px;padding-top: 6px">
+          <el-col :span="6">
+            <div style="display: flex;flex-direction:row">
+              <span style="font-size: 14px;color: #666666;">任务名:&nbsp </span>
+              <span style="font-size: 14px;color: #333333;">{{task_name}}</span>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div style="display: flex;flex-direction:row">
+              <span style="font-size: 14px;color: #666666;">所属案件:&nbsp </span>
+              <span style="font-size: 14px;color: #333333;">{{case_name}}</span>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div style="display: flex;flex-direction:row">
+              <span style="font-size: 14px;color: #666666;">任务编号:&nbsp </span>
+              <span style="font-size: 14px;color: #333333;">{{task_id}}</span>
+            </div>
+          </el-col>
+          <el-col :span="3">
+            <div style="display: flex;flex-direction:row">
+              <span style="font-size: 14px;color: #666666;">状态:&nbsp </span>
+              <span style="font-size: 14px;color: #333333;">{{status}}</span>
+            </div>
+          </el-col>
+<!--          <el-col :span="1">-->
+<!--            <div style="display: flex;flex-direction:row">-->
+<!--              <el-button type="primary" size="mini" icon="el-icon-edit" @click="editTaskInfo"></el-button>-->
+<!--            </div>-->
+<!--          </el-col>-->
+        </el-row>
+        <el-row>
+            <el-col :span="1.5">
+              <div style="display: flex;flex-direction:row">
+                <span style="font-size: 14px;color: #666666;">详情:&nbsp </span>
+              </div>
+            </el-col>
+            <el-col :span="22">
+              <div style="display: flex;flex-direction:row">
+                <span style="font-size: 14px;color: #333333;">{{details}}</span>
+              </div>
+            </el-col>
+        </el-row>
+<!--        <div style="display: flex;justify-content: space-between;padding-bottom: 10px;padding-top: 10px;font-size: 14px;color: #666666">-->
+<!--          <span>任务名 : &nbsp;{{ task_name }}</span>-->
+<!--          <span>所属案件:&nbsp; {{ case_name }}</span>-->
+<!--          <span>任务编号:&nbsp; {{ task_id }}</span>-->
+<!--          <span>状态 :&nbsp; {{ status }}</span>-->
+<!--        </div>-->
+<!--        <div style="display: flex;justify-content: space-between;">-->
+<!--          <span style="font-size: 14px;color: #333333">详情&nbsp;&nbsp;&nbsp;&nbsp; {{ details }}</span>-->
+<!--          <el-button type="primary" size="mini" icon="el-icon-edit" @click="editTaskInfo"></el-button>-->
+<!--        </div>-->
         <el-divider content-position="center" />
       </div>
     </div>
-    <div style="width: 100%;height:5%;display: flex;justify-content: space-between;padding-left:20px;padding-top: 10px;padding-right: 10px">
-      <span style="font-size: 16px;font-weight: bold">取证列表</span>
-      <el-input v-model="tableDataName" align="right" placeholder="请输入" suffix-icon="el-icon-search" style="width:360px" @input="doFilter" />
-    </div>
+    <el-row style="padding: 10px 10px 0px 20px;">
+      <el-col :span="17">
+        <div style="display: flex;flex-direction:row">
+          <span style="font-size: 16px;font-weight: bold">取证列表</span>
+        </div>
+      </el-col>
+      <el-col :span="7">
+        <div style="display: flex;flex-direction:row">
+          <el-input v-model="tableDataName" align="right" placeholder="请输入" suffix-icon="el-icon-search" style="width:360px" @input="doFilter" />
+        </div>
+      </el-col>
+    </el-row>
     <div style="width: 100%;height:70%;display: flex;flex-direction: column;padding:10px;">
       <el-table
         :data="tempList"
@@ -169,7 +227,7 @@ export default {
     init() {
       this.getParams()
       // this.getMessage()
-      this.getMessageByPost()
+      //this.getMessageByPost()
         // this.$store.commit('forensic/getTreeCaseInfo','')
         // this.$store.commit('forensic/getTreeTaskInfo',this.task_id)
         let task_show_dict= new Map([["ready",'准备中'],["running",'运行中'],["complete",'已完成'],["failed",'失败'],["canceled",'已取消']]);
@@ -181,22 +239,12 @@ export default {
                     this.status = task_show_dict.get(this.caseInfo.task_list[j].task_status)
                     this.task_name = this.caseInfo.task_list[j].task_name
                     this.task_info = this.caseInfo.task_list[j]
+                    this.bondsAllList = this.task_info.evidence_content
+                    this.tableDataName = ''
+                    this.getCreateTable()
                 }
             }
         }
-        // for(var i = 0; i < this.$store.state.forensic.case_info.length; i++) {
-        //     if(this.$store.state.forensic.case_info[i].case_id === this.case_id) {
-        //         for (var j = 0; j < this.$store.state.forensic.case_info[i].task_list.length; j++) {
-        //             if (this.$store.state.forensic.case_info[i].task_list[j].task_id === this.task_id) {
-        //                 this.details = this.$store.state.forensic.case_info[i].task_list[j].task_detail
-        //                 this.status = task_show_dict.get(this.$store.state.forensic.case_info[i].task_list[j].task_status)
-        //                 this.case_name = this.$store.state.forensic.case_info[i].case_name
-        //                 this.task_name = this.$store.state.forensic.case_info[i].task_list[j].task_name
-        //                 this.task_info = this.$store.state.forensic.case_info[i].task_list[j]
-        //             }
-        //         }
-        //     }
-        // }
     },
     getMessage() {
       const path = 'http://10.10.100.59:5000/forensic/forensic-details'
