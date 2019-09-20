@@ -17,23 +17,30 @@
 <!--            {{case_type_trans(scope.row.taskType)}}-->
 <!--          </el-tag>-->
 
-          <svg-icon v-if="scope.row.taskType===1" icon-class="number_task" style="line-height: 48px"/>
+          <div style="display: flex;align-items:center">
+          <div>
 
-          <i v-else class="el-icon-s-data"></i>
-<!--          <el-avatar shape="square" size="large " src="../../../../icons/svg/number_task.svg"></el-avatar>-->
+          <svg-icon v-if="scope.row.taskType===1" icon-class="number_task" style="width: 40px;height: 40px;margin-right: 16px"/>
+
+          <svg-icon v-else icon-class="forensic_task" style="width: 40px;height: 40px;margin-right: 16px"/>
+
+          </div>
+          <div>
           <el-link :underline="false"
-                   style="font-size: 16px;font-family: 'Microsoft YaHei';font-weight: 500;line-height: 40px" @click="routeTcase(scope.row.caseId)">
+                   style="font-size: 14px;font-family: 'Microsoft YaHei';color: rgba(0,0,0,0.65);font-weight: 500;line-height: 22px;margin-bottom: 4px" @click="routeTcase(scope.row.caseId)">
             {{scope.row.caseName}} -
           </el-link>
           <el-link :underline="false"
-                   style="font-size: 16px;color: #2d2f33;font-family: 'Microsoft YaHei';font-weight: 500;line-height: 40px">
+                   style="font-size: 14px;color: rgba(0,0,0,0.65);font-family: 'Microsoft YaHei';font-weight: 500;line-height: 22px;margin-bottom: 4px">
             {{scope.row.taskName}}
           </el-link>
-          <div style="color: #7d7d7f;font-size: 13px;line-height: 18px">{{scope.row.task_detail}}</div>
+          <div style="color: rgba(0,0,0,0.45);font-size: 14px;line-height: 22px">{{scope.row.task_detail}}</div>
+          </div>
+          </div>
         </template>
       </el-table-column>
 
-      <el-table-column label="进度" align="right" min-width="20%">
+      <el-table-column label="进度" align="left" min-width="20%">
         <template slot-scope="scope">
           <div class="progress-item">
             <el-progress   :percentage=scope.row.task_progress
@@ -50,7 +57,7 @@
         align="right" min-width="18%">
         <template slot-scope="scope">
           <!--          <i class="el-icon-time"></i>-->
-          <span style="letter-spacing: 0.1em;">{{ timeAllFormat(scope.row.task_timestamp) }}</span>
+          <span style="color: rgba(0,0,0,0.45)">{{ timeAllFormat(scope.row.task_timestamp) }}</span>
         </template>
       </el-table-column>
 
