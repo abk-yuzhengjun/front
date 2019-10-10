@@ -173,7 +173,10 @@ export default {
             .catch(() => {
               this.loading = false
             })
-            this.getUsrInfo()
+
+             // this.getUsrInfo()
+
+
         } else {
           console.log('error submit!!')
           return false
@@ -187,7 +190,7 @@ export default {
         }
         return acc
       }, {})
-    }
+    },
     // afterQRScan() {
     //   if (e.key === 'x-admin-oauth-code') {
     //     const code = getQueryObject(e.newValue)
@@ -206,7 +209,19 @@ export default {
     //     }
     //   }
     // }
-  }
+      send(){
+          console.log('1111111');
+          this.$socket.emit('message','1111111111');
+      },
+  },
+    sockets:{
+        connect: function(){
+            console.log('socket connected')
+        },
+        message: function(val){
+            console.log('返回:'+val)
+        }
+    },
 }
 </script>
 
