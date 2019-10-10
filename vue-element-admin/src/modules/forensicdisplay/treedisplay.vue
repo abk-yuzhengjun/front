@@ -15,9 +15,9 @@
           <i v-if="data.node_ind==='home'" class="el-icon-house" ></i>
            <i v-else-if="data.node_ind==='case'" class="el-icon-folder"></i>
 
-          <i v-else-if="data.node_ind==='task_number'" class="el-icon-s-cooperation"></i>
+          <svg-icon v-else-if="data.node_ind==='task_number'" icon-class="get_phone_number"></svg-icon>
 
-          <i v-else-if="data.node_ind==='task_evidence'" class="el-icon-s-data"></i>
+          <svg-icon v-else-if="data.node_ind==='task_evidence'" icon-class="get_phone_app"></svg-icon>
 
           <i v-else-if="data.node_ind==='phone'" class="el-icon-phone"></i>
           <!--          <i v-else-if="data.node_ind==='app'" class="el-icon-folder"></i>-->
@@ -25,6 +25,11 @@
             <svg-icon v-if="data.label==='微信'" icon-class="wechat" />
             <svg-icon v-else-if="data.label==='微博'" icon-class="weibo" />
             <svg-icon v-else-if="data.label==='支付宝'" icon-class="alipay" />
+            <svg-icon v-else-if="data.label==='京东'" icon-class="jingdong" />
+            <svg-icon v-else-if="data.label==='拼多多'" icon-class="pinduoduo" />
+            <svg-icon v-else-if="data.label==='美团'" icon-class="meituan" />
+            <svg-icon v-else-if="data.label==='百度贴吧'" icon-class="baidutieba" />
+            <svg-icon v-else-if="data.label==='淘宝'" icon-class="taobao" />
              <svg-icon v-else icon-class="app" />
           </template>
           <span style="font-size: 14px;padding-left: 4px">{{ node.label }}</span>
@@ -139,7 +144,7 @@
                     })
             },
             getMessageByPost2() {
-                const path2 = 'http://10.10.100.59:5000/forensic/casetaskdisplay'
+                const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
                 const param = {
                     user_id: this.$store.state.user.name
                 }
@@ -178,6 +183,7 @@
                     treeId = this.treeIdData[this.$store.state.forensic.case_id + ':' + this.$store.state.forensic.task_id + ':' +':']
                     console.log('expand Task: ' + treeId)
                 }
+                this.treeExpandAddr = []
                 this.treeExpandAddr.push(treeId)
                 this.$refs.tree.setCurrentKey(treeId)
                 console.log(this.treeExpandAddr)
@@ -253,7 +259,7 @@
               let treeId = 2
                 const temp_list = []
                 const index = {
-                    label: '案件信息',
+                    label: '主页',
                     id: 1,
                     node_ind:'home',
                     children: []
@@ -298,19 +304,21 @@
                                     }
                                     this.treeIdData[this.taskTableData[i].case_id + ':' +this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].task_id + ':' +obj_child_child.label +':'] = obj_child_child.id
                                     this.treeLabelData[obj_child_child.id] = obj_child_child.label
-                                    if (this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].hasOwnProperty('app_list') && this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list.length >= 1) {
+                                    if (this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].hasOwnProperty('app_list')  && this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list.length >= 1) {
                                         const phone_length = this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list.length
                                         let temp_phone_length = this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list.length
-                                        while (temp_phone_length > 0) {
-                                            const obj_child_child_child = {
-                                                label: this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list[phone_length - temp_phone_length],
-                                                id: treeId++,
-                                                node_ind:'app',
+                                        if(this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list[phone_length - temp_phone_length].hasOwnProperty('app')) {
+                                            while (temp_phone_length > 0) {
+                                                const obj_child_child_child = {
+                                                    label: this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list[phone_length - temp_phone_length].app,
+                                                    id: treeId++,
+                                                    node_ind: 'app',
+                                                }
+                                                this.treeIdData[this.taskTableData[i].case_id + ':' + this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].task_id + ':' + obj_child_child.label + ':' + obj_child_child_child.label] = obj_child_child_child.id
+                                                this.treeLabelData[obj_child_child_child.id] = obj_child_child_child.label
+                                                temp_phone_length--
+                                                obj_child_child.children.push(obj_child_child_child)
                                             }
-                                            this.treeIdData[this.taskTableData[i].case_id + ':' +this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].task_id + ':' +obj_child_child.label +':' + obj_child_child_child.label] = obj_child_child_child.id
-                                            this.treeLabelData[obj_child_child_child.id] = obj_child_child_child.label
-                                            temp_phone_length--
-                                            obj_child_child.children.push(obj_child_child_child)
                                         }
                                     }
                                     temp_length--

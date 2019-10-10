@@ -1,38 +1,42 @@
 <template xmlns:height="http://www.w3.org/1999/xhtml">
   <div style="width: 100%;height:100%">
-    <div style="width: 100%;display: flex;padding-bottom: 5px; background: #F3F4F7">
-      <div style="width: 100%; background: #FFFFFF;display: flex; padding: 10px 20px 0px 20px;flex-direction: column;">
+    <div style="width: 100%;display: flex;padding-bottom: 20px; background: #F3F4F7">
+      <div style="width: 100%; background: #FFFFFF;display: flex; padding: 20px 20px 10px 20px;flex-direction: column;">
         <el-row>
-          <el-col :span="24">
-            <div style="display: flex;flex-direction:row">
-              <span style="font-size: 16px;color: #333333; font-weight: bold">任务详情&nbsp</span>
+          <el-col style="width: 30px;">
+            <svg-icon icon-class="task_phone" style="width: 26px;height: 26px"></svg-icon>
+          </el-col>
+          <el-col :span="16">
+            <div style="display: flex;flex-direction:row;justify-content: flex-start">
+              <span style="font-size: 16px;color: #333333; font-weight: bold;">任务编号:&nbsp{{task_id}}</span>
               <el-button type="text" size="mini" icon="el-icon-edit" @click="editTaskInfo"></el-button>
             </div>
           </el-col>
         </el-row>
         <el-row style="padding-bottom: 10px;padding-top: 6px">
+          <el-col style="width: 30px;">
+            &nbsp
+          </el-col>
           <el-col :span="6">
             <div style="display: flex;flex-direction:row">
               <span style="font-size: 14px;color: #666666;">任务名:&nbsp </span>
               <span style="font-size: 14px;color: #333333;">{{task_name}}</span>
             </div>
           </el-col>
-          <el-col :span="6">
-            <div style="display: flex;flex-direction:row">
-              <span style="font-size: 14px;color: #666666;">所属案件:&nbsp </span>
-              <span style="font-size: 14px;color: #333333;">{{case_name}}</span>
-            </div>
-          </el-col>
           <el-col :span="8">
             <div style="display: flex;flex-direction:row">
-              <span style="font-size: 14px;color: #666666;">任务编号:&nbsp </span>
-              <span style="font-size: 14px;color: #333333;">{{task_id}}</span>
+              <span style="font-size: 14px;color: #666666;">创建时间:&nbsp </span>
+              <span style="font-size: 14px;color: #333333;" v-if="taskInfo!== undefined">{{taskInfo.create_ts}}</span>
             </div>
           </el-col>
-          <el-col :span="3">
-            <div style="display: flex;flex-direction:row">
-              <span style="font-size: 14px;color: #666666;">状态:&nbsp </span>
-              <span style="font-size: 14px;color: #333333;">{{status}}</span>
+          <el-col :span="4">
+            <div style="display: flex;justify-content: flex-end">
+              <span style="font-size: 14px;color: #666666;">状态&nbsp&nbsp</span>
+            </div>
+          </el-col>
+          <el-col :span="4">
+            <div style="display: flex;justify-content: flex-end">
+              <span style="font-size: 14px;color: #666666;">取号(上号/取号成功)</span>
             </div>
           </el-col>
           <!--          <el-col :span="1">-->
@@ -41,32 +45,93 @@
           <!--            </div>-->
           <!--          </el-col>-->
         </el-row>
-        <el-row>
+        <el-row style="padding-bottom: 5px;padding-top: 6px">
+          <el-col style="width: 30px;">
+            &nbsp
+          </el-col>
+          <el-col :span="6">
+            <div style="display: flex;flex-direction:row">
+              <span style="font-size: 14px;color: #666666;">创建人:&nbsp </span>
+              <span style="font-size: 14px;color: #333333;">***</span>
+            </div>
+          </el-col>
+          <el-col :span="10">
+            <div style="display: flex;flex-direction:row">
+              <span style="font-size: 14px;color: #666666;">完成时间:&nbsp </span>
+              <span style="font-size: 14px;color: #333333;"  v-if="taskInfo!== undefined">{{taskInfo.update_ts}}</span>
+            </div>
+          </el-col>
+          <el-col :span="2">
+            <div style="display: flex;justify-content: flex-end">
+              <el-tag type="danger">取号中</el-tag>
+            </div>
+          </el-col>
+          <el-col :span="4">
+            <div style="display: flex;justify-content: flex-end">
+              <span style="font-size: 16px;color: #333333;">100/20</span>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row style="padding-bottom: 5px;padding-top: 6px">
+          <el-col style="width: 30px;">
+            &nbsp
+          </el-col>
+          <el-col :span="6">
+            <div style="display: flex;flex-direction:row">
+              <span style="font-size: 14px;color: #666666;">取号范围:&nbsp </span>
+              <span style="font-size: 14px;color: #333333;">黑名单</span>
+            </div>
+          </el-col>
+          <el-col :span="6">
+            <div style="display: flex;flex-direction:row">
+              <span style="font-size: 14px;color: #666666;">取号方式:&nbsp </span>
+              <span style="font-size: 14px;color: #333333;">空口</span>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row style="padding-bottom: 15px;padding-top: 15px;">
+          <el-col style="width: 30px;">
+            &nbsp
+          </el-col>
           <el-col :span="1.5">
             <div style="display: flex;flex-direction:row">
               <span style="font-size: 14px;color: #666666;">详情:&nbsp </span>
             </div>
           </el-col>
-          <el-col :span="22">
+          <el-col :span="10">
             <div style="display: flex;flex-direction:row">
               <span style="font-size: 14px;color: #333333;">{{details}}</span>
             </div>
           </el-col>
         </el-row>
-        <!--        <div style="display: flex;justify-content: space-between;padding-bottom: 10px;padding-top: 10px;font-size: 14px;color: #666666">-->
-        <!--          <span>任务名 : &nbsp;{{ task_name }}</span>-->
-        <!--          <span>所属案件:&nbsp; {{ case_name }}</span>-->
-        <!--          <span>任务编号:&nbsp; {{ task_id }}</span>-->
-        <!--          <span>状态 :&nbsp; {{ status }}</span>-->
-        <!--        </div>-->
-        <!--        <div style="display: flex;justify-content: space-between;">-->
-        <!--          <span style="font-size: 14px;color: #333333">详情&nbsp;&nbsp;&nbsp;&nbsp; {{ details }}</span>-->
-        <!--          <el-button type="primary" size="mini" icon="el-icon-edit" @click="editTaskInfo"></el-button>-->
-        <!--        </div>-->
-        <el-divider content-position="center" />
       </div>
     </div>
-    <el-row style="padding: 10px 10px 0px 20px;">
+
+    <div style="width: 100%;display: flex;padding-bottom: 20px; background: #F3F4F7">
+      <div style="width: 100%; background: #FFFFFF;display: flex; padding: 20px 20px 10px 20px;flex-direction: column;">
+        <el-row>
+          <el-col :span="24">
+            <div style="display: flex;justify-content: space-between">
+              <span style="font-size: 16px;color: #333333; font-weight: bold">任务动态&nbsp</span>
+              <el-button type="text">全部</el-button>
+            </div>
+          </el-col>
+          <el-col :span="24" style="padding-bottom: 10px;padding-top: 6px">
+            <div style="display: flex;">
+              <span class="status-success"></span>
+              <span style="font-size: 16px;color: #333333;">&nbspimsi:460000000000 上号 时间：2019-9-18 16:27:55</span>
+            </div>
+          </el-col>
+          <el-col :span="24">
+            <div style="display: flex;">
+              <span class="status-success"></span>
+              <span style="font-size: 16px;color: #333333;">&nbspimsi:460000000001 上号 时间：2019-9-18 16:27:55</span>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+    </div>
+    <el-row style="padding: 20px 10px 0px 20px;">
       <el-col :span="17">
         <div style="display: flex;flex-direction:row">
           <span style="font-size: 16px;font-weight: bold">取号列表</span>
@@ -78,22 +143,35 @@
         </div>
       </el-col>
     </el-row>
-    <div style="width: 100%;height:65%;display: flex;flex-direction: column;padding:10px;">
+    <div style="width: 100%;display: flex;flex-direction: column;padding:10px;">
       <el-table
         :data="tempList"
-        :header-cell-style="{color:'#666666',font: '14px Base'}"
+        :header-cell-style="{color:'#303133',font: '14px Base'}"
         :cell-style="{font: '14px Base', color:'#333333'}"
-        stripe
         style="margin-bottom:14px;"
         :empty-text="emptyText"
         :default-sort="{prop:'time',order:'ascending'}"
         :highlight-current-row="true"
         width="100%"
-        height="1"
+        height="300px"
       >
-        <el-table-column property="phone" label="手机号" min-width="10px" align="center" />
-        <el-table-column property="imsi" label="Imsi" min-width="20px" align="center" />
-        <el-table-column property="create_time" label="时间" min-width="20px" align="center" />
+        <el-table-column property="imsi" label="Imsi" width="200px" align="left" />
+        <el-table-column property="phone" label="手机号码" width="200px" align="left" />
+        <el-table-column label="状态" width="200px" align="left" >
+          <template slot-scope="scope">
+            <span class="status-success" v-if="scope.row.phone === '15671564368'"></span>
+            <span class="status-warning" v-else></span>
+            <el-tag type="primary" v-if="scope.row.phone === '15671564368'">取号成功</el-tag>
+            <el-tag type="warning"v-else>鉴权中</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column property="create_time" label="开始时间" width="300px" align="left" />
+        <el-table-column property="create_time" label="上号时间" width="00px" align="left" />
+        <el-table-column  label="耗时" width="100px" align="left" >
+          <template slot-scope="scope">
+            <span>5ms</span>
+          </template>
+        </el-table-column>
         <!--        <el-table-column label="操作" align="center" width="80">-->
         <!--          <template slot-scope="scope">-->
         <!--            <el-button size="mini" type="danger" @click="confirmDelete(scope.$index,scope.row)">删除</el-button>-->
@@ -105,7 +183,7 @@
         :current-page="currentPage1"
         background
         layout="total, sizes, prev, pager, next, jumper"
-        :page-sizes="[10, 20, 50, 100]"
+        :page-sizes="[5, 10, 50, 100]"
         :page-size="pageSize"
         :total="total1"
         @size-change="handleSizeChange1"
@@ -135,11 +213,12 @@ export default {
       total1: 0,
       dialogFormVisible: 0,
       currentPage1: 1,
-      pageSize: 10,
+      pageSize: 5,
       bondsAllList: '',
       tempList: [],
       emptyText: '',
       tableDataName: '',
+      src: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
       details: '',
       status: '',
       tableDataEnd: '',
@@ -195,7 +274,7 @@ export default {
     this.init()
   },
     computed: {
-        ...mapGetters({ caseInfo:'caseInfo'}),
+        ...mapGetters({ caseInfo:'caseInfo',taskInfo:'taskInfo'}),
     },
   methods: {
       closeTaskDialog() {
@@ -275,8 +354,8 @@ export default {
           }
           axios.post(path,list)
               .then((res) => {
-                  this.bondsAllList = res.data
-                  this.tableDataName = ''
+                  this.bondsAllList = res.data;
+                  this.tableDataName = '';
                   this.getCreateTable()
               })
               .catch((error) => {
@@ -288,11 +367,11 @@ export default {
       if (this.flag === 1) {
         return
       }
-      this.pageSize = pageSize
+      this.pageSize = pageSize;
       this.handleCurrentChange1(this.currentPage1)
     },
     handleCurrentChange1: function(currentPage) { // 页码切换
-      this.currentPage1 = currentPage
+      this.currentPage1 = currentPage;
       // eslint-disable-next-line eqeqeq
       if (this.flag === 0) {
         this.currentChangePage(this.bondsAllList, currentPage)
@@ -329,7 +408,13 @@ export default {
           if (value.phone.indexOf(this.tableDataName) >= 0) {
             this.filterTableDataEnd.push(value)
           }
+          else if (value.imsi) {
+              if (value.imsi.indexOf(this.tableDataName) >= 0) {
+                  this.filterTableDataEnd.push(value)
+              }
+          }
         }
+
       })
       this.currentPage1 = 1
       this.total1 = this.filterTableDataEnd.length
@@ -390,6 +475,45 @@ export default {
     padding: 0;
     height: 110px;
   }
-
+  .status-info{
+    display:inline-block;
+    width: 10px;
+    height:10px;
+    background:#909399;
+    border-radius:50%;
+    /*border:2px solid #909399;*/
+  }
+  .status-primary{
+    display:inline-block;
+    width: 10px;
+    height:10px;
+    background:#409eff;
+    border-radius:50%;
+    /*border:2px solid #409eff;*/
+  }
+  .status-success{
+    display:inline-block;
+    width: 10px;
+    height:10px;
+    background:#67c23a;
+    border-radius:50%;
+    /*border:2px solid #67c23a;*/
+  }
+  .status-warning{
+    display:inline-block;
+    width: 10px;
+    height:10px;
+    background:#e6a23c;
+    border-radius:50%;
+    /*border:2px solid #e6a23c;*/
+  }
+  .status-danger{
+    display:inline-block;
+    width: 10px;
+    height:10px;
+    background:#f56c6c;
+    border-radius:50%;
+    /*border:2px solid #f56c6c;*/
+  }
 </style>
 

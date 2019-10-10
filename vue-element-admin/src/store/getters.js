@@ -19,7 +19,20 @@ const getters = {
         return state.forensic.case_info[index];
       }
     }
+  },
+  taskInfo:state => {
+    console.log('task Getter refresh')
+    for (let index in state.forensic.case_info) {
+      if (state.forensic.case_info[index].case_id == state.forensic.case_id) {
+        for (let taskIndex in state.forensic.case_info[index].task_list) {
+          if(state.forensic.case_info[index].task_list[taskIndex].task_id == state.forensic.task_id)
+          {
+            console.log(state.forensic.case_info[index].task_list[taskIndex]);
+            return state.forensic.case_info[index].task_list[taskIndex];
+          }
+        }
+      }
+    }
   }
-
 }
 export default getters

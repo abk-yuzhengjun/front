@@ -299,6 +299,12 @@
         computed: {
             ...mapGetters({ caseInfo:'caseInfo'}),
         },
+        sockets: {
+            recv: function (data) {
+                console.log('socket recv')
+                console.log(data)
+            },
+        },
         methods: {
             format(percentage) {
                 let taskStatus = new Map([[100, "已完成"], [25, "进行中"], [1, "准备中"], [50, "已失败"], [0, "已取消"]])
@@ -492,6 +498,11 @@
                 {
                     taskStatus= '结束'
                 }
+                else
+                {
+                    return
+                }
+                this.$socket.emit('start', {'param':'test socket io'});
                     this.$confirm('确认' + taskStatus + '?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
@@ -510,26 +521,26 @@
             handelTaskStatus(index, row) {
                 const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'
                 this.isloading[index] = true
-                let taskStatus = 'ready'
+                // let taskStatus = 'ready'
                 // let status = new Map([[0, "ready"], [1, "running"], [2, "complete"], [3, "failed"], [4, "canceled"]])
                 // let taskStatus = status.get((indexStatus + 1 ) % 5)
-                if(row.task_status === 'ready') {
-                    taskStatus = 'running'
-                } else if(row.task_status === 'running') {
-                    taskStatus = 'complete'
-                }else if(row.task_status === 'complete') {
-                    taskStatus = 'failed'
-                }else if(row.task_status === 'failed') {
-                    taskStatus = 'canceled'
-                }else if(row.task_status === 'canceled') {
-                    taskStatus = 'ready'
-                }
+                // if(row.task_status === 'ready') {
+                //     taskStatus = 'running'
+                // } else if(row.task_status === 'running') {
+                //     taskStatus = 'complete'
+                // }else if(row.task_status === 'complete') {
+                //     taskStatus = 'failed'
+                // }else if(row.task_status === 'failed') {
+                //     taskStatus = 'canceled'
+                // }else if(row.task_status === 'canceled') {
+                //     taskStatus = 'ready'
+                // }
 
                 const param = {
                     user_id: this.$store.state.user.name,
                     case_id: this.case_id,
                     task_id: row.task_id,
-                    task_status: taskStatus
+                    task_status: row.task_status
                 }
                 console.log(param)
                 axios.post(path2, param)
