@@ -19,6 +19,10 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
+
+import VueSocketIO from 'vue-socket.io'
+
+import socketio from 'socket.io-client';
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -49,3 +53,23 @@ new Vue({
   store,
   render: h => h(App)
 })
+
+Vue.use(new VueSocketIO({
+
+  debug: true,
+
+  connection: 'http://localhost:5000',
+
+  // cors_allowed_origins:'*',
+  vuex: {       // 不需要用到vuex这个可以不加
+
+    store,
+
+    actionPrefix: 'SOCKET_',
+
+    mutationPrefix: 'SOCKET_'
+
+  }
+
+}))
+

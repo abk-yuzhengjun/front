@@ -127,7 +127,7 @@
             return appIconMap.get(appname)
           },
             getMessage() {
-                const path2 = 'http://10.10.100.59:5000/forensic/getTreeData/yuzhengjun'
+                const path2 = 'http://localhost:5000/forensic/getTreeData/yuzhengjun'
                 axios.get(path2)
                     .then((res) => {
                         this.taskTableData = res.data
@@ -139,7 +139,7 @@
                     })
             },
             getMessageByPost2() {
-                const path2 = 'http://10.10.100.59:5000/forensic/casetaskdisplay'
+                const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
                 const param = {
                     user_id: this.$store.state.user.name
                 }
@@ -241,10 +241,16 @@
                     }
                 )
             },
-            jumpToAppInformation() {
+            jumpToAppInformation(taskId,appName,phone) {
+              console.log("jumpToAppInformation")
                 this.$router.push(
                     {
-                        name: 'appinformation'
+                        name: 'appinformation',
+                        query:{
+                            task_id:taskId,
+                            phone:phone,
+                            appName:appName
+                        }
                     }
                 )
             },
@@ -368,7 +374,7 @@
                 }
                 else
                 {
-                    this.jumpToAppInformation()
+                    this.jumpToAppInformation(treeTaskId,treeApp,treePhone)
                 }
             }
         }
