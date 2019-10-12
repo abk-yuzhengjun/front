@@ -296,15 +296,18 @@ $light_gray:#eee;
   }
 
   .title-container {
-    position: relative;
-
-    .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
-      text-align: center;
-      font-weight: bold;
-    }
+    /*position: relative;*/
+    text-align: center;
+    margin: auto;
+    width: 100%;
+    min-height: 100%;
+    <!--.title {-->
+      <!--font-size: 26px;-->
+      <!--color: $light_gray;-->
+      <!--margin: 0px auto 40px auto;-->
+      <!--text-align: center;-->
+      <!--font-weight: bold;-->
+    <!--}-->
   }
 
   .show-pwd {
