@@ -8,7 +8,7 @@
             v-for="(item,index) in form.case_list"
             :key="index"
             :label="item.case_name"
-            :value="item.case_id" >
+            :value="item.case_name" >
             <span style="float: left">{{ item.case_name }}</span>
             <span style="float: right; color: #8492a6; font-size: 13px">{{ item.case_id }}</span>
           </el-option>
@@ -63,8 +63,8 @@
           <el-select v-model="form.task_info.number_content.capture_operation" multiple placeholder="请选择" value="">
             <el-option
               v-for="item in form.oper_list"
-              :key="item"
-              :value="item"
+              :key="item.name"
+              :value="item.name"
             />
           </el-select>
         </el-form-item>
@@ -112,6 +112,7 @@
                 devTest:{
                     label:{devlist:[]}
                 },
+                app_list:[],
                 // devlist:[],
                 pluginControl: {
                     task_name: '',
@@ -139,6 +140,7 @@
                         task_detail:'',
                         create_ts: '',
                         update_ts: '',
+                        start_ts:'',
                         task_type: '',
                         dev_list: [],
                         number_content: {
@@ -153,6 +155,7 @@
                             {
                                 phone: '',
                                 imsi: '',
+                                update_ts:'',
                                 app_list: '',
                             }
                         ]
@@ -163,8 +166,8 @@
 
         methods: {
             taskJump(){
-                console.log("case_id：",this.form.task_info.case_id)
-                console.log("task_id：",this.form.task_info.task_id)
+                // console.log("case_id：",this.form.task_info.case_id)
+                // console.log("task_id：",this.form.task_info.task_id)
                 if(2 === this.form.task_info.task_type) {
 
                     this.$router.push(
@@ -190,6 +193,7 @@
                 }
             },
             onSubmit() {
+
                 this.$confirm('确认提交此任务？', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -208,12 +212,30 @@
                     });
                 });
             },
+            get_app_list(){
+                for(var i = 0;i <this.form.task_info.evidence_content.length;i++){
+                    for(var j = 0;j < this.form.task_info.evidence_content[i].app_list.length;j++){
+                        var obj = {'app_name':'', 'app_status':'ready','update_ts':''}
+                        obj['app_name'] = this.form.task_info.evidence_content[i].app_list[j]
+                        this.form.task_info.evidence_content[i].app_list[j] =obj
+                    }
+                }
+            },
+            get_case_id(case_name){
+               for(var i = 0;i <this.form.case_list.length;i++){
+                   if(case_name === this.form.case_list[i].case_name){
+                       this.form.task_info.case_id =this.form.case_list[i].case_id;
+                   }
+                }
+
+            },
             submitData() {
 
                 this.form.task_info.case_name = this.case_info.case.case_name
-                this.form.task_info.case_id = this.case_info.case.case_id
                 this.form.task_info.user_id = this.$store.getters.name
                 this.form.task_info.type = this.form.type
+                this.get_case_id(this.form.task_info.case_name)
+                this.get_app_list()
                 console.log("submit task",this.form.task_info)
 
                 axios.post(host + '/caseManage/creatTask/submitTask', this.form.task_info)
@@ -286,8 +308,8 @@
                 else if(1 === this.form.type){
                     this.pluginControl.task_name = false
                     this.pluginControl.case_name = true;
-                    this.case_info.case.case_id =this.form.task_info.case_id;
-                    this.case_info.case.case_name =this.form.task_info.case_name;
+                    this.case_info.case.case_id =this.form.case_list.case_id;
+                    this.case_info.case.case_name =this.form.case_list.case_name;
                     this.form.task_info.number_content.imsi_black_list =[''];
                     this.form.task_info.dev_list=[];
                     console.log('dialogshow   ------------------------1')
@@ -295,8 +317,8 @@
                 else if(2 === this.form.type){
                     this.pluginControl.task_name = false
                     this.pluginControl.case_name = true
-                    this.case_info.case.case_id =this.form.task_info.case_id;
-                    this.case_info.case.case_name =this.form.task_info.case_name;
+                    this.case_info.case.case_id =this.form.case_list.case_id;
+                    this.case_info.case.case_name =this.form.case_list.case_name;
                 }
                 console.log("form", this.form)
                 // console.log("this.pluginControl.task_name",this.pluginControl.task_name)

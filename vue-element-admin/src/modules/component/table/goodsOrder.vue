@@ -25,7 +25,7 @@
       width="80">
     </el-table-column>
     <el-table-column
-      prop="delivery_adress"
+      prop="delivery_address"
       label="收货地址"
       width="200">
     </el-table-column>
@@ -40,7 +40,7 @@
 
 <script>
     export default {
-        name: "goodsOrder",
+        name: "orderNormalGoods",
         props: ["goods"],
         data(){
             return {

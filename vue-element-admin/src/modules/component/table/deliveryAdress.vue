@@ -26,7 +26,7 @@
 
 <script>
     export default {
-        name: "deliveryAdress",
+        name: "deliveryAddress",
         props: ["dvAdress"],
         data(){
             return{
