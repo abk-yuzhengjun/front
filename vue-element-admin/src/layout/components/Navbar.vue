@@ -8,36 +8,88 @@
       <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
 
-        <error-log class="errLog-container right-menu-item hover-effect" />
+        <!--<error-log class="errLog-container right-menu-item hover-effect" />-->
 
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <!--<screenfull id="screenfull" class="right-menu-item hover-effect" />-->
 
-        <el-tooltip content="Global Size" effect="dark" placement="bottom">
-          <size-select id="size-select" class="right-menu-item hover-effect" />
-        </el-tooltip>
+        <!--<el-tooltip content="Global Size" effect="dark" placement="bottom">-->
+          <!--<size-select id="size-select" class="right-menu-item hover-effect" />-->
+        <!--</el-tooltip>-->
 
       </template>
 
+      <el-dropdown class=" right-menu-item hover-effect" trigger="click">
+        <div class="avatar-wrapper">
+
+
+          <i class="el-icon-bell" ></i>
+          <el-badge :value="14" :max="99" style="font-size:1px"></el-badge>
+
+
+        </div>
+        <el-dropdown-menu slot="dropdown" >
+          <div style="margin-left: 10px;margin-right: 8px; font-size: 10px">
+          <el-tabs style="font-size: 5px" value="tongzhi">
+            <el-tab-pane name="tongzhi" class="el_tab_style" >
+              <span slot="label">通知
+                <el-badge :value="11" :max="99" style="font-size:1px"></el-badge>
+              </span>
+              <Notice></Notice>
+
+            </el-tab-pane>
+
+            <!--<el-badge :value="14" :max="99">-->
+            <el-tab-pane name="xiaoxi" class="el_tab_style">
+
+                <span slot="label">消息
+                  <el-badge :value="1" :max="99" style="font-size:1px"></el-badge>
+                </span>
+
+              <span>新消息1</span>
+
+            </el-tab-pane>
+            <!--</el-badge>-->
+
+            <el-tab-pane name="daiban"  class="el_tab_style">
+                <span slot="label">代办
+                <el-badge :value="1" :max="99" style="font-size:1px"></el-badge>
+                </span>
+
+              <span>代办消息1</span>
+
+            </el-tab-pane>
+
+          </el-tabs>
+          </div>
+
+
+
+        </el-dropdown-menu>
+      </el-dropdown>
+
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
+          <!--<img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">-->
+          <svg-icon icon-class="user" class="el-icon-user"/>
+          <!--<i class="el-icon-caret-bottom" />-->
+          <div class="el_icon_user_name"><span >{{userName}}</span></div>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/profile/index">
-            <el-dropdown-item>Profile</el-dropdown-item>
+
+          <router-link to="/account/index">
+            <el-dropdown-item>账户</el-dropdown-item>
           </router-link>
-          <router-link to="/">
-            <el-dropdown-item>Dashboard</el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-element-admin/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
+          <!--<router-link to="/">-->
+            <!--<el-dropdown-item>Dashboard</el-dropdown-item>-->
+          <!--</router-link>-->
+          <!--<a target="_blank" href="https://github.com/PanJiaChen/vue-element-admin/">-->
+            <!--<el-dropdown-item>Github</el-dropdown-item>-->
+          <!--</a>-->
+          <!--<a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">-->
+            <!--<el-dropdown-item>Docs</el-dropdown-item>-->
+          <!--</a>-->
           <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">Log Out</span>
+            <span style="display:block;" @click="logout">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -53,15 +105,20 @@ import ErrorLog from '@/components/ErrorLog'
 import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
+import SvgIcon from "../../components/SvgIcon/index.vue"
+import Notice from "./notice.vue"
+import { getMyToken } from '@/utils/auth'
+import store from "@/store"
 
 export default {
   components: {
+    SvgIcon,
     Breadcrumb,
     Hamburger,
     ErrorLog,
     Screenfull,
     SizeSelect,
-    Search
+    Search,Notice
   },
   computed: {
     ...mapGetters([
@@ -69,6 +126,11 @@ export default {
       'avatar',
       'device'
     ])
+    ,
+    userName:function () {
+      return this.$store.getters.name;
+    }
+
   },
   methods: {
     toggleSideBar() {
@@ -79,6 +141,7 @@ export default {
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
+
 }
 </script>
 
@@ -156,12 +219,37 @@ export default {
         .el-icon-caret-bottom {
           cursor: pointer;
           position: absolute;
-          right: -20px;
+          right: 0px;
           top: 25px;
           font-size: 12px;
         }
       }
     }
+    .el-icon-user {
+      cursor: pointer;
+      /*position:relative;*/
+      margin: auto;
+      margin-bottom: 5px;
+    }
+    .el_icon_user_name{
+      font-size: 10px;
+      float: right;
+      margin-bottom: 5px;
+      margin-left: 5px;
+
+    }
   }
 }
+
+  .el_tab_style{
+    width: 240px;
+    min-height: 50px;
+    height: 300px;
+    margin: auto;
+    /*font-size: 5px;*/
+  }
+  .el-badge-tip{
+    margin-bottom: -25px;
+    margin-right: 40px;
+  }
 </style>

@@ -3,7 +3,8 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">等杨竞</h3>
+        <div style="width:20%; height:50px;float:left"></div>
+        <img src="@/assets/logo.png" alt="logo" style="width:70%; height:50px; margin-bottom: 10px">
       </div>
 
       <el-form-item prop="username">
@@ -18,6 +19,7 @@
           type="text"
           tabindex="1"
           autocomplete="on"
+          clearable
         />
       </el-form-item>
 
@@ -38,38 +40,39 @@
             @keyup.native="checkCapslock"
             @blur="capsTooltip = false"
             @keyup.enter.native="handleLogin"
+            clearable
           />
           <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
           </span>
         </el-form-item>
       </el-tooltip>
-
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-
-      <div style="position:relative">
-        <div class="tips">
-          <span>Username : admin</span>
-          <span>Password : any</span>
-        </div>
-        <div class="tips">
-          <span style="margin-right:18px;">Username : editor</span>
-          <span>Password : any</span>
-        </div>
-
-        <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
-          Or connect with
-        </el-button>
+      <div style="text-align: center">
+      <el-button :loading="loading" type="primary" style="width:50%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
       </div>
+      <!--<div style="position:relative">-->
+        <!--<div class="tips">-->
+          <!--<span>Username : admin</span>-->
+          <!--<span>Password : any</span>-->
+        <!--</div>-->
+        <!--<div class="tips">-->
+          <!--<span style="margin-right:18px;">Username : editor</span>-->
+          <!--<span>Password : any</span>-->
+        <!--</div>-->
+
+        <!--<el-button class="thirdparty-button" type="primary" @click="showDialog=true">-->
+          <!--Or connect with-->
+        <!--</el-button>-->
+      <!--</div>-->
     </el-form>
 
-    <el-dialog title="Or connect with" :visible.sync="showDialog">
-      Can not be simulated on local, so please combine you own business simulation! ! !
-      <br>
-      <br>
-      <br>
-      <social-sign />
-    </el-dialog>
+    <!--<el-dialog title="Or connect with" :visible.sync="showDialog">-->
+      <!--Can not be simulated on local, so please combine you own business simulation! ! !-->
+      <!--<br>-->
+      <!--<br>-->
+      <!--<br>-->
+      <!--<social-sign />-->
+    <!--</el-dialog>-->
   </div>
 </template>
 
@@ -97,8 +100,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111'
+        username: 'wangzhongyou',
+        password: 'wangzhongyou'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -115,7 +118,11 @@ export default {
   watch: {
     $route: {
       handler: function(route) {
+
         const query = route.query
+//        console.log('watch')
+//        console.log(query)
+
         if (query) {
           this.redirect = query.redirect
           this.otherQuery = this.getOtherQuery(query)
@@ -161,22 +168,55 @@ export default {
       // })
     },
 
+    router2Home:function(){
+      console.log(this.$router);
+      this.$router.push(
+        {
+          name: 'casedisplay'
+        });
+      console.log('router2Home success');
+    },
+
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
-              this.loading = false
+            .then((result) => {
+//              console.log("login dispatch success, ", this.redirect || '/')
+//              console.log("login router param, ",this.otherQuery)
+//              this.$router.push({ path: this.redirect})
+//              this.$router.push({ path: '/' })
+//              this.$router.push({ name: 'dashboard' })
+//                this.router2Home();
+              console.log("dispatch result=", result)
+
+              if(result["authRest"] == 0)
+              {
+                this.loading = false
+                alert("用户名不存在")
+
+              }
+              else if(result["authRest"] == 1)
+              {
+                this.loading = false
+//                alert("登录成功")
+//                console.log("time=", result["id"].getTimestamp())
+                this.$router.push({ path: this.redirect || '/', query: this.otherQuery })
+
+              }
+              else if(result["authRest"] == 2)
+              {
+
+                this.loading = false
+                alert("登录失败：密码错误")
+
+              }
             })
             .catch(() => {
               this.loading = false
             })
-
-             // this.getUsrInfo()
-
-
+//            this.getUsrInfo()
         } else {
           console.log('error submit!!')
           return false
@@ -190,7 +230,7 @@ export default {
         }
         return acc
       }, {})
-    },
+    }
     // afterQRScan() {
     //   if (e.key === 'x-admin-oauth-code') {
     //     const code = getQueryObject(e.newValue)
@@ -209,19 +249,7 @@ export default {
     //     }
     //   }
     // }
-      send(){
-          console.log('1111111');
-          this.$socket.emit('message','1111111111');
-      },
-  },
-    sockets:{
-        connect: function(){
-            console.log('socket connected')
-        },
-        message: function(val){
-            console.log('返回:'+val)
-        }
-    },
+  }
 }
 </script>
 
@@ -313,15 +341,11 @@ $light_gray:#eee;
   }
 
   .title-container {
-    position: relative;
+    /*position: relative;*/
+    text-align: center;
+    width: 100%;
 
-    .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
-      text-align: center;
-      font-weight: bold;
-    }
+
   }
 
   .show-pwd {

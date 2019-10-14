@@ -1,10 +1,12 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+// import { login, logout, getInfo } from '@/api/user'
+import { getToken, setToken, removeMyToken, setMyToken, setCookiUser} from '@/utils/auth'
 import router, { resetRouter } from '@/router'
-
+import axios from 'axios'
+import {getMyToken} from "../../utils/auth"
+const host = 'http://localhost:5000'
 const state = {
   token: getToken(),
-  name: '',
+  name: 'admin',
   avatar: '',
   introduction: '',
   roles: []
@@ -33,12 +35,85 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve()
+      // login({ username: username.trim(), password: password })
+      axios.post(host + '/login/', { username: username.trim(), password: password })
+      .then(response => {
+
+        //const { data } = response
+        //commit('SET_TOKEN', data.token)
+        //setToken(data.token)
+        // console.log("login response:", response)
+        setMyToken(true)
+        console.log("login response data res = ", response["data"]["authRest"])
+        commit('SET_NAME', username)
+        // commit('SET_ROLES', response["data"]["role"])
+        if(response["data"]["authRest"] == 1)
+        {
+          setCookiUser(response["data"])
+          console.log("setCookiUser = ", response["data"])
+        }
+        resolve(response["data"])
       }).catch(error => {
+        reject(error)
+      })
+    })
+  },
+
+
+
+  userEdit({ commit }, userInfo ){
+    console.log("userEdit enter----------------")
+    return new Promise((resolve, reject) => {
+      const { username, password, pwd } = userInfo
+      // console.log("username:", userInfo.name)
+      // console.log("password:", userInfo.passWord)
+      // console.log("passwordAgain:", userInfo.passwordAgain)
+      axios.post(host + '/login/userEdit', { username: userInfo.name.trim(), password: userInfo.passWord })
+        .then(response => {
+          console.log("userEdit response data res = ", response["data"]["result"])
+          resolve(response["data"])
+        }).catch(error => {
+        console.log("userEdit error----------------")
+        reject(error)
+      })
+    })
+  },
+
+  queryAllUser({ commit }){
+    // console.log("queryAllUser enter----------------")
+    return new Promise((resolve, reject) => {
+      axios.post(host + '/login/queryAllUser')
+        .then(response => {
+
+          resolve(response["data"])
+        }).catch(error => {
+        console.log("queryAllUser error----------------")
+        reject(error)
+      })
+    })
+  },
+
+  userDel({ commit }, userName){
+    return new Promise((resolve, reject) => {
+      axios.post(host + '/login/userDel',  { username: userName.trim()})
+        .then(response => {
+          console.log("userDel response data = ", response)
+          resolve(response["data"])
+        }).catch(error => {
+
+        reject(error)
+      })
+    })
+  },
+  userAdd({ commit }, account){
+    return new Promise((resolve, reject) => {
+      axios.post(host + '/login/userAdd',  { userName: account.name.trim(), userPwd:account.pwd,
+                role:account.role, icon:account.icon})
+        .then(response => {
+          console.log("userAdd response data = ", response)
+          resolve(response["data"])
+        }).catch(error => {
+
         reject(error)
       })
     })
@@ -74,17 +149,26 @@ const actions = {
 
   // user logout
   logout({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        commit('SET_TOKEN', '')
-        commit('SET_ROLES', [])
-        removeToken()
-        resetRouter()
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
+    // setMyToken(false)
+    removeMyToken()
+    console.log("logOut token=", getMyToken())
+    // resetRouter()
+    console.log("logOut SET_ROLES before=", state.roles)
+    commit('SET_ROLES', [])
+    console.log("logOut SET_ROLES=", state.roles)
+    // return new Promise((resolve, reject) => {
+    //   //logout(state.token)
+    //
+    //     .then(() => {
+    //     // commit('SET_TOKEN', '')
+    //     // commit('SET_ROLES', [])
+    //     // removeToken()
+    //     // resetRouter()
+    //     resolve()
+    //   }).catch(error => {
+    //     reject(error)
+    //   })
+    // })
   },
 
   // remove token
@@ -95,6 +179,10 @@ const actions = {
       removeToken()
       resolve()
     })
+  },
+
+  setToken({ commit }) {
+    setMyToken(true)
   },
 
   // dynamically modify permissions

@@ -92,7 +92,7 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-
+    name:'dashboard',
     redirect: '/dashboard',
     children: [
       {
@@ -205,7 +205,37 @@ export const constantRoutes = [
       }
     ]
 
-  }
+  },
+
+  {
+    path: '/account',
+    component: Layout,
+    redirect: '/account/index',
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/modules/account/index'),
+        name: 'account',
+        meta: { title: '账户', icon: 'user', noCache: true },
+        children: [ {
+          path: 'accountAdd',
+          component: () => import('@/modules/account/accountAdd'),
+          name: 'accountAdd',
+          meta: { title: '添加账户',  icon: 'user', noCache: true },
+        },
+          {
+            path: 'accountDisplay',
+            component: () => import('@/modules/account/accountDisplay'),
+            name: 'accountDisplay',
+            meta: { title: '账户预览', icon: 'user',  noCache: true },
+          }]
+      }
+
+
+
+    ]
+  },
 ]
 
 /**

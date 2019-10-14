@@ -3,7 +3,7 @@ import store from './store'
 import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
+import { getToken, getMyToken , getCookiUser} from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
@@ -18,26 +18,51 @@ router.beforeEach(async(to, from, next) => {
   document.title = getPageTitle(to.meta.title)
 
   // determine whether the user has logged in
-  const hasToken = getToken()
+  // const hasToken = getToken()
+  let hasToken = getMyToken()
+console.log("hasToken=", hasToken)
 
-  if (hasToken) {
+  if (hasToken == "undefined" )
+  {
+    hasToken = false
+  }
+
+  if (hasToken)
+  {
+    console.log("test hasToken")
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
-      next({ path: '/' })
+      // next({ path: '/' })
+      next()
       NProgress.done()
     } else {
       // determine whether the user has obtained his permission roles through getInfo
+      // console.log("getters role=", store.getters.roles)
+      // console.log("getters role.length=", store.getters.roles.length)
       const hasRoles = store.getters.roles && store.getters.roles.length > 0
+
+      // console.log("hasRoles=", hasRoles)
       if (hasRoles) {
+        // console.log("test 1")
         next()
       } else {
         try {
           // get user info
           // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
-          const { roles } = await store.dispatch('user/getInfo')
+          // const { roles } = await store.dispatch('user/getInfo')
+          // console.log("test 2")
+
+          const cooki = JSON.parse(getCookiUser())
+          // console.log("permission getCookiUser = ", cooki)
+          // console.log("permission cooki.userName = ", cooki["userName"])
 
           // generate accessible routes map based on roles
-          const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
+          store.commit('user/SET_NAME', cooki["userName"])
+          store.commit('user/SET_ROLES', cooki["role"])
+
+          // console.log("permission name = ", store.getters.name)
+          // console.log("permission roles = ", store.getters.roles)
+          const accessRoutes = await store.dispatch('permission/generateRoutes', ["admin",])
 
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)
@@ -54,8 +79,9 @@ router.beforeEach(async(to, from, next) => {
         }
       }
     }
-  } else {
-    /* has no token*/
+  }
+  else {
+
 
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
