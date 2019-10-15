@@ -63,12 +63,12 @@
           </el-col>
           <el-col :span="2">
             <div style="display: flex;justify-content: flex-end">
-              <el-button type="primary" @click="updateTaskStatus" size="mini">{{task_status_dict.get(task_status)}}</el-button>
+              <el-button :type="this.task_status_show_dict.get(task_status)" @click="updateTaskStatus" size="mini">{{task_status_dict.get(task_status)}}</el-button>
             </div>
           </el-col>
           <el-col :span="4">
             <div style="display: flex;justify-content: flex-end">
-              <span style="font-size: 16px;color: #333333;">100/20</span>
+              <span style="font-size: 16px;color: #333333;">{{this.phoneNumber}}/{{this.evidenceNumber}}</span>
             </div>
           </el-col>
         </el-row>
@@ -156,7 +156,7 @@
           </el-col>
           <el-col :span="6">
             <span style="font-size: 16px;color: #666666;">取证状态：&nbsp</span>
-            <el-tag type="danger">取证中</el-tag>
+            <el-tag type="danger">{{phone_status_dict.get(item.phone_status)}}</el-tag>
           </el-col>
         </el-row>
       </el-tab-pane>
@@ -187,25 +187,25 @@
         </el-table-column>
         <el-table-column  width="60px" align="left">
           <template slot-scope="scope">
-            <svg-icon v-if="scope.row.appName === '微信'" icon-class="wechat" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.appName === '支付宝'" icon-class="alipay" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.appName === '京东'" icon-class="jingdong" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.appName === 'Taobao'" icon-class="taobao" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.appName === '美团'" icon-class="meituan" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.appName === '拼多多'" icon-class="pinduoduo" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.appName === '百度贴吧'" icon-class="baidutieba" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-if="scope.row.app_name === '微信'" icon-class="wechat" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-else-if="scope.row.app_name === '支付宝'" icon-class="alipay" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-else-if="scope.row.app_name === '京东'" icon-class="jingdong" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-else-if="scope.row.app_name === 'Taobao'" icon-class="Taobao" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-else-if="scope.row.app_name === '美团'" icon-class="meituan" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-else-if="scope.row.app_name === '拼多多'" icon-class="pinduoduo" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-else-if="scope.row.app_name === '百度贴吧'" icon-class="baidutieba" style="width: 40px;height: 40px"></svg-icon>
           </template>
         </el-table-column>
         <el-table-column  width="200px" align="left">
           <template slot-scope="scope">
-            <span style="font-size: 14px;color: #666666; font-weight: bold;">{{ app_list.get(scope.row.appName) }}</span>
+            <span style="font-size: 14px;color: #666666; font-weight: bold;">{{ app_list.get(scope.row.app_name) }}</span>
           </template>
         </el-table-column>
 
         <el-table-column width="200px" align="left" >
           <template slot-scope="scope">
-            <span :class="app_show_dict.get(scope.row.appStatus)"></span>
-            <span style="font-size: 14px;color: #666666;">{{app_status_dict.get(scope.row.appStatus)}}</span>
+            <span :class="app_show_dict.get(scope.row.app_status)"></span>
+            <span style="font-size: 14px;color: #666666;">{{app_status_dict.get(scope.row.app_status)}}</span>
           </template>
         </el-table-column>
         <el-table-column width="300px" align="left" >
@@ -287,6 +287,8 @@ export default {
       task_id: '',
       case_id: '',
       task_info: '',
+      phoneNumber: 0,
+      evidenceNumber: 0,
       task_status: '',
       message_scoll:{
           phone:'',
@@ -294,9 +296,11 @@ export default {
           app_status: '',
           phone_status: '',
           timestr: '',
-        },
+       },
+      phone_status_dict: new Map([["", "未开始"], ["1", "取证中"], ["2", "取证中"],["3", "取证中"],["4", "取证中"],["5", "取证中"],["6", "取证中"], ["7", "已完成"]]),
       app_list: new Map([["Taobao", "淘宝"], ["running", "运行中"], ["complete", "已完成"],["canceled",'已取消']]),
       task_status_dict: new Map([["ready", "准备中"], ["running", "运行中"], ["complete", "已完成"],["canceled",'已取消']]),
+      task_status_show_dict: new Map([["ready", 'primary'], ["running", "danger"], ["complete", 'success'], ["failed", 'warning'], ["canceled", 'info']]),
       app_status_dict: new Map([["1", "下发取证任务"], ["2", "APP登录中"], ["3", "处理验证码"], ["4", "登录成功"], ["5", "登录失败"], ["6", "开始取证"], ["7", "取证完成"]]),
       app_show_dict: new Map([["1", "status-primary"], ["2", "status-primary"], ["3", "status-warning"], ["4", "status-success"], ["5", "status-danger"], ["6", "status-warning"], ["7", "status-success"]]),
       dialogPropTask: {
@@ -391,6 +395,8 @@ export default {
         // this.$store.commit('forensic/getTreeCaseInfo','')
         // this.$store.commit('forensic/getTreeTaskInfo',this.task_id)
         let task_show_dict= new Map([["ready",'准备中'],["running",'运行中'],["complete",'已完成'],["failed",'失败'],["canceled",'已取消']]);
+        this.phoneNumber = 0;
+        this.evidenceNumber = 0;
         if(this.caseInfo !== undefined) {
             this.case_name = this.caseInfo.case_name
             for (var j = 0; j < this.caseInfo.task_list.length; j++) {
@@ -405,6 +411,21 @@ export default {
                     this.activeName = this.bondsAllList[0].phone
                     console.log('activeName :' + this.activeName)
                     this.tableDataName = ''
+                    for (let index in this.task_info.evidence_content)
+                    {
+                        if( this.task_info.evidence_content[index].phone_status === "7")
+                        {
+                            this.phoneNumber++;
+                        }
+                        for (let subIndex in this.task_info.evidence_content[index].app_list)
+                        {
+                            console.log('----------------appStatus :' + this.task_info.evidence_content[index].app_list[subIndex].appStatus)
+                            if( this.task_info.evidence_content[index].app_list[subIndex].appStatus === "7")
+                            {
+                                this.evidenceNumber++;
+                            }
+                        }
+                    }
                     this.getCreateTable()
                 }
             }
