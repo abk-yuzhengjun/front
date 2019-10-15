@@ -29,7 +29,7 @@
             <svg-icon v-else-if="data.label==='Pinduoduo'" icon-class="pinduoduo" />
             <svg-icon v-else-if="data.label==='Meituan'" icon-class="meituan" />
             <svg-icon v-else-if="data.label==='Baidutieba'" icon-class="baidutieba" />
-            <svg-icon v-else-if="data.label==='Taobao'" icon-class="taobao" />
+            <svg-icon v-else-if="data.label==='Taobao'" icon-class="Taobao" />
             <svg-icon v-else icon-class="app" />
           </template>
           <span style="font-size: 14px;padding-left: 4px" v-if="data.node_ind==='app'">{{ app_name_dict.get(node.label) }}</span>
