@@ -22,15 +22,8 @@
           <i v-else-if="data.node_ind==='phone'" class="el-icon-phone"></i>
           <!--          <i v-else-if="data.node_ind==='app'" class="el-icon-folder"></i>-->
           <template v-else-if="data.node_ind==='app'">
-            <svg-icon v-if="data.label==='微信'" icon-class="wechat" />
-            <svg-icon v-else-if="data.label==='Sinaweibo'" icon-class="weibo" />
-            <svg-icon v-else-if="data.label==='支付宝'" icon-class="alipay" />
-            <svg-icon v-else-if="data.label==='京东'" icon-class="jingdong" />
-            <svg-icon v-else-if="data.label==='Pinduoduo'" icon-class="pinduoduo" />
-            <svg-icon v-else-if="data.label==='Meituan'" icon-class="meituan" />
-            <svg-icon v-else-if="data.label==='Baidutieba'" icon-class="baidutieba" />
-            <svg-icon v-else-if="data.label==='Taobao'" icon-class="Taobao" />
-            <svg-icon v-else icon-class="app" />
+            <svg-icon :icon-class=data.label />
+
           </template>
           <span style="font-size: 14px;padding-left: 4px" v-if="data.node_ind==='app'">{{ app_name_dict.get(node.label) }}</span>
           <span style="font-size: 14px;padding-left: 4px" v-else>{{ node.label }}</span>

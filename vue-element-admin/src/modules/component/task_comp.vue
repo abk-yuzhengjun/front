@@ -112,7 +112,7 @@
                 devTest:{
                     label:{devlist:[]}
                 },
-                app_list:[],
+
                 // devlist:[],
                 pluginControl: {
                     task_name: '',
@@ -192,6 +192,50 @@
                     )
                 }
             },
+            nameTranslate(name){
+                if(name === '淘宝'){
+                    return 'Taobao'
+                }
+                if(name === '同程旅游'){
+                    return 'Tongchenglvyou'
+                }
+                if(name === '百度贴吧'){
+                    return 'Baidutieba'
+                }
+                if(name === '菜鸟裹裹'){
+                    return 'Cainiaoguoguo'
+                }
+                if(name === '哈啰出行'){
+                    return 'Haluochuxing'
+                }
+                if(name === '美团'){
+                    return 'Meituan'
+                }
+                if(name === '美团外卖'){
+                    return 'Meituanwaimai'
+                }
+                if(name === '芒果电单车'){
+                    return 'Mango'
+                }
+                if(name === '摩拜单车'){
+                    return 'Mobike'
+                }
+                if(name === '新浪微博'){
+                    return 'Sinaweibo'
+                }
+                if(name === '携程旅行'){
+                    return 'Xiechenglvxing'
+                }
+                if(name === '去哪儿'){
+                    return 'Qunaer'
+                }
+                if(name === '拼多多'){
+                    return 'Pinduoduo'
+                }
+
+
+
+            },
             onSubmit() {
 
                 this.$confirm('确认提交此任务？', '提示', {
@@ -213,11 +257,20 @@
                 });
             },
             get_app_list(){
+                // var date = new Date();
+                // var nowTime = date.getUTCFullYear()+'-'+date.getUTCMonth()+'-'+date.getUTCDay()+
+                //     'T'+date.getUTCHours()+':'+date.getUTCMinutes()+':'+date.getUTCSeconds()+'.000:00';
+
                 for(var i = 0;i <this.form.task_info.evidence_content.length;i++){
+
+                    // this.form.task_info.evidence_content[i].update_ts = nowTime;
+
                     for(var j = 0;j < this.form.task_info.evidence_content[i].app_list.length;j++){
-                        var obj = {'app_name':'', 'app_status':'ready','update_ts':''}
-                        obj['app_name'] = this.form.task_info.evidence_content[i].app_list[j]
+
+                        var obj = {'app_name':'', 'app_status':'ready','update_ts':''};
+                        obj['app_name'] = this.nameTranslate(this.form.task_info.evidence_content[i].app_list[j]);
                         this.form.task_info.evidence_content[i].app_list[j] =obj
+
                     }
                 }
             },

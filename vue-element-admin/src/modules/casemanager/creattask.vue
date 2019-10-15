@@ -40,7 +40,7 @@ export default {
                     {
                         phone:'',
                         imsi: '',
-                        start_ts:'',
+                        update_ts:'',
                         app_list: [
 
                            ],
