@@ -63,7 +63,7 @@
           </el-col>
           <el-col :span="2">
             <div style="display: flex;justify-content: flex-end">
-              <el-tag type="danger">取号中</el-tag>
+              <el-tag type="danger">{{task_status_dict.get(taskInfo.task_status)}}</el-tag>
             </div>
           </el-col>
           <el-col :span="4">
@@ -79,13 +79,13 @@
           <el-col :span="6">
             <div style="display: flex;flex-direction:row">
               <span style="font-size: 14px;color: #666666;">取号范围:&nbsp </span>
-              <span style="font-size: 14px;color: #333333;">黑名单</span>
+              <span style="font-size: 14px;color: #333333;">{{this.capture_mode_dict.get(taskInfo.number_content.capture_mode)}}</span>
             </div>
           </el-col>
           <el-col :span="6">
             <div style="display: flex;flex-direction:row">
               <span style="font-size: 14px;color: #666666;">取号方式:&nbsp </span>
-              <span style="font-size: 14px;color: #333333;">空口</span>
+              <span style="font-size: 14px;color: #333333;">{{this.capture_type_dict.get(taskInfo.number_content.capture_type)}}</span>
             </div>
           </el-col>
         </el-row>
@@ -119,13 +119,13 @@
           <el-col :span="24" style="padding-bottom: 10px;padding-top: 6px">
             <div style="display: flex;">
               <span class="status-success"></span>
-              <span style="font-size: 16px;color: #333333;">&nbspimsi:460000000000 上号 时间：2019-9-18 16:27:55</span>
+              <span style="font-size: 16px;color: #333333;" v-if="this.message_scoll1.imsi!==''">&nbspimsi:&nbsp&nbsp{{this.message_scoll1.imsi}}&nbsp&nbsp&nbsp&nbsp {{this.imsi_status_dict.get(this.message_scoll1.imsi_status)}} &nbsp&nbsp&nbsp&nbsp时间：{{this.message_scoll1.timestr}}</span>
             </div>
           </el-col>
           <el-col :span="24">
             <div style="display: flex;">
               <span class="status-success"></span>
-              <span style="font-size: 16px;color: #333333;">&nbspimsi:460000000001 上号 时间：2019-9-18 16:27:55</span>
+              <span style="font-size: 16px;color: #333333;" v-if="this.message_scoll2.imsi!==''">&nbspimsi:&nbsp&nbsp{{this.message_scoll2.imsi}}&nbsp&nbsp&nbsp&nbsp {{this.imsi_status_dict.get(this.message_scoll2.imsi_status)}} &nbsp&nbsp&nbsp&nbsp时间：{{this.message_scoll2.timestr}}</span>
             </div>
           </el-col>
         </el-row>
@@ -228,6 +228,24 @@ export default {
       case_name: '',
       task_id: '',
       case_id: '',
+      capture_type_dict: new Map([[1, "网络优先"], [2, "仅空口"]]),
+      capture_mode_dict: new Map([[1, "全部"], [2, "黑名单"]]),
+      task_status_dict: new Map([["ready", "准备中"], ["running", "取号中"], ["complete", "已完成"], ["failed", "已失败"], ["canceled", "已取消"]]),
+      message_scoll1:{
+            imsi:'',
+            imsi_status:'',
+            timestr:'',
+            phone:'',
+            flag: 0,
+        },
+      message_scoll2:{
+            imsi:'',
+            imsi_status:'',
+            timestr:'',
+            phone:'',
+            flag: 0,
+        },
+      imsi_status_dict:new Map([["1", "下发取证任务"], ["2", "APP登录中"], ["3", "处理验证码"], ["4", "登录成功"], ["5", "登录失败"], ["6", "开始取证"], ["7", "取证完成"]]),
       dialogPropTask: {
             type: 0,
             dev_list: [],
@@ -275,6 +293,50 @@ export default {
   },
     computed: {
         ...mapGetters({ caseInfo:'caseInfo',taskInfo:'taskInfo'}),
+    },
+    sockets: {
+        webPhoneUpdate: function (data) {
+            console.log('web-phone-update')
+            console.log(data)
+            if(data['msg']['task_id'] !== this.task_id)
+            {
+                return
+            }
+            if(this.message_scoll1.flag === 0)
+            {
+                this.message_scoll1.imsi = data['msg']['imsi']
+                this.message_scoll1.imsi_status = data['msg']['imsi_status']
+                this.message_scoll1.phone = data['msg']['phone']
+                this.message_scoll1.timestr = data['head']['timestamp']
+                this.message_scoll1.flag = 1
+                console.log(1)
+                console.log(this.message_scoll1)
+            }
+            else if(this.message_scoll2.flag === 0)
+            {
+                this.message_scoll2.imsi = data['msg']['imsi']
+                this.message_scoll2.imsi_status = data['msg']['imsi_status']
+                this.message_scoll2.phone = data['msg']['phone']
+                this.message_scoll2.timestr = data['head']['timestamp']
+                this.message_scoll2.flag = 1
+                console.log(2)
+                console.log(this.message_scoll2)
+            }
+            else
+            {
+                this.message_scoll1.imsi = this.message_scoll2.imsi;
+                this.message_scoll1.imsi_status = this.message_scoll2.imsi_status;
+                this.message_scoll1.phone = this.message_scoll2.phone;
+                this.message_scoll1.timestr = this.message_scoll2.timestr;
+                this.message_scoll2.imsi = data['msg']['imsi']
+                this.message_scoll2.imsi_status = data['msg']['imsi_status']
+                this.message_scoll2.phone = data['msg']['phone']
+                this.message_scoll2.timestr = data['head']['timestamp']
+                console.log(3)
+                console.log(this.message_scoll2)
+            }
+
+        },
     },
   methods: {
       closeTaskDialog() {
@@ -336,6 +398,7 @@ export default {
           console.log('task dialog')
       },
     getMessage() {
+          return
       const path = 'http://localhost:5000/forensic/phoneInformation'
       axios.get(path)
         .then((res) => {
@@ -348,6 +411,7 @@ export default {
         })
     },
       getMessageByPost() {
+          return
           const path = 'http://localhost:5000/forensic/phoneInformation'
           const list = {
               task_id:"10001"

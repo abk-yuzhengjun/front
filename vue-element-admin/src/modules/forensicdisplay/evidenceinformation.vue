@@ -91,10 +91,25 @@
           <el-col style="width: 30px;">
             &nbsp
           </el-col>
-          <el-col :span="20">
+          <el-col :span="2">
             <div style="display: flex;flex-direction:row">
               <span class="status-success"></span>
-              <span style="font-size: 16px;color: #333333;">&nbsp&nbsp任务动态: 156****4358 上号成功 时间：2019-9-20 10:18:49 </span>
+              <span style="font-size: 16px;color: #333333;">&nbsp&nbsp任务动态:</span>
+            </div>
+          </el-col>
+          <el-col :span="2">
+            <div style="display: flex;flex-direction:row">
+              <span style="font-size: 16px;color: #333333;">{{this.message_scoll.phone}}</span>
+            </div>
+          </el-col>
+          <el-col :span="2">
+            <div style="display: flex;flex-direction:row">
+              <span style="font-size: 16px;color: #333333;">{{this.app_status_dict.get(this.message_scoll.phone_status)}}</span>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div style="display: flex;flex-direction:row">
+              <span style="font-size: 16px;color: #333333;">{{this.message_scoll.timestr}}</span>
             </div>
           </el-col>
         </el-row>
@@ -147,11 +162,11 @@
       </el-tab-pane>
     </el-tabs>
       </el-col>
-<!--      <el-col :span="4" style="padding: 10px 10px 0px 10px;">-->
-<!--        <div style="display: flex;flex-direction:row">-->
-<!--          <el-input v-model="tableDataName" align="right" placeholder="请输入手机号" suffix-icon="el-icon-search" style="width:360px" @input="doFilter" />-->
-<!--        </div>-->
-<!--      </el-col>-->
+      <el-col :span="4" style="padding: 10px 10px 0px 10px;">
+        <div style="display: flex;flex-direction:row">
+          <el-input v-model="tableDataName" align="right" placeholder="请输入手机号" suffix-icon="el-icon-search" style="width:360px" @input="doFilter" />
+        </div>
+      </el-col>
     </el-row>
 
 <!--    <el-divider></el-divider>-->
@@ -172,25 +187,25 @@
         </el-table-column>
         <el-table-column  width="60px" align="left">
           <template slot-scope="scope">
-            <svg-icon v-if="scope.row.app === '微信'" icon-class="wechat" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.app === '支付宝'" icon-class="alipay" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.app === '京东'" icon-class="jingdong" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.app === '淘宝'" icon-class="taobao" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.app === '美团'" icon-class="meituan" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.app === '拼多多'" icon-class="pinduoduo" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.app === '百度贴吧'" icon-class="baidutieba" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-if="scope.row.appName === '微信'" icon-class="wechat" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-else-if="scope.row.appName === '支付宝'" icon-class="alipay" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-else-if="scope.row.appName === '京东'" icon-class="jingdong" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-else-if="scope.row.appName === 'Taobao'" icon-class="taobao" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-else-if="scope.row.appName === '美团'" icon-class="meituan" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-else-if="scope.row.appName === '拼多多'" icon-class="pinduoduo" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon v-else-if="scope.row.appName === '百度贴吧'" icon-class="baidutieba" style="width: 40px;height: 40px"></svg-icon>
           </template>
         </el-table-column>
         <el-table-column  width="200px" align="left">
           <template slot-scope="scope">
-            <span style="font-size: 14px;color: #666666; font-weight: bold;">{{ scope.row.app }}</span>
+            <span style="font-size: 14px;color: #666666; font-weight: bold;">{{ app_list.get(scope.row.appName) }}</span>
           </template>
         </el-table-column>
 
         <el-table-column width="200px" align="left" >
           <template slot-scope="scope">
-            <span :class="app_show_dict.get(scope.row.app_status)"></span>
-            <span style="font-size: 14px;color: #666666;">{{app_status_dict.get(scope.row.app_status)}}</span>
+            <span :class="app_show_dict.get(scope.row.appStatus)"></span>
+            <span style="font-size: 14px;color: #666666;">{{app_status_dict.get(scope.row.appStatus)}}</span>
           </template>
         </el-table-column>
         <el-table-column width="300px" align="left" >
@@ -273,6 +288,14 @@ export default {
       case_id: '',
       task_info: '',
       task_status: '',
+      message_scoll:{
+          phone:'',
+          app:'',
+          app_status: '',
+          phone_status: '',
+          timestr: '',
+        },
+      app_list: new Map([["Taobao", "淘宝"], ["running", "运行中"], ["complete", "已完成"],["canceled",'已取消']]),
       task_status_dict: new Map([["ready", "准备中"], ["running", "运行中"], ["complete", "已完成"],["canceled",'已取消']]),
       app_status_dict: new Map([["1", "下发取证任务"], ["2", "APP登录中"], ["3", "处理验证码"], ["4", "登录成功"], ["5", "登录失败"], ["6", "开始取证"], ["7", "取证完成"]]),
       app_show_dict: new Map([["1", "status-primary"], ["2", "status-primary"], ["3", "status-warning"], ["4", "status-success"], ["5", "status-danger"], ["6", "status-warning"], ["7", "status-success"]]),
@@ -323,6 +346,22 @@ export default {
   },
     computed: {
         ...mapGetters({ caseInfo:'caseInfo',taskInfo:'taskInfo'}),
+    },
+    sockets: {
+        webEvidenceUpdate: function (data) {
+            console.log('web-evidence-update')
+            console.log(data)
+            if(data['msg']['task_id'] !== this.task_id)
+            {
+                return
+            }
+            this.message_scoll.phone = data['msg']['phone']
+            this.message_scoll.app = data['msg']['app']
+            this.message_scoll.app_status = data['msg']['app_status']
+            this.message_scoll.phone_status = data['msg']['phone_status']
+            this.message_scoll.timestr = data['head']['timestamp']
+            console.log(this.message_scoll)
+        },
     },
   methods: {
       closeTaskDialog() {

@@ -300,8 +300,13 @@
             ...mapGetters({ caseInfo:'caseInfo'}),
         },
         sockets: {
-            recv: function (data) {
-                console.log('socket recv')
+            webChangeTaskStatusAck: function (data) {
+                console.log('web-change-task-status-ack')
+                console.log(data)
+                this.$store.state.forensic.case_info = data
+            },
+            my_message: function (data) {
+                console.log('my_message')
                 console.log(data)
             },
         },
@@ -502,7 +507,7 @@
                 {
                     return
                 }
-                this.$socket.emit('start', {'param':'test socket io'});
+                this.isloading[index] = true
                     this.$confirm('确认' + taskStatus + '?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
@@ -512,6 +517,7 @@
                             this.handelTaskStatus(index, row)
                         })
                         .catch(() => {
+
                             // this.$message({
                             //     type: 'info',
                             //     message: '已取消!'
@@ -520,7 +526,7 @@
             },
             handelTaskStatus(index, row) {
                 const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'
-                this.isloading[index] = true
+
                 // let taskStatus = 'ready'
                 // let status = new Map([[0, "ready"], [1, "running"], [2, "complete"], [3, "failed"], [4, "canceled"]])
                 // let taskStatus = status.get((indexStatus + 1 ) % 5)

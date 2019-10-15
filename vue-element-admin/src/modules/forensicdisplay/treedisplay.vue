@@ -23,22 +23,17 @@
           <!--          <i v-else-if="data.node_ind==='app'" class="el-icon-folder"></i>-->
           <template v-else-if="data.node_ind==='app'">
             <svg-icon v-if="data.label==='微信'" icon-class="wechat" />
-            <svg-icon v-else-if="data.label==='微博'" icon-class="weibo" />
+            <svg-icon v-else-if="data.label==='Sinaweibo'" icon-class="weibo" />
             <svg-icon v-else-if="data.label==='支付宝'" icon-class="alipay" />
             <svg-icon v-else-if="data.label==='京东'" icon-class="jingdong" />
-            <svg-icon v-else-if="data.label==='拼多多'" icon-class="pinduoduo" />
-            <svg-icon v-else-if="data.label==='美团'" icon-class="meituan" />
-            <svg-icon v-else-if="data.label==='百度贴吧'" icon-class="baidutieba" />
-            <svg-icon v-else-if="data.label==='淘宝'" icon-class="taobao" />
-             <svg-icon v-else icon-class="app" />
+            <svg-icon v-else-if="data.label==='Pinduoduo'" icon-class="pinduoduo" />
+            <svg-icon v-else-if="data.label==='Meituan'" icon-class="meituan" />
+            <svg-icon v-else-if="data.label==='Baidutieba'" icon-class="baidutieba" />
+            <svg-icon v-else-if="data.label==='Taobao'" icon-class="taobao" />
+            <svg-icon v-else icon-class="app" />
           </template>
-          <span style="font-size: 14px;padding-left: 4px">{{ node.label }}</span>
-<!--          <el-badge v-if="data.node_ind==='task_evidence'" :value="1" :max="99" class="item">-->
-<!--          </el-badge>-->
-<!--          <span>-->
-<!--            <el-tag v-if="data.id.toString().length === 4 && data.evidence === 1" type="danger" size="mini">取证</el-tag>-->
-<!--            <el-tag v-if="data.id.toString().length === 4 && data.evidence === 0" type="primary" size="mini">取号</el-tag>-->
-<!--          </span>-->
+          <span style="font-size: 14px;padding-left: 4px" v-if="data.node_ind==='app'">{{ app_name_dict.get(node.label) }}</span>
+          <span style="font-size: 14px;padding-left: 4px" v-else>{{ node.label }}</span>
         </span>
       </el-tree>
       </el-scrollbar>
@@ -69,6 +64,8 @@
                 lastTreeId : 0,
                 treeLabelData: [],
                 treeIdData: [],
+                app_name_dict: new Map([['Taobao','淘宝'],['Meituanwaimai','美团外卖'],['Pinduoduo','拼多多'],['Tongchenglvyou','同城旅游'],['Baidutieba','百度贴吧'],['Cainiaoguoguo','菜鸟裹裹'],
+                    ['Haluochuxing','哈罗出行'],['Meituan','美团'],['Mango','芒果电单车'],['Mobike','摩拜单车'],['Sinaweibo','新浪微博'],['Xiechenglvxing','携程旅行'],['Qunar','去哪儿']]),
                 defaultProps: {
                     children: 'children',
                     label: 'label'
@@ -313,10 +310,10 @@
                                     if (this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].hasOwnProperty('app_list')  && this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list.length >= 1) {
                                         const phone_length = this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list.length
                                         let temp_phone_length = this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list.length
-                                        if(this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list[phone_length - temp_phone_length].hasOwnProperty('app')) {
+                                        if(this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list[phone_length - temp_phone_length].hasOwnProperty('appName')) {
                                             while (temp_phone_length > 0) {
                                                 const obj_child_child_child = {
-                                                    label: this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list[phone_length - temp_phone_length].app,
+                                                    label: this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].evidence_content[evidence_length - temp_length].app_list[phone_length - temp_phone_length].appName,
                                                     id: treeId++,
                                                     node_ind: 'app',
                                                 }
