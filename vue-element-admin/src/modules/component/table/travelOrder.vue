@@ -31,7 +31,7 @@
 
 <script>
     export default {
-        name: "travelOrder",
+        name: "orderAttractionTicket",
         props: ["tvOrder"],
         data(){
             return {
@@ -41,7 +41,10 @@
                 "order_state":"",
                 "order_price":""
             }
-        }
+        },
+        created() {
+            console.log("tvOrder",this.tvOrder)
+        },
     }
 </script>
 

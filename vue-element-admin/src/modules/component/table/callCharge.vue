@@ -26,7 +26,7 @@
 
 <script>
     export default {
-        name: "callCharge",
+        name: "orderPhoneDeposit",
         props: ["charge"],
         data(){
             return{

@@ -16,7 +16,7 @@
 
 <script>
     export default {
-        name: "barAttInfo",
+        name: "attentionBarInfo",
         props: ["barInfo"],
         data(){
             return{

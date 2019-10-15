@@ -4,8 +4,10 @@
     <el-form style="width:100%;margin:20px">
       <el-row >
         <el-col >
-          <el-form-item  :label="form.app_name" class="label_app_name">
-
+          <svg-icon  :icon-class=postData.app_name
+                    style="width: 40px;height: 40px;margin-right: 16px ;margin-bottom:10px"/>
+          <el-form-item label="">
+            {{postData.app_name}}
           </el-form-item>
         </el-col>
         </el-row>
@@ -51,8 +53,10 @@
         </el-form-item>
       </el-col>
         <el-col :span="14">
-          <el-form-item label="任务详情:">
-            {{form.task_detail}}
+          <el-form-item label="最新消息:">
+            {{detail}}
+<!--            <svg-icon  icon-class="greenido"-->
+<!--                       style="width: 30px;height: 30px;"/>-->
           </el-form-item>
         </el-col>
         <el-col :span="2">
@@ -62,7 +66,7 @@
         </el-col>
         <el-col :span="2">
           <el-form-item label="">
-          56
+          {{this.cnt}}
           </el-form-item>
         </el-col>
       </el-row>
@@ -86,6 +90,8 @@ export default {
     components: {app_show},
     data() {
       return {
+          cnt:0,
+          detail:'取证进行中~！',
           postData:{
               task_id:'',
               phone:'',
@@ -93,40 +99,7 @@ export default {
           },
 
           form: {
-              // task_id:'5d1313121588852',
-              // phone:'13886835964',
-              // deleted:'0',
-              // app_name:'Taobao',
-              // imsi:'',
-              // creactor:'Mr.Hu',
-              // start_time:'2019-09-21 15:34:13',
-              // update_time:'2019-09-23 15:34:13',
-              // app_data:[
-              //     {
-              //         class:'goodsOrder',
-              //         version:'1.0',
-              //         data:[{
-              //             "order_number":"1",
-              //             "order_content":"2",
-              //             "goods_name":"3",
-              //             "goods_price":"4",
-              //             "delivery_address":"5",
-              //             "delivery_name":"6",
-              //             "delivery_phone":"7"
-              //         }]
-              //     },
-              //     {
-              //         class:'deliveryAdress',
-              //         version:'1.0',
-              //         data:[{
-              //             "delivery_address":"武汉",
-              //             "delivery_name":"胖虎",
-              //             "delivery_phone":"1312512123",
-              //             "delivery_post":"22222222",
-              //             "is_default":1
-              //         }]
-              //     }
-              // ],
+
           },
 
           activeName: 'second',
@@ -136,8 +109,27 @@ export default {
     },
     sockets: {
         appInfoUpdate(data) {                                 //监听appInfoUpdate事件，方法是后台定义和提供的
+            // console.log("postData:",this.postData.task_id,this.postData.app_name);
+             console.log("from:",this.form);
+            if (data.task_id === this.postData.task_id){
+                  for(var i= 0;i < this.form.app_data.length;i++){
+                      if(this.form.app_data[i].class === data.class){
+                          this.form.app_data[i].data.push(data.data)
+                          console.log("update app :",this.form);
+                          this.detail = '获取到新的'+ this.translate(data.class)+'信息';
+                          this.cnt += 1;
+                          this.message_tip(this.detail)
+                          return ;
+                      }
 
-            console.log("appinfo update data:",data);
+                }
+
+                // for(item in appInfo.app_data){
+                //     if (item.class ===data.class){
+                //
+                //     }
+                // }
+            }
 
         }
 
@@ -147,34 +139,64 @@ export default {
             console.log(tab, event);
 
         },
-        app_name_show(name){
-            if(name === 'Taobao') {
-                return '淘宝'
-            }
-            else if(name === 'Meituan'){
-                return '美团'
-            }
-            else if(name === 'Meituan'){
+        message_tip(message){
+            this.$notify({
+                title: '您有一条新的消息！',
+                message: message,
+                position: 'top-right'
+            });
+        },
+        calc_cnt(){
+            for(var i= 0;i < this.form.app_data.length;i++){
+                this.cnt += this.form.app_data[i].data.length;
 
             }
-            else if(name === 'Meituan'){
-
+            console.log("info cnt:",this.cnt)
+        },
+        translate(english) {
+            // console.log(english,idx);
+            if(english === 'orderNormalGoods') {
+                return '普通订单'
             }
-            else if(name === 'Meituan'){
-
+            else if(english === 'orderPhoneDeposit') {
+                return '话费充值'
             }
-            else if(name === 'Meituan'){
-
+            if(english === 'deliveryAddress') {
+                return '收货地址'
             }
-            else if(name === 'Meituan'){
-
+            if(english === 'orderHotel') {
+                return '酒店订单'
             }
-            else if(name === 'Meituan'){
-
+            if(english === 'orderTrafficTicket') {
+                return '购票订单'
             }
-
+            if(english === 'orderAttractionTicket') {
+                return '旅行订单'
+            }
+            if(english === 'userInfo') {
+                return '用户信息'
+            }
+            if(english === 'fansInfo') {
+                return '粉丝信息'
+            }
+            if(english === 'attentionInfo') {
+                return '关注信息'
+            }
+            if(english === 'attentionBarInfo') {
+                return '贴吧信息'
+            }
+            if(english === 'senderAddress') {
+                return '寄件人信息'
+            }
+            if(english === 'traveller') {
+                return '常用游客'
+            }
+            if(english === 'invoiceTitle') {
+                return '发票信息'
+            }
 
         },
+
         getAppInfo() {
             const host = 'http://localhost:5000'
             // console.log("query",this.$route.query)
@@ -183,12 +205,13 @@ export default {
             this.postData.app_name = this.$route.query.appName
 
 
-            // console.log("postData",this.postData)
+             console.log("app info Data",this.postData)
 
             axios.post(host + '/forensic/getAppInfo', this.postData)
                 .then(response=>{
                     this.form = response.data
-                        // console.log("get app info axios:",response)
+                    this.calc_cnt()
+                        console.log("get app info axios:",response)
                     }
                 )
                 .catch(function(error) {
@@ -204,6 +227,7 @@ export default {
     created(){
       // console.log("app information create")
         this.getAppInfo()
+
     }
 }
 </script>

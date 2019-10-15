@@ -40,7 +40,9 @@ export default {
                     {
                         phone:'',
                         imsi: '',
+                        start_ts:'',
                         app_list: [
+
                            ],
                     }
 
@@ -60,6 +62,13 @@ export default {
           this.form.app_list = this.$store.state.baseInfo.app_list
           this.form.oper_list = this.$store.state.baseInfo.oper_list
           this.form.case_list = this.$store.state.baseInfo.case_list
+
+          // for(var i = 0;i < this.$store.state.baseInfo.app_list.length;i++) {
+          //     var obj = {'app_name':'', 'app_status':'ready','update_ts':''}
+          //     obj['app_name'] = this.$store.state.baseInfo.app_list[i]
+          //     this.form.app_list[i] = obj
+          // }
+          console.log("creat task app_list",this.form.app_list)
       },
   },
     created() {

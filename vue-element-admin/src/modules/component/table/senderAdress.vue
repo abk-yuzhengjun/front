@@ -22,7 +22,7 @@
 
 <script>
     export default {
-        name: "senderAdress",
+        name: "senderAddress",
         props: ["sdAdress"],
         data(){
             return {

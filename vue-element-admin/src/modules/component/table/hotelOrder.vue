@@ -31,7 +31,7 @@
 
 <script>
     export default {
-        name: "hotelOrder",
+        name: "orderHotel",
         props: ["htOrder"],
         data(){
             return {
