@@ -1,5 +1,6 @@
 <template>
   <el-table
+    height="300"
     :data="goods.data" >
     <el-table-column
       prop="goods_name"

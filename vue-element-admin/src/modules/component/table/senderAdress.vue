@@ -1,5 +1,7 @@
 <template>
   <el-table
+    height="300"
+
     :data="sdAdress.data">
     <el-table-column
       prop="sender_name"

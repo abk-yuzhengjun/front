@@ -1,5 +1,7 @@
 <template>
   <el-table
+    height="300"
+
     :data="tvOrder.data">
     <el-table-column
       prop="attraction_ticket_name"

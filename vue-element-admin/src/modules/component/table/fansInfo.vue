@@ -1,5 +1,7 @@
 <template>
   <el-table
+    height="300"
+
     :data="fInfo.data">
     <el-table-column
       prop="fans_nickname"

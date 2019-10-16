@@ -3,13 +3,28 @@
   <div class ="task_info">
     <el-form style="width:100%;margin:20px">
       <el-row >
-        <el-col >
+        <el-col span="18">
+          <el-form-item label="">
           <svg-icon  :icon-class=postData.app_name
                     style="width: 40px;height: 40px;margin-right: 16px ;margin-bottom:10px"/>
-          <el-form-item label="">
-            {{postData.app_name}}
+          {{appNameTrans(postData.app_name)}}
           </el-form-item>
         </el-col>
+        <el-col :span="3">
+          <el-form-item  label="状态:">
+          </el-form-item>
+          <el-form-item label="">
+            正在取证
+          </el-form-item>
+        </el-col >
+        <el-col :span="3">
+          <el-form-item  label="数量:">
+
+          </el-form-item>
+          <el-form-item label="">
+            {{this.cnt}}
+          </el-form-item>
+        </el-col >
         </el-row>
 
         <el-row :gutter="1">
@@ -18,12 +33,11 @@
               {{form.creactor}}
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="14">
             <el-form-item  label="手机号码:" class="label_task_name">
               {{form.phone}}
             </el-form-item>
           </el-col >
-
         </el-row>
       <el-row>
         <el-col :span="6">
@@ -36,14 +50,7 @@
             {{form.task_id}}
           </el-form-item>
         </el-col >
-        <el-col :span="2">
-          <el-form-item  label="状态:">
-          </el-form-item>
-        </el-col >
-        <el-col :span="2">
-          <el-form-item  label="数量:">
-          </el-form-item>
-        </el-col >
+
         </el-row>
 
       <el-row>
@@ -53,22 +60,15 @@
         </el-form-item>
       </el-col>
         <el-col :span="14">
-          <el-form-item label="最新消息:">
-            {{detail}}
-<!--            <svg-icon  icon-class="greenido"-->
-<!--                       style="width: 30px;height: 30px;"/>-->
+          <el-form-item label="最新消息:" >
+            <div class="scroll-wrap">
+              <ul class="scroll-content" :style="{ top }">
+                <li v-for="item in scroll.detail">{{item}}</li >
+              </ul>
+            </div>
           </el-form-item>
         </el-col>
-        <el-col :span="2">
-          <el-form-item label="">
-            正在取证
-          </el-form-item>
-        </el-col>
-        <el-col :span="2">
-          <el-form-item label="">
-          {{this.cnt}}
-          </el-form-item>
-        </el-col>
+
       </el-row>
     </el-form>
 
@@ -88,10 +88,21 @@
 export default {
   name: 'appinformation',
     components: {app_show},
+    computed: {
+        top() {
+            return - this.scroll.activeIndex * 50 + 'px';
+        }
+    },
     data() {
       return {
           cnt:0,
-          detail:'取证进行中~！',
+          scroll:{
+              detail:[
+              ],
+              activeIndex: 0,
+              intnum:'',
+          },
+
           postData:{
               task_id:'',
               phone:'',
@@ -116,25 +127,30 @@ export default {
                       if(this.form.app_data[i].class === data.class){
                           this.form.app_data[i].data.push(data.data)
                           console.log("update app :",this.form);
-                          this.detail = '获取到新的'+ this.translate(data.class)+'信息';
+                          this.scroll.detail.push('获取到新的'+ this.translate(data.class)+'信息');
+
                           this.cnt += 1;
-                          this.message_tip(this.detail)
+                          // this.message_tip(this.detail)
                           return ;
                       }
 
                 }
 
-                // for(item in appInfo.app_data){
-                //     if (item.class ===data.class){
-                //
-                //     }
-                // }
             }
 
         }
 
     },
     methods: {
+        ScrollUp(){
+            setInterval(_ => {
+                if (this.scroll.activeIndex < this.scroll.detail.length) {
+                    this.scroll.activeIndex += 1;
+                } else {
+                    this.scroll.activeIndex = 0;
+                }
+            }, 3000);
+        },
         handleClick(tab, event) {
             console.log(tab, event);
 
@@ -153,12 +169,47 @@ export default {
             }
             console.log("info cnt:",this.cnt)
         },
+        appNameTrans(name){
+            if(name === 'Taobao'){
+                return '淘宝'
+            }
+            if(name === 'Meituanwaimai'){
+                return '美团外卖'
+            }
+            if(name === 'Pinduoduo'){
+                return '拼多多'
+            }
+            if(name === 'Tongchenglvyou'){
+                return '同程旅游'
+            }
+            if(name === 'Baidutieba'){
+                return '百度贴吧'
+            }
+            if(name === 'Cainiaoguoguo'){
+                return '菜鸟裹裹'
+            }
+            if(name === 'Meituan'){
+                return '美团'
+            }
+            if(name === 'Mango'){
+                return '芒果电单车'
+            }
+            if(name === 'Mobike'){
+                return '摩拜单车'
+            }
+            if(name === 'Xiechenglvxing'){
+                return '携程旅行'
+            }
+            if(name === 'Qunaer'){
+                return '去哪儿'
+            }
+        },
         translate(english) {
             // console.log(english,idx);
             if(english === 'orderNormalGoods') {
                 return '普通订单'
             }
-            else if(english === 'orderPhoneDeposit') {
+            if(english === 'orderPhoneDeposit') {
                 return '话费充值'
             }
             if(english === 'deliveryAddress') {
@@ -204,7 +255,6 @@ export default {
             this.postData.phone = this.$route.query.phone
             this.postData.app_name = this.$route.query.appName
 
-
              console.log("app info Data",this.postData)
 
             axios.post(host + '/forensic/getAppInfo', this.postData)
@@ -227,6 +277,7 @@ export default {
     created(){
       // console.log("app information create")
         this.getAppInfo()
+        this.ScrollUp()
 
     }
 }
@@ -265,6 +316,23 @@ export default {
   }
   .label_task_creat_time{
     width: 300px;
+
+  }
+  .scroll-wrap{
+
+    width: 200px;
+    height: 50px;
+    /*border: 1px solid blue;*/
+    overflow: hidden;
+
+  }
+  .scroll-content {
+    position: relative;
+    transition: top 0.5s;
+  }
+  li{
+    line-height: 50px;
+    text-align: center;
 
   }
 </style>

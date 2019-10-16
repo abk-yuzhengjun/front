@@ -1,5 +1,7 @@
 <template>
   <el-table
+    height="300"
+
     :data="dvAdress.data">
     <el-table-column
       prop="delivery_name"
