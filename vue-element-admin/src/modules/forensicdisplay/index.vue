@@ -63,12 +63,12 @@
           </el-col>
           <el-col :span="2">
             <div style="display: flex;justify-content: flex-end">
-              <el-tag type="danger">{{task_status_dict.get(taskInfo.task_status)}}</el-tag>
+              <el-button :type="this.task_status_show_dict.get(taskInfo.task_status)" @click="updateTaskStatus" size="mini">{{task_status_dict.get(taskInfo.task_status)}}</el-button>
             </div>
           </el-col>
           <el-col :span="4">
             <div style="display: flex;justify-content: flex-end">
-              <span style="font-size: 16px;color: #333333;">100/20</span>
+              <span style="font-size: 16px;color: #333333;">{{this.phoneNumber}}/{{this.capturePhoneNumber}}</span>
             </div>
           </el-col>
         </el-row>
@@ -108,24 +108,24 @@
     </div>
 
     <div style="width: 100%;display: flex;padding-bottom: 20px; background: #F3F4F7">
-      <div style="width: 100%; background: #FFFFFF;display: flex; padding: 20px 20px 10px 20px;flex-direction: column;">
+      <div style="width: 100%; background: #FFFFFF;display: flex; padding: 20px 20px 20px 20px;flex-direction: column;">
         <el-row>
           <el-col :span="24">
             <div style="display: flex;justify-content: space-between">
               <span style="font-size: 16px;color: #333333; font-weight: bold">任务动态&nbsp</span>
-              <el-button type="text">全部</el-button>
+              <el-button type="text" @click="jumpToPhoneDetails">全部</el-button>
             </div>
           </el-col>
           <el-col :span="24" style="padding-bottom: 10px;padding-top: 6px">
             <div style="display: flex;">
-              <span class="status-success"></span>
-              <span style="font-size: 16px;color: #333333;" v-if="this.message_scoll1.imsi!==''">&nbspimsi:&nbsp&nbsp{{this.message_scoll1.imsi}}&nbsp&nbsp&nbsp&nbsp {{this.imsi_status_dict.get(this.message_scoll1.imsi_status)}} &nbsp&nbsp&nbsp&nbsp时间：{{this.message_scoll1.timestr}}</span>
+              <span class="status-success"  v-if="this.message_scoll1.imsi!==''"></span>
+              <span style="font-size: 16px;color: #333333;" v-if="this.message_scoll1.imsi!==''">&nbspimsi:&nbsp&nbsp{{this.message_scoll1.imsi}}&nbsp&nbsp&nbsp&nbsp {{this.imsi_status_dict.get(this.message_scoll1.imsi_status)}} &nbsp&nbsp&nbsp&nbsp{{this.message_scoll1.timestr}}</span>
             </div>
           </el-col>
           <el-col :span="24">
             <div style="display: flex;">
-              <span class="status-success"></span>
-              <span style="font-size: 16px;color: #333333;" v-if="this.message_scoll2.imsi!==''">&nbspimsi:&nbsp&nbsp{{this.message_scoll2.imsi}}&nbsp&nbsp&nbsp&nbsp {{this.imsi_status_dict.get(this.message_scoll2.imsi_status)}} &nbsp&nbsp&nbsp&nbsp时间：{{this.message_scoll2.timestr}}</span>
+              <span class="status-success"  v-if="this.message_scoll2.imsi!==''"></span>
+              <span style="font-size: 16px;color: #333333;" v-if="this.message_scoll2.imsi!==''">&nbspimsi:&nbsp&nbsp{{this.message_scoll2.imsi}}&nbsp&nbsp&nbsp&nbsp {{this.imsi_status_dict.get(this.message_scoll2.imsi_status)}} &nbsp&nbsp&nbsp&nbsp{{this.message_scoll2.timestr}}</span>
             </div>
           </el-col>
         </el-row>
@@ -165,8 +165,8 @@
             <el-tag type="warning"v-else>鉴权中</el-tag>
           </template>
         </el-table-column>
-        <el-table-column property="create_time" label="开始时间" width="300px" align="left" />
-        <el-table-column property="create_time" label="上号时间" width="00px" align="left" />
+        <el-table-column property="phone_capture_ts" label="开始时间" width="300px" align="left" />
+        <el-table-column property="phone_capture_ts" label="上号时间" width="00px" align="left" />
         <el-table-column  label="耗时" width="100px" align="left" >
           <template slot-scope="scope">
             <span>5ms</span>
@@ -218,7 +218,6 @@ export default {
       tempList: [],
       emptyText: '',
       tableDataName: '',
-      src: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
       details: '',
       status: '',
       tableDataEnd: '',
@@ -228,9 +227,13 @@ export default {
       case_name: '',
       task_id: '',
       case_id: '',
+      phoneNumber: 0,
+      capturePhoneNumber: 0,
+
       capture_type_dict: new Map([[1, "网络优先"], [2, "仅空口"]]),
       capture_mode_dict: new Map([[1, "全部"], [2, "黑名单"]]),
       task_status_dict: new Map([["ready", "准备中"], ["running", "取号中"], ["complete", "已完成"], ["failed", "已失败"], ["canceled", "已取消"]]),
+      task_status_show_dict: new Map([["ready", 'primary'], ["running", "danger"], ["complete", 'success'], ["failed", 'warning'], ["canceled", 'info']]),
       message_scoll1:{
             imsi:'',
             imsi_status:'',
@@ -245,7 +248,12 @@ export default {
             phone:'',
             flag: 0,
         },
-      imsi_status_dict:new Map([["1", "下发取证任务"], ["2", "APP登录中"], ["3", "处理验证码"], ["4", "登录成功"], ["5", "登录失败"], ["6", "开始取证"], ["7", "取证完成"]]),
+      imsi_status_dict:new Map([["", "未开始"], ["1", "控制中心下发取号任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
+          ["51", "收到伪终端rand"],["52", "收到主动式sres"],["53", "伪终端鉴权成功"],["54", "伪终端鉴权失败"],
+          ["6", "伪终端发送取号短信成功"], ["7", "伪终端发送取号短信失败"],["8", "取号成功"]]),
+      imsi_status_show_dict:new Map([["", "未开始"], ["1", "控制中心下发取号任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
+            ["51", "收到伪终端rand"],["52", "收到主动式sres"],["53", "伪终端鉴权成功"],["54", "伪终端鉴权失败"],
+            ["6", "伪终端发送取号短信成功"], ["7", "伪终端发送取号短信失败"],["8", "取号成功"]]),
       dialogPropTask: {
             type: 0,
             dev_list: [],
@@ -302,6 +310,28 @@ export default {
             {
                 return
             }
+            var message_vuex = {
+                    task_id : '',
+                    imsi:'',
+                    imsi_status:'',
+                    timestr:'',
+                    phone:'',
+            }
+            message_vuex.task_id = data['msg']['task_id']
+            message_vuex.imsi = data['msg']['imsi']
+            message_vuex.imsi_status = data['msg']['imsi_status']
+            message_vuex.phone = data['msg']['phone']
+            message_vuex.timestr = data['head']['timestamp']
+            this.$store.commit('phoneDetails/getPhoneInfo',  message_vuex)
+            if(data['msg']['imsi_status'] !== '8')
+            {
+                this.notifyMessage('',data['msg']['imsi']+'\n'+this.imsi_status_dict.get(data['msg']['imsi_status'])+'<br/>'+data['head']['timestamp'])
+            }
+            else
+            {
+                this.notifyMessage('',data['msg']['imsi']+'\n'+this.imsi_status_dict.get(data['msg']['imsi_status'])+'<br/>'+data['msg']['phone']+'<br/>'+data['head']['timestamp'])
+            }
+
             if(this.message_scoll1.flag === 0)
             {
                 this.message_scoll1.imsi = data['msg']['imsi']
@@ -337,12 +367,26 @@ export default {
             }
 
         },
+        webPhoneUpdateData: function (data) {
+            this.bondsAllList = data;
+            this.tableDataName = '';
+            this.getCreateTable()
+        }
     },
   methods: {
       closeTaskDialog() {
           console.log('-------------Task----------------')
           this.dialogFormVisible = !this.dialogFormVisible
           this.getTreeMessage()
+      },
+      notifyMessage(status,data) {
+          this.$notify({
+              title: '取号任务',
+              message: data,
+              type: 'success',
+              duration: 0,
+              dangerouslyUseHTMLString: true
+          });
       },
       getTreeMessage() {
           const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
@@ -379,6 +423,61 @@ export default {
               }
           }
       },
+      updateTaskStatus() {
+          let taskStatus = ''
+          console.log(this.task_info.task_status)
+          if(this.task_info.task_status==='ready')
+          {
+              taskStatus = '开始'
+          }
+          else if(this.task_info.task_status === 'running')
+          {
+              taskStatus= '结束'
+          }
+          else
+          {
+              return;
+          }
+          this.$confirm('确认' + taskStatus + '?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+          })
+              .then(() => {
+                  console.log('start update status')
+                  this.handelTaskStatus(this.task_info.task_status)
+              })
+              .catch(() => {
+                  // this.$message({
+                  //     type: 'info',
+                  //     message: '已取消!'
+                  // })
+              })
+      },
+      handelTaskStatus(task_status) {
+          const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'
+          this.taskStatusLoading = true
+          console.log('start update loading status')
+          const param = {
+              user_id: this.$store.state.user.name,
+              case_id: this.case_id,
+              task_id: this.task_id,
+              task_status: task_status
+          }
+          console.log('param!');
+          console.log(param)
+          axios.post(path2, param)
+              .then((res) => {
+                  console.log(res.data)
+                  this.getTreeMessage()
+                  this.taskStatusLoading = false
+              })
+              .catch((error) => {
+                  alert(error)
+                  this.taskStatusLoading = false
+              })
+
+      },
       editTaskInfo() {
           this.dialogFormVisible = !this.dialogFormVisible
           this.dialogPropTask.type = 2
@@ -397,24 +496,10 @@ export default {
           console.log(this.dialogPropTask)
           console.log('task dialog')
       },
-    getMessage() {
-          return
-      const path = 'http://localhost:5000/forensic/phoneInformation'
-      axios.get(path)
-        .then((res) => {
-          this.bondsAllList = res.data
-          this.tableDataName = []
-          this.getCreateTable()
-        })
-        .catch((error) => {
-          alert(error)
-        })
-    },
       getMessageByPost() {
-          return
           const path = 'http://localhost:5000/forensic/phoneInformation'
           const list = {
-              task_id:"10001"
+              task_id:"2E2O6479EYA8226U"
           }
           axios.post(path,list)
               .then((res) => {
@@ -455,6 +540,14 @@ export default {
       }
     },
     getCreateTable() {
+        this.phoneNumber = 0
+        for (let index in this.bondsAllList)
+        {
+            if( this.bondsAllList[index].status === "finish")
+            {
+                this.phoneNumber++;
+            }
+        }
       this.total1 = this.bondsAllList.length
       this.flag = 0
       this.handleCurrentChange1(this.currentPage1)
@@ -500,7 +593,16 @@ export default {
         {
           name: 'casedisplay'
         })
-    }
+    },
+      jumpToPhoneDetails() {
+          this.$router.push(
+              {
+                  name: 'phoneDetailsShow',
+                  query:{
+                      task_id:this.task_id,
+                  }
+              })
+      }
   }
 }
 </script>

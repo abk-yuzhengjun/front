@@ -102,9 +102,10 @@
               <span style="font-size: 16px;color: #333333;">{{this.message_scoll.phone}}</span>
             </div>
           </el-col>
-          <el-col :span="2">
+          <el-col :span="5">
             <div style="display: flex;flex-direction:row">
-              <span style="font-size: 16px;color: #333333;">{{this.app_status_dict.get(this.message_scoll.phone_status)}}</span>
+              <span style="font-size: 16px;color: #333333;" v-if=" this.message_scoll.phone_status!== '8'">{{this.phone_status_show_dict.get(this.message_scoll.phone_status)}}</span>
+              <span style="font-size: 16px;color: #333333;" v-else-if=" this.message_scoll.phone_status === '8'">已上号&nbsp&nbsp&nbsp{{this.app_name_dict.get(this.message_scoll.app)}}&nbsp&nbsp&nbsp&nbsp{{this.app_status_dict.get(this.message_scoll.app_status)}}</span>
             </div>
           </el-col>
           <el-col :span="8">
@@ -164,7 +165,7 @@
       </el-col>
       <el-col :span="4" style="padding: 10px 10px 0px 10px;">
         <div style="display: flex;flex-direction:row">
-          <el-input v-model="tableDataName" align="right" placeholder="请输入手机号" suffix-icon="el-icon-search" style="width:360px" @input="doFilter" />
+          <el-input v-model="tableDataName" align="right" placeholder="请输入APP名" suffix-icon="el-icon-search" style="width:360px" @input="doFilter" />
         </div>
       </el-col>
     </el-row>
@@ -183,9 +184,9 @@
       >
         <el-table-column
           type="index"
-          width="50px">
+          min-width="5px">
         </el-table-column>
-        <el-table-column  width="60px" align="left">
+        <el-table-column  min-width="6px" align="left">
           <template slot-scope="scope">
             <svg-icon v-if="scope.row.app_name === '微信'" icon-class="wechat" style="width: 40px;height: 40px"></svg-icon>
             <svg-icon v-else-if="scope.row.app_name === '支付宝'" icon-class="alipay" style="width: 40px;height: 40px"></svg-icon>
@@ -196,29 +197,29 @@
             <svg-icon v-else-if="scope.row.app_name === '百度贴吧'" icon-class="baidutieba" style="width: 40px;height: 40px"></svg-icon>
           </template>
         </el-table-column>
-        <el-table-column  width="200px" align="left">
+        <el-table-column  min-width="20px" align="left">
           <template slot-scope="scope">
-            <span style="font-size: 14px;color: #666666; font-weight: bold;">{{ app_list.get(scope.row.app_name) }}</span>
+            <span style="font-size: 14px;color: #666666; font-weight: bold;">{{ app_name_dict.get(scope.row.app_name) }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column width="200px" align="left" >
+        <el-table-column min-width="20px" align="left" >
           <template slot-scope="scope">
             <span :class="app_show_dict.get(scope.row.app_status)"></span>
             <span style="font-size: 14px;color: #666666;">{{app_status_dict.get(scope.row.app_status)}}</span>
           </template>
         </el-table-column>
-        <el-table-column width="300px" align="left" >
+        <el-table-column min-width="30px" align="left" >
           <template slot-scope="scope">
             <span style="font-size: 14px;color: #666666;">获取订单信息</span>
           </template>
         </el-table-column>
-        <el-table-column width="300px" align="left" >
+        <el-table-column min-width="30px" align="left" >
           <template slot-scope="scope">
             <span style="font-size: 14px;color: #666666;">2019-9-23 15:11:30</span>
           </template>
         </el-table-column>
-        <el-table-column width="360px" align="center" >
+        <el-table-column min-width="36px" align="center" >
           <template slot-scope="scope">
             <el-button type="text">更多</el-button>
           </template>
@@ -297,10 +298,14 @@ export default {
           phone_status: '',
           timestr: '',
        },
-      phone_status_dict: new Map([["", "未开始"], ["1", "取证中"], ["2", "取证中"],["3", "取证中"],["4", "取证中"],["5", "取证中"],["6", "取证中"], ["7", "已完成"]]),
-      app_list: new Map([["Taobao", "淘宝"], ["running", "运行中"], ["complete", "已完成"],["canceled",'已取消']]),
+      phone_status_dict: new Map([["", "暂无信息"], ["1", "取证中"], ["2", "取证中"],["3", "取证中"],["4", "取证中"],["5", "取证中"],["6", "取证中"], ["7", "已完成"]]),
+      app_name_dict: new Map([['Taobao','淘宝'],['Meituanwaimai','美团外卖'],['Pinduoduo','拼多多'],['Tongchenglvyou','同城旅游'],['Baidutieba','百度贴吧'],['Cainiaoguoguo','菜鸟裹裹'],
+            ['Haluochuxing','哈罗出行'],['Meituan','美团'],['Mango','芒果电单车'],['Mobike','摩拜单车'],['Sinaweibo','新浪微博'],['Xiechenglvxing','携程旅行'],['Qunar','去哪儿']]),
       task_status_dict: new Map([["ready", "准备中"], ["running", "运行中"], ["complete", "已完成"],["canceled",'已取消']]),
       task_status_show_dict: new Map([["ready", 'primary'], ["running", "danger"], ["complete", 'success'], ["failed", 'warning'], ["canceled", 'info']]),
+      phone_status_show_dict: new Map([["", "未开始"], ["1", "控制中心下发取号任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
+          ["51", "收到伪终端rand"],["52", "收到主动式sres"],["53", "伪终端鉴权成功"],["54", "伪终端鉴权失败"],
+          ["6", "伪终端发送取号短信成功"], ["7", "伪终端发送取号短信失败"],["8", "取号成功"]]),
       app_status_dict: new Map([["1", "下发取证任务"], ["2", "APP登录中"], ["3", "处理验证码"], ["4", "登录成功"], ["5", "登录失败"], ["6", "开始取证"], ["7", "取证完成"]]),
       app_show_dict: new Map([["1", "status-primary"], ["2", "status-primary"], ["3", "status-warning"], ["4", "status-success"], ["5", "status-danger"], ["6", "status-warning"], ["7", "status-success"]]),
       dialogPropTask: {
@@ -364,7 +369,23 @@ export default {
             this.message_scoll.app_status = data['msg']['app_status']
             this.message_scoll.phone_status = data['msg']['phone_status']
             this.message_scoll.timestr = data['head']['timestamp']
+            if(this.message_scoll.phone_status !== '8')
+            {
+                this.notifyMessage('',this.message_scoll.phone+'\n'+this.phone_status_show_dict.get(this.message_scoll.phone_status)+'<br/>'+this.message_scoll.timestr)
+            }
+            else
+            {
+                this.notifyMessage('',this.message_scoll.phone+'\n'+this.phone_status_show_dict.get(this.message_scoll.phone_status)+'<br/>'+
+                    this.app_name_dict.get(this.message_scoll.app)+'\n'+ this.app_status_dict.get(this.message_scoll.app_status)+'<br/>'
+                    +this.message_scoll.timestr)
+            }
+
             console.log(this.message_scoll)
+        },
+        webEvidenceUpdateData: function (data) {
+            console.log('webEvidenceUpdateData')
+            console.log(data)
+            this.$store.commit('forensic/getCaseInfo', data)
         },
     },
   methods: {
@@ -387,6 +408,15 @@ export default {
               .catch((error) => {
                   alert(error)
               })
+      },
+      notifyMessage(status,data) {
+          this.$notify({
+              title: '取证任务',
+              message: data,
+              type: 'success',
+              duration: 0,
+              dangerouslyUseHTMLString: true
+          });
       },
     init() {
       this.getParams()
@@ -438,6 +468,7 @@ export default {
       },
       updateTaskStatus() {
           let taskStatus = ''
+          console.log(this.task_status)
           if(this.task_status==='ready')
           {
               taskStatus = '开始'
@@ -456,6 +487,7 @@ export default {
               type: 'warning'
           })
               .then(() => {
+                  console.log('start update status')
                   this.handelTaskStatus(this.task_status)
               })
               .catch(() => {
@@ -468,12 +500,14 @@ export default {
       handelTaskStatus(task_status) {
           const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'
           this.taskStatusLoading = true
+          console.log('start update loading status')
           const param = {
               user_id: this.$store.state.user.name,
               case_id: this.case_id,
-              task_id: row.task_id,
+              task_id: this.task_id,
               task_status: task_status
           }
+          console.log('param!');
           console.log(param)
           axios.post(path2, param)
               .then((res) => {
@@ -547,29 +581,29 @@ export default {
     },
     doFilter() {
       // eslint-disable-next-line eqeqeq
-      if (this.tableDataName === '') {
-        this.evdencePhoneList = this.bondsAllList
-        this.getCreateTable()
-        return
-      }
-      this.tableDataEnd = []
-      this.filterTableDataEnd = []
-      this.evdencePhoneList = []
-      this.bondsAllList.forEach((value, index) => {
-        if (value.phone) {
-          if (value.phone.indexOf(this.tableDataName) >= 0) {
-            this.filterTableDataEnd.push(value)
-              this.evdencePhoneList.push(value)
-          }
+        if (this.tableDataName === '') {
+            this.getCreateTable()
+            return
         }
-      })
-      this.currentPage1 = 1
-      this.tempList = []
-      this.activeName = this.evdencePhoneList[0].phone
-      this.getCreateTable()
-      // this.total1 = this.filterTableDataEnd.length
-      // this.currentChangePage(this.filterTableDataEnd, this.currentPage1)
-      // this.flag = 1
+        this.tableDataEnd = []
+        this.filterTableDataEnd = []
+        this.evidencePhoneInfo.app_list.forEach((value, index) => {
+            if (value.app_name) {
+                if (this.app_name_dict.get(value.app_name).indexOf(this.tableDataName) >= 0) {
+                    this.filterTableDataEnd.push(value)
+                }
+                // else if (value.imsi) {
+                //     if (value.imsi.indexOf(this.tableDataName) >= 0) {
+                //         this.filterTableDataEnd.push(value)
+                //     }
+                // }
+            }
+
+        })
+        this.currentPage1 = 1
+        this.total1 = this.filterTableDataEnd.length
+        this.currentChangePage(this.filterTableDataEnd, this.currentPage1)
+        this.flag = 1
     },
     openData() {
       this.tableDataName = []

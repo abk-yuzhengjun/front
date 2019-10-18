@@ -186,6 +186,14 @@ export const constantRoutes = [
             // meta: { title: '取号信息' }
           },
           {
+            path: 'phoneDetailsShow',
+            component: () => import('@/modules/forensicdisplay/phoneDetailsShow'),
+            name: 'phoneDetailsShow',
+            hidden: true,
+            breadcrumb: false,
+            // meta: { title: '取号动态信息展示' }
+          },
+          {
             path: 'appdisplay',
             component: () => import('@/modules/forensicdisplay/appdisplay'),
             name: 'appdisplay',
