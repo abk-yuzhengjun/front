@@ -1,5 +1,7 @@
 <template>
   <el-table
+    height="300"
+
     :data="charge.data">
     <el-table-column
       prop="order_number"

@@ -1,5 +1,7 @@
 <template>
   <el-table
+    height="300"
+
     :data="htOrder.data">
     <el-table-column
       prop="hotel_name"

@@ -1,5 +1,7 @@
 <template>
   <el-table
+    height="300"
+
     :data="usrInfo.data">
     <el-table-column
       prop="user_nickname"

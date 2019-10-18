@@ -1,5 +1,7 @@
 <template>
   <el-table
+    height="300"
+
     :data="barInfo.data">
     <el-table-column
       prop="bar_name"

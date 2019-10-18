@@ -1,5 +1,7 @@
 <template>
   <el-table
+    height="300"
+
     :data="travellerData.data">
     <el-table-column
       prop="name"

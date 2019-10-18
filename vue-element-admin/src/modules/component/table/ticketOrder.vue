@@ -1,5 +1,7 @@
 <template>
   <el-table
+    height="300"
+
     :data="tkOrder.data">
     <el-table-column
       prop="traffic_ticket_name"

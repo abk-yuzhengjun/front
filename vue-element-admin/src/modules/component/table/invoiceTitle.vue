@@ -1,5 +1,7 @@
 <template>
   <el-table
+    height="300"
+
     :data="invoiceData.data">
     <el-table-column
       prop="title"

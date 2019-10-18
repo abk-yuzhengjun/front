@@ -1,5 +1,7 @@
 <template>
   <el-table
+    height="300"
+
     :data="attInfo.data">
     <el-table-column
       prop="attention_nickname"
