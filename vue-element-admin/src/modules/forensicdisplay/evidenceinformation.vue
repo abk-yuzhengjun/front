@@ -104,7 +104,7 @@
           </el-col>
           <el-col :span="5">
             <div style="display: flex;flex-direction:row">
-              <span style="font-size: 16px;color: #333333;" v-if=" this.message_scoll.phone_status!== '8'">{{this.phone_status_show_dict.get(this.message_scoll.phone_status)}}</span>
+              <span style="font-size: 16px;color: #333333;" v-if=" this.message_scoll.phone_status!== '8'">{{this.phone_status_dict.get(this.message_scoll.phone_status)}}</span>
               <span style="font-size: 16px;color: #333333;" v-else-if=" this.message_scoll.phone_status === '8'">已上号&nbsp&nbsp&nbsp{{this.app_name_dict.get(this.message_scoll.app)}}&nbsp&nbsp&nbsp&nbsp{{this.app_status_dict.get(this.message_scoll.app_status)}}</span>
             </div>
           </el-col>
@@ -145,19 +145,20 @@
 <!--            <svg-icon icon-class="phone" style="width: 40px;height: 40px"></svg-icon>-->
           </el-col>
         </el-row>
-        <el-row style="padding: 20px" >
+        <el-row style="padding: 20px;height: 10px" >
           <el-col :span="6">
-            <span style="font-size: 16px;color: #666666;" >imsi:46000012345</span>
+            <span style="font-size: 16px;color: #666666;" >imsi:{{item.imsi}}</span>
           </el-col>
-          <el-col :span="6">
-            <span style="font-size: 16px;color: #666666;"> 上号时间：2019-9-20 16:30:04</span>
-          </el-col>
-          <el-col :span="6">
-            <span style="font-size: 16px;color: #666666;"> 取号时间：2019-9-20 10:18:49</span>
-          </el-col>
+
+<!--          <el-col :span="6">-->
+<!--            <span style="font-size: 16px;color: #666666;"> 取号时间：2019-9-20 10:18:49</span>-->
+<!--          </el-col>-->
           <el-col :span="6">
             <span style="font-size: 16px;color: #666666;">取证状态：&nbsp</span>
-            <el-tag type="danger">{{phone_status_dict.get(item.phone_status)}}</el-tag>
+            <el-tag :type="phone_status_show_dict.get(item.phone_status)">{{phone_status_dict.get(item.phone_status)}}</el-tag>
+          </el-col>
+          <el-col :span="10">
+            <span style="font-size: 16px;color: #666666;"> 更新状态时间：{{item.update_ts}}</span>
           </el-col>
         </el-row>
       </el-tab-pane>
@@ -188,13 +189,7 @@
         </el-table-column>
         <el-table-column  min-width="6px" align="left">
           <template slot-scope="scope">
-            <svg-icon v-if="scope.row.app_name === '微信'" icon-class="wechat" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.app_name === '支付宝'" icon-class="alipay" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.app_name === '京东'" icon-class="jingdong" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.app_name === 'Taobao'" icon-class="Taobao" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.app_name === '美团'" icon-class="meituan" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.app_name === '拼多多'" icon-class="pinduoduo" style="width: 40px;height: 40px"></svg-icon>
-            <svg-icon v-else-if="scope.row.app_name === '百度贴吧'" icon-class="baidutieba" style="width: 40px;height: 40px"></svg-icon>
+            <svg-icon :icon-class="scope.row.app_name" style="width: 40px;height: 40px"></svg-icon>
           </template>
         </el-table-column>
         <el-table-column  min-width="20px" align="left">
@@ -216,7 +211,7 @@
         </el-table-column>
         <el-table-column min-width="30px" align="left" >
           <template slot-scope="scope">
-            <span style="font-size: 14px;color: #666666;">2019-9-23 15:11:30</span>
+            <span style="font-size: 14px;color: #666666;">{{scope.row.update_ts}}</span>
           </template>
         </el-table-column>
         <el-table-column min-width="36px" align="center" >
@@ -269,6 +264,7 @@ export default {
       dialogFormVisible: 0,
       tempList: [],
       emptyText: '',
+      imsi: '',
       value1:true,
       activeName: '',
       currentPage1: 1,
@@ -298,16 +294,21 @@ export default {
           phone_status: '',
           timestr: '',
        },
-      phone_status_dict: new Map([["", "暂无信息"], ["1", "取证中"], ["2", "取证中"],["3", "取证中"],["4", "取证中"],["5", "取证中"],["6", "取证中"], ["7", "已完成"]]),
+      phone_status_dict: new Map([["", "暂无信息"], ["1", "控制中心下发取证任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["31", "2G主动式丢失目标"],
+          ["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
+          ["51", "收到伪终端rand"],["52", "收到主动式sres"],["53", "伪终端鉴权成功"],["54", "伪终端鉴权失败"]]),
+      phone_status_show_dict: new Map([["", "primary"], ["1", "primary"], ["2", "warning"],["3", "warning"],["31", "info"],
+            ["4", "primary"],["5", "primary"],
+            ["51", "primary"],["52", "primary"],["53", "success"],["54", "info"]]),
       app_name_dict: new Map([['Taobao','淘宝'],['Meituanwaimai','美团外卖'],['Pinduoduo','拼多多'],['Tongchenglvyou','同城旅游'],['Baidutieba','百度贴吧'],['Cainiaoguoguo','菜鸟裹裹'],
             ['Haluochuxing','哈罗出行'],['Meituan','美团'],['Mango','芒果电单车'],['Mobike','摩拜单车'],['Sinaweibo','新浪微博'],['Xiechenglvxing','携程旅行'],['Qunar','去哪儿']]),
       task_status_dict: new Map([["ready", "准备中"], ["running", "运行中"], ["complete", "已完成"],["canceled",'已取消']]),
       task_status_show_dict: new Map([["ready", 'primary'], ["running", "danger"], ["complete", 'success'], ["failed", 'warning'], ["canceled", 'info']]),
-      phone_status_show_dict: new Map([["", "未开始"], ["1", "控制中心下发取号任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
-          ["51", "收到伪终端rand"],["52", "收到主动式sres"],["53", "伪终端鉴权成功"],["54", "伪终端鉴权失败"],
-          ["6", "伪终端发送取号短信成功"], ["7", "伪终端发送取号短信失败"],["8", "取号成功"]]),
-      app_status_dict: new Map([["1", "下发取证任务"], ["2", "APP登录中"], ["3", "处理验证码"], ["4", "登录成功"], ["5", "登录失败"], ["6", "开始取证"], ["7", "取证完成"]]),
-      app_show_dict: new Map([["1", "status-primary"], ["2", "status-primary"], ["3", "status-warning"], ["4", "status-success"], ["5", "status-danger"], ["6", "status-warning"], ["7", "status-success"]]),
+
+      app_status_dict: new Map([["1", "控制中心给取证模块下发取证任务"], ["2", "取证模块点击验证码成功"], ["3", "取证模块点击验证码失败"], ["4", "伪终端收到验证码"],
+          ["5", "登录失败"], ["6", "登录失败"], ["7", "取证完成"],["8", "取证失败"]]),
+      app_show_dict: new Map([["1", "status-primary"], ["2", "status-success"], ["3", "status-info"], ["4", "status-warning"], ["5", "status-info"],
+          ["6", "status-info"], ["7", "status-success"], ["8", "status-info"]]),
       dialogPropTask: {
             type: 0,
             dev_list: [],
@@ -379,13 +380,17 @@ export default {
                     this.app_name_dict.get(this.message_scoll.app)+'\n'+ this.app_status_dict.get(this.message_scoll.app_status)+'<br/>'
                     +this.message_scoll.timestr)
             }
-
             console.log(this.message_scoll)
         },
         webEvidenceUpdateData: function (data) {
             console.log('webEvidenceUpdateData')
             console.log(data)
-            this.$store.commit('forensic/getCaseInfo', data)
+            this.$store.state.forensic.case_info = data
+        },
+        webChangeTaskStatusAck: function (data) {
+            console.log('web-change-task-status-ack 2')
+            console.log(data)
+            this.$store.state.forensic.case_info = data
         },
     },
   methods: {

@@ -159,17 +159,15 @@
         <el-table-column property="phone" label="手机号码" width="200px" align="left" />
         <el-table-column label="状态" width="200px" align="left" >
           <template slot-scope="scope">
-            <span class="status-success" v-if="scope.row.phone === '15671564368'"></span>
-            <span class="status-warning" v-else></span>
-            <el-tag type="primary" v-if="scope.row.phone === '15671564368'">取号成功</el-tag>
-            <el-tag type="warning"v-else>鉴权中</el-tag>
+            <span :class="imsi_status_show_dict.get(scope.row.status)"></span>
+            <el-tag :type="imsi_status_tag_show_dict.get(scope.row.status)">{{imsi_status_dict.get(scope.row.status)}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column property="phone_capture_ts" label="开始时间" width="300px" align="left" />
-        <el-table-column property="phone_capture_ts" label="上号时间" width="00px" align="left" />
+        <el-table-column property="imsi_capture_ts" label="上号时间" width="300px" align="left" />
+        <el-table-column property="phone_capture_ts" label="取号成功时间" width="300px" align="left" />
         <el-table-column  label="耗时" width="100px" align="left" >
           <template slot-scope="scope">
-            <span>5ms</span>
+            <span>{{calcSpendTime(scope.row.imsi_capture_ts,scope.row.phone_capture_ts)}}</span>
           </template>
         </el-table-column>
         <!--        <el-table-column label="操作" align="center" width="80">-->
@@ -251,9 +249,12 @@ export default {
       imsi_status_dict:new Map([["", "未开始"], ["1", "控制中心下发取号任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
           ["51", "收到伪终端rand"],["52", "收到主动式sres"],["53", "伪终端鉴权成功"],["54", "伪终端鉴权失败"],
           ["6", "伪终端发送取号短信成功"], ["7", "伪终端发送取号短信失败"],["8", "取号成功"]]),
-      imsi_status_show_dict:new Map([["", "未开始"], ["1", "控制中心下发取号任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
-            ["51", "收到伪终端rand"],["52", "收到主动式sres"],["53", "伪终端鉴权成功"],["54", "伪终端鉴权失败"],
-            ["6", "伪终端发送取号短信成功"], ["7", "伪终端发送取号短信失败"],["8", "取号成功"]]),
+      imsi_status_show_dict:new Map([["1", "status-primary"], ["2", "status-primary"], ["3", "status-warning"], ["4", "status-success"],
+          ["51", "status-primary"],["52", "status-primary"],["53", "status-success"],["54", "status-info"],
+          ["5", "status-danger"], ["6", "status-warning"], ["7", "status-info"], ["8", "status-success"]]),
+        imsi_status_tag_show_dict:new Map([["1", "primary"], ["2", "primary"], ["3", "warning"], ["4", "success"], ["5", "danger"],
+            ["51", "primary"],["52", "primary"],["53", "success"],["54", "info"],
+            ["6", "warning"], ["7", "info"], ["8", "success"]]),
       dialogPropTask: {
             type: 0,
             dev_list: [],
@@ -323,11 +324,7 @@ export default {
             message_vuex.phone = data['msg']['phone']
             message_vuex.timestr = data['head']['timestamp']
             this.$store.commit('phoneDetails/getPhoneInfo',  message_vuex)
-            if(data['msg']['imsi_status'] !== '8')
-            {
-                this.notifyMessage('',data['msg']['imsi']+'\n'+this.imsi_status_dict.get(data['msg']['imsi_status'])+'<br/>'+data['head']['timestamp'])
-            }
-            else
+            if(data['msg']['imsi_status'] === '8')
             {
                 this.notifyMessage('',data['msg']['imsi']+'\n'+this.imsi_status_dict.get(data['msg']['imsi_status'])+'<br/>'+data['msg']['phone']+'<br/>'+data['head']['timestamp'])
             }
@@ -371,7 +368,13 @@ export default {
             this.bondsAllList = data;
             this.tableDataName = '';
             this.getCreateTable()
-        }
+        },
+        webChangeTaskStatusAck: function (data) {
+            console.log('web-change-task-status-ack 2')
+            console.log(data)
+            this.$store.state.forensic.case_info = data
+        },
+
     },
   methods: {
       closeTaskDialog() {
@@ -402,6 +405,26 @@ export default {
               .catch((error) => {
                   alert(error)
               })
+      },
+      calcSpendTime(beginTime,endTime) {
+          console.log('beginTime:'+beginTime+' endTime:'+endTime);
+          if(endTime === undefined)
+          {
+              return '未结束';
+          }
+          else if(beginTime === undefined)
+          {
+              return '0秒'
+          }
+          else if(beginTime === '')
+          {
+              return '0秒'
+          }
+          let time1 = new Date(beginTime);
+          let time2 = new Date(endTime);
+          console.log('time1:'+time1+' time2:'+time2);
+          console.log('spend:' + Math.abs(time1.getTime() - time2.getTime())/1000);
+          return Math.abs(time1.getTime() - time2.getTime())/1000 + '秒'
       },
       init() {
           console.log('phoneInformation init')
@@ -445,7 +468,7 @@ export default {
           })
               .then(() => {
                   console.log('start update status')
-                  this.handelTaskStatus(this.task_info.task_status)
+                  this.handelTaskStatus(taskStatus)
               })
               .catch(() => {
                   // this.$message({
@@ -454,7 +477,7 @@ export default {
                   // })
               })
       },
-      handelTaskStatus(task_status) {
+      handelTaskStatus(taskStatus) {
           const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'
           this.taskStatusLoading = true
           console.log('start update loading status')
@@ -462,7 +485,7 @@ export default {
               user_id: this.$store.state.user.name,
               case_id: this.case_id,
               task_id: this.task_id,
-              task_status: task_status
+              task_status: this.task_info.task_status
           }
           console.log('param!');
           console.log(param)
@@ -499,7 +522,7 @@ export default {
       getMessageByPost() {
           const path = 'http://localhost:5000/forensic/phoneInformation'
           const list = {
-              task_id:"2E2O6479EYA8226U"
+              task_id:this.task_id
           }
           axios.post(path,list)
               .then((res) => {
@@ -543,7 +566,7 @@ export default {
         this.phoneNumber = 0
         for (let index in this.bondsAllList)
         {
-            if( this.bondsAllList[index].status === "finish")
+            if( this.bondsAllList[index].status === "8")
             {
                 this.phoneNumber++;
             }

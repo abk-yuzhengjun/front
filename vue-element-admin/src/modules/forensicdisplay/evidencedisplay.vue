@@ -507,7 +507,6 @@
                 {
                     return
                 }
-                this.isloading[index] = true
                     this.$confirm('确认' + taskStatus + '?', '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
@@ -526,7 +525,7 @@
             },
             handelTaskStatus(index, row) {
                 const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'
-
+                this.isloading[index] = true
                 // let taskStatus = 'ready'
                 // let status = new Map([[0, "ready"], [1, "running"], [2, "complete"], [3, "failed"], [4, "canceled"]])
                 // let taskStatus = status.get((indexStatus + 1 ) % 5)
@@ -559,6 +558,7 @@
                         alert(error)
                         this.isloading[index] = false
                     })
+                this.jumpToEvidenceInformation(index,row)
 
             },
             jumpToPhoneDisplay(index, row) {
