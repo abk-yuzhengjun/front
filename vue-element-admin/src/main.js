@@ -56,7 +56,7 @@ new Vue({
 
 Vue.use(new VueSocketIO({
 
-  debug: true,
+  debug: false,
 
   connection: 'http://localhost:5000',
 

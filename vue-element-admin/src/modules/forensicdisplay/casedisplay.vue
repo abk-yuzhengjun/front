@@ -19,18 +19,18 @@
         height="1"
       >
         <!--        <el-table-column type="index" :index="indexMethod" label=" " min-width="100px" align="center" />-->
-        <el-table-column type="expand" min-width="5px">
-          <template slot-scope="props">
-            <el-form v-for="(item,index) in props.row.task_list" :key="index" label-position="left" inline
-                     class="demo-table-expand">
-              <el-form-item label="任务">
-                <span> {{ item.task_name }} </span>
-                <!--                <el-tag size="medium"> 未开始 </el-tag>-->
-                <!--                <el-button size="mini" type="info" @click="jumpToEvidenceDisplay(props.$index,props.row)"> 查看任务 </el-button>-->
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
+<!--        <el-table-column min-width="5px">-->
+<!--          <template slot-scope="props">-->
+<!--&lt;!&ndash;            <el-form v-for="(item,index) in props.row.task_list" :key="index" label-position="left" inline&ndash;&gt;-->
+<!--&lt;!&ndash;                     class="demo-table-expand">&ndash;&gt;-->
+<!--&lt;!&ndash;              <el-form-item label="任务">&ndash;&gt;-->
+<!--&lt;!&ndash;                <span> {{ item.task_name }} </span>&ndash;&gt;-->
+<!--&lt;!&ndash;                &lt;!&ndash;                <el-tag size="medium"> 未开始 </el-tag>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                &lt;!&ndash;                <el-button size="mini" type="info" @click="jumpToEvidenceDisplay(props.$index,props.row)"> 查看任务 </el-button>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;              </el-form-item>&ndash;&gt;-->
+<!--&lt;!&ndash;            </el-form>&ndash;&gt;-->
+<!--          </template>-->
+<!--        </el-table-column>-->
         <el-table-column label="案件编号" min-width="15px" align="left">
           <template slot-scope="scope">
             <el-button size="medium" type="text" @click="jumpToEvidenceDisplay(scope.$index,scope.row)">{{scope.row.case_id}}</el-button>

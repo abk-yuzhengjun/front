@@ -18,15 +18,15 @@
       width="100%"
       height="600px"
     >
-      <el-table-column property="imsi" label="imsi" min-width="100px" align="left" />
-      <el-table-column property="phone" label="手机号码" min-width="100px" align="left" />
+      <el-table-column property="msg.imsi" label="imsi" min-width="100px" align="left" />
+      <el-table-column property="msg.phone" label="手机号码" min-width="100px" align="left" />
       <el-table-column label="状态" min-width="200px" align="left" >
         <template slot-scope="scope">
-          <span :class="imsi_status_show_dict.get(scope.row.imsi_status)" ></span>
-          <span >{{imsi_status_dict.get(scope.row.imsi_status)}}</span>
+          <span :class="imsi_status_show_dict.get(scope.row.msg.imsi_status)" ></span>
+          <span >{{imsi_status_dict.get(scope.row.msg.imsi_status)}}</span>
         </template>
       </el-table-column>
-      <el-table-column property="timestr" label="时间" min-width="200px" align="left" />
+      <el-table-column property="head.timestamp" label="时间" min-width="200px" align="left" />
     </el-table>
     <el-pagination
       align="center"
@@ -44,6 +44,7 @@
 
 <script>
     import store from '../../store'
+    import { mapGetters } from 'vuex'
     export default {
         name: "phoneDetailsShow.vue",
         data() {
@@ -71,6 +72,15 @@
         created() {
             this.init();
         },
+        watch: {
+            phoneInfo() {
+                console.log('watch phoneInfo.......');
+                this.init();
+            }
+        },
+        computed: {
+            ...mapGetters({phoneInfo:'phoneInfo'}),
+        },
         methods: {
             goBack(){
                 this.$router.go(-1);
@@ -79,18 +89,23 @@
                 this.task_id = this.$route.query.task_id
             },
             init() {
-                this.getParams();
-                let temp = []
-                let temp2 = []
-                temp = this.$store.state.phoneDetails.phone_info;
-                for (let index in temp)
-                {
-                    console.log(temp[index])
-                    if(temp[index].task_id === this.task_id) {
-                        temp2.push(temp[index])
-                    }
-                }
-                this.bondsAllList = temp2
+                // this.getParams();
+                // let temp = []
+                // let temp2 = []
+                // temp = this.$store.state.phoneDetails.phone_info;
+                // let length = temp.length - 1;
+                // console.log(length);
+                // if(length >= 0)
+                // {
+                //     for (let index = length;index >= 0; index--)
+                //     {
+                //         console.log(temp[index])
+                //         if(temp[index].task_id === this.task_id) {
+                //             temp2.push(temp[index])
+                //         }
+                //     }
+                // }
+                this.bondsAllList = this.phoneInfo
                 console.log('phoneDeatilsShow created!')
                 console.log(this.task_id)
                 console.log(this.bondsAllList)
@@ -138,12 +153,17 @@
                 this.tableDataEnd = []
                 this.filterTableDataEnd = []
                 this.bondsAllList.forEach((value, index) => {
-                    if (value.imsi) {
-                        if (value.imsi.indexOf(this.tableDataName) >= 0) {
+                    if (value.msg.imsi) {
+                        if (value.msg.imsi.indexOf(this.tableDataName) >= 0) {
                             this.filterTableDataEnd.push(value)
                         }
-                        else if (value.phone) {
-                            if (value.phone.indexOf(this.tableDataName) >= 0) {
+                        else if (value.msg.phone) {
+                            if (value.msg.phone.indexOf(this.tableDataName) >= 0) {
+                                this.filterTableDataEnd.push(value)
+                            }
+                        }
+                        else if (value.msg.imsi_status) {
+                            if (this.imsi_status_dict.get(value.msg.imsi_status).indexOf(this.tableDataName) >= 0) {
                                 this.filterTableDataEnd.push(value)
                             }
                         }
