@@ -33,6 +33,46 @@ const getters = {
         }
       }
     }
+  },
+  phoneInfo:state => {
+    console.log('phoneInfo Getter refresh')
+    let temp = []
+    for (let index in state.phoneDetails.phone_info)
+    {
+      if(state.phoneDetails.phone_info[index]['msg']['task_id'] === state.forensic.task_id)
+      {
+          temp.push(state.phoneDetails.phone_info[index])
+      }
+    }
+    return temp
+
+  },
+  evidenceInfo:state => {
+    console.log('evidenceInfo Getter refresh')
+    let temp = []
+    for (let index in state.phoneDetails.evidence_info)
+    {
+      if(state.phoneDetails.evidence_info[index]['msg']['task_id'] === state.forensic.task_id)
+      {
+        temp.push(state.phoneDetails.evidence_info[index])
+      }
+    }
+    return temp
+
+  },
+  phoneImsiInfo:state => {
+    console.log('phoneImsiInfo Getter refresh')
+    let temp = []
+    for (let index in state.phoneDetails.phone_imso_info)
+    {
+      if(state.phoneDetails.phone_imso_info[index][0].task_id === state.forensic.task_id)
+      {
+          return state.phoneDetails.phone_imso_info[index];
+      }
+    }
+    return temp
+
   }
+
 }
 export default getters

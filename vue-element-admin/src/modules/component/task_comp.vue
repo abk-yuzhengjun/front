@@ -267,7 +267,7 @@
 
                     for(var j = 0;j < this.form.task_info.evidence_content[i].app_list.length;j++){
 
-                        var obj = {'app_name':'', 'app_status':'ready','update_ts':''};
+                        var obj = {'app_name':'', 'app_status':'','update_ts':''};
                         obj['app_name'] = this.nameTranslate(this.form.task_info.evidence_content[i].app_list[j]);
                         this.form.task_info.evidence_content[i].app_list[j] =obj
 

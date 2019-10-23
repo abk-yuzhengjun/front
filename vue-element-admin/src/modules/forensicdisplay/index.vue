@@ -68,7 +68,7 @@
           </el-col>
           <el-col :span="4">
             <div style="display: flex;justify-content: flex-end">
-              <span style="font-size: 16px;color: #333333;">{{this.phoneNumber}}/{{this.capturePhoneNumber}}</span>
+              <span style="font-size: 16px;color: #333333;">{{this.capturePhoneNumber}}/{{this.phoneNumber}}</span>
             </div>
           </el-col>
         </el-row>
@@ -118,14 +118,14 @@
           </el-col>
           <el-col :span="24" style="padding-bottom: 10px;padding-top: 6px">
             <div style="display: flex;">
-              <span class="status-success"  v-if="this.message_scoll1.imsi!==''"></span>
-              <span style="font-size: 16px;color: #333333;" v-if="this.message_scoll1.imsi!==''">&nbspimsi:&nbsp&nbsp{{this.message_scoll1.imsi}}&nbsp&nbsp&nbsp&nbsp {{this.imsi_status_dict.get(this.message_scoll1.imsi_status)}} &nbsp&nbsp&nbsp&nbsp{{this.message_scoll1.timestr}}</span>
+              <span class="status-success"  v-if="this.message_scoll1!==''"></span>
+              <span style="font-size: 16px;color: #333333;" v-if="this.message_scoll1!==''">&nbspimsi:&nbsp&nbsp{{this.message_scoll1.msg.imsi}}&nbsp&nbsp&nbsp&nbsp {{this.imsi_status_dict.get(this.message_scoll1.msg.imsi_status)}} &nbsp&nbsp&nbsp&nbsp{{this.message_scoll1.head.timestamp}}</span>
             </div>
           </el-col>
           <el-col :span="24">
             <div style="display: flex;">
-              <span class="status-success"  v-if="this.message_scoll2.imsi!==''"></span>
-              <span style="font-size: 16px;color: #333333;" v-if="this.message_scoll2.imsi!==''">&nbspimsi:&nbsp&nbsp{{this.message_scoll2.imsi}}&nbsp&nbsp&nbsp&nbsp {{this.imsi_status_dict.get(this.message_scoll2.imsi_status)}} &nbsp&nbsp&nbsp&nbsp{{this.message_scoll2.timestr}}</span>
+              <span class="status-success"  v-if="this.message_scoll2!==''"></span>
+              <span style="font-size: 16px;color: #333333;" v-if="this.message_scoll2!==''">&nbspimsi:&nbsp&nbsp{{this.message_scoll2.msg.imsi}}&nbsp&nbsp&nbsp&nbsp {{this.imsi_status_dict.get(this.message_scoll2.msg.imsi_status)}} &nbsp&nbsp&nbsp&nbsp{{this.message_scoll2.head.timestamp}}</span>
             </div>
           </el-col>
         </el-row>
@@ -155,19 +155,20 @@
         width="100%"
         height="300px"
       >
-        <el-table-column property="imsi" label="Imsi" width="200px" align="left" />
-        <el-table-column property="phone" label="手机号码" width="200px" align="left" />
-        <el-table-column label="状态" width="200px" align="left" >
+        <el-table-column property="imsi" label="Imsi" min-width="200px" align="left" />
+        <el-table-column property="phone" label="手机号码" min-width="200px" align="left" />
+        <el-table-column label="状态" min-width="200px" align="left" >
           <template slot-scope="scope">
             <span :class="imsi_status_show_dict.get(scope.row.status)"></span>
             <el-tag :type="imsi_status_tag_show_dict.get(scope.row.status)">{{imsi_status_dict.get(scope.row.status)}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column property="imsi_capture_ts" label="上号时间" width="300px" align="left" />
-        <el-table-column property="phone_capture_ts" label="取号成功时间" width="300px" align="left" />
-        <el-table-column  label="耗时" width="100px" align="left" >
+        <el-table-column property="gsm_imsi_capture_ts" label="2G上号时间" min-width="200px" align="left" />
+        <el-table-column property="lte_imsi_capture_ts" label="4G上号时间" min-width="200px" align="left" />
+        <el-table-column property="phone_capture_ts" label="取号成功时间" min-width="200px" align="left" />
+        <el-table-column  label="耗时" min-width="100px" align="left" >
           <template slot-scope="scope">
-            <span>{{calcSpendTime(scope.row.imsi_capture_ts,scope.row.phone_capture_ts)}}</span>
+            <span>{{calcSpendTime(scope.row.gsm_imsi_capture_ts,scope.row.lte_imsi_capture_ts,scope.row.phone_capture_ts)}}</span>
           </template>
         </el-table-column>
         <!--        <el-table-column label="操作" align="center" width="80">-->
@@ -227,25 +228,12 @@ export default {
       case_id: '',
       phoneNumber: 0,
       capturePhoneNumber: 0,
-
       capture_type_dict: new Map([[1, "网络优先"], [2, "仅空口"]]),
       capture_mode_dict: new Map([[1, "全部"], [2, "黑名单"]]),
       task_status_dict: new Map([["ready", "准备中"], ["running", "取号中"], ["complete", "已完成"], ["failed", "已失败"], ["canceled", "已取消"]]),
       task_status_show_dict: new Map([["ready", 'primary'], ["running", "danger"], ["complete", 'success'], ["failed", 'warning'], ["canceled", 'info']]),
-      message_scoll1:{
-            imsi:'',
-            imsi_status:'',
-            timestr:'',
-            phone:'',
-            flag: 0,
-        },
-      message_scoll2:{
-            imsi:'',
-            imsi_status:'',
-            timestr:'',
-            phone:'',
-            flag: 0,
-        },
+      message_scoll1:'',
+      message_scoll2:'',
       imsi_status_dict:new Map([["", "未开始"], ["1", "控制中心下发取号任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
           ["51", "收到伪终端rand"],["52", "收到主动式sres"],["53", "伪终端鉴权成功"],["54", "伪终端鉴权失败"],
           ["6", "伪终端发送取号短信成功"], ["7", "伪终端发送取号短信失败"],["8", "取号成功"]]),
@@ -293,89 +281,104 @@ export default {
   watch: {
     '$route': 'init',
     caseInfo() {
-          console.log('watch evidenceInformation.......');
+          console.log('watch phone init.......');
           this.init()
+      },
+      phoneInfo() {
+          console.log('watch phoneInfo.......');
+          this.getPhoneInfo(this.phoneInfo);
+      },
+      phoneImsiInfo() {
+          console.log('watch phoneImsiInfo.......');
+          this.bondsAllList = this.phoneImsiInfo;
+          this.tableDataName = '';
+          this.getCreateTable()
       }
   },
   created() {
     this.init()
   },
     computed: {
-        ...mapGetters({ caseInfo:'caseInfo',taskInfo:'taskInfo'}),
+        ...mapGetters({ caseInfo:'caseInfo',taskInfo:'taskInfo',
+            phoneInfo:'phoneInfo',phoneImsiInfo:'phoneImsiInfo'}),
+        // phoneInfo() {
+        //     console.log('123 computed refresh')
+        //     return this.$store.state.getters.phoneInfo
+        // }
     },
-    sockets: {
-        webPhoneUpdate: function (data) {
-            console.log('web-phone-update')
-            console.log(data)
-            if(data['msg']['task_id'] !== this.task_id)
-            {
-                return
-            }
-            var message_vuex = {
-                    task_id : '',
-                    imsi:'',
-                    imsi_status:'',
-                    timestr:'',
-                    phone:'',
-            }
-            message_vuex.task_id = data['msg']['task_id']
-            message_vuex.imsi = data['msg']['imsi']
-            message_vuex.imsi_status = data['msg']['imsi_status']
-            message_vuex.phone = data['msg']['phone']
-            message_vuex.timestr = data['head']['timestamp']
-            this.$store.commit('phoneDetails/getPhoneInfo',  message_vuex)
-            if(data['msg']['imsi_status'] === '8')
-            {
-                this.notifyMessage('',data['msg']['imsi']+'\n'+this.imsi_status_dict.get(data['msg']['imsi_status'])+'<br/>'+data['msg']['phone']+'<br/>'+data['head']['timestamp'])
-            }
-
-            if(this.message_scoll1.flag === 0)
-            {
-                this.message_scoll1.imsi = data['msg']['imsi']
-                this.message_scoll1.imsi_status = data['msg']['imsi_status']
-                this.message_scoll1.phone = data['msg']['phone']
-                this.message_scoll1.timestr = data['head']['timestamp']
-                this.message_scoll1.flag = 1
-                console.log(1)
-                console.log(this.message_scoll1)
-            }
-            else if(this.message_scoll2.flag === 0)
-            {
-                this.message_scoll2.imsi = data['msg']['imsi']
-                this.message_scoll2.imsi_status = data['msg']['imsi_status']
-                this.message_scoll2.phone = data['msg']['phone']
-                this.message_scoll2.timestr = data['head']['timestamp']
-                this.message_scoll2.flag = 1
-                console.log(2)
-                console.log(this.message_scoll2)
-            }
-            else
-            {
-                this.message_scoll1.imsi = this.message_scoll2.imsi;
-                this.message_scoll1.imsi_status = this.message_scoll2.imsi_status;
-                this.message_scoll1.phone = this.message_scoll2.phone;
-                this.message_scoll1.timestr = this.message_scoll2.timestr;
-                this.message_scoll2.imsi = data['msg']['imsi']
-                this.message_scoll2.imsi_status = data['msg']['imsi_status']
-                this.message_scoll2.phone = data['msg']['phone']
-                this.message_scoll2.timestr = data['head']['timestamp']
-                console.log(3)
-                console.log(this.message_scoll2)
-            }
-
-        },
-        webPhoneUpdateData: function (data) {
-            this.bondsAllList = data;
-            this.tableDataName = '';
-            this.getCreateTable()
-        },
-        webChangeTaskStatusAck: function (data) {
-            console.log('web-change-task-status-ack 2')
-            console.log(data)
-            this.$store.state.forensic.case_info = data
-        },
-
-    },
+    // sockets: {
+    //     webPhoneUpdate: function (data) {
+    //         console.log('web-phone-update')
+    //         console.log(data)
+    //         if(data['msg']['task_id'] !== this.task_id)
+    //         {
+    //             return
+    //         }
+    //         var message_vuex = {
+    //                 task_id : '',
+    //                 imsi:'',
+    //                 imsi_status:'',
+    //                 timestr:'',
+    //                 phone:'',
+    //         }
+    //         message_vuex.task_id = data['msg']['task_id']
+    //         message_vuex.imsi = data['msg']['imsi']
+    //         message_vuex.imsi_status = data['msg']['imsi_status']
+    //         message_vuex.phone = data['msg']['phone']
+    //         message_vuex.timestr = data['head']['timestamp']
+    //         this.$store.commit('phoneDetails/getPhoneInfo',  message_vuex)
+    //         if(data['msg']['imsi_status'] === '8')
+    //         {
+    //             this.notifyMessage('',data['msg']['imsi']+'\n'+this.imsi_status_dict.get(data['msg']['imsi_status'])+'<br/>'+data['msg']['phone']+'<br/>'+data['head']['timestamp'])
+    //         }
+    //
+    //         if(this.message_scoll1.flag === 0)
+    //         {
+    //             this.message_scoll1.imsi = data['msg']['imsi']
+    //             this.message_scoll1.imsi_status = data['msg']['imsi_status']
+    //             this.message_scoll1.phone = data['msg']['phone']
+    //             this.message_scoll1.timestr = data['head']['timestamp']
+    //             this.message_scoll1.flag = 1
+    //             console.log(1)
+    //             console.log(this.message_scoll1)
+    //         }
+    //         else if(this.message_scoll2.flag === 0)
+    //         {
+    //             this.message_scoll2.imsi = data['msg']['imsi']
+    //             this.message_scoll2.imsi_status = data['msg']['imsi_status']
+    //             this.message_scoll2.phone = data['msg']['phone']
+    //             this.message_scoll2.timestr = data['head']['timestamp']
+    //             this.message_scoll2.flag = 1
+    //             console.log(2)
+    //             console.log(this.message_scoll2)
+    //         }
+    //         else
+    //         {
+    //             this.message_scoll1.imsi = this.message_scoll2.imsi;
+    //             this.message_scoll1.imsi_status = this.message_scoll2.imsi_status;
+    //             this.message_scoll1.phone = this.message_scoll2.phone;
+    //             this.message_scoll1.timestr = this.message_scoll2.timestr;
+    //             this.message_scoll2.imsi = data['msg']['imsi']
+    //             this.message_scoll2.imsi_status = data['msg']['imsi_status']
+    //             this.message_scoll2.phone = data['msg']['phone']
+    //             this.message_scoll2.timestr = data['head']['timestamp']
+    //             console.log(3)
+    //             console.log(this.message_scoll2)
+    //         }
+    //
+    //     },
+    //     webPhoneUpdateData: function (data) {
+    //         this.bondsAllList = data;
+    //         this.tableDataName = '';
+    //         this.getCreateTable()
+    //     },
+    //     webChangeTaskStatusAck: function (data) {
+    //         console.log('web-change-task-status-ack 2')
+    //         console.log(data)
+    //         this.$store.state.forensic.case_info = data
+    //     },
+    //
+    // },
   methods: {
       closeTaskDialog() {
           console.log('-------------Task----------------')
@@ -406,33 +409,91 @@ export default {
                   alert(error)
               })
       },
-      calcSpendTime(beginTime,endTime) {
-          console.log('beginTime:'+beginTime+' endTime:'+endTime);
+      calcSpendTime(begin2GTime,begin4GTime,endTime) {
           if(endTime === undefined)
           {
               return '未结束';
           }
-          else if(beginTime === undefined)
+          else if(begin2GTime === undefined && begin4GTime === undefined)
           {
               return '0秒'
           }
-          else if(beginTime === '')
+          if(begin2GTime === undefined)
           {
-              return '0秒'
+              begin2GTime = begin4GTime
           }
-          let time1 = new Date(beginTime);
+          else if(begin4GTime === undefined)
+          {
+              begin4GTime = begin2GTime
+          }
+
+          let time2G = new Date(begin2GTime);
+          let time4G = new Date(begin4GTime);
+          let time1 = Math.min(time2G,time4G)
           let time2 = new Date(endTime);
-          console.log('time1:'+time1+' time2:'+time2);
-          console.log('spend:' + Math.abs(time1.getTime() - time2.getTime())/1000);
-          return Math.abs(time1.getTime() - time2.getTime())/1000 + '秒'
+          let spendTimeSecond = Math.abs(time1.getTime() - time2.getTime())/1000;
+          let spendTimeMin = parseInt(spendTimeSecond/60);
+          if(spendTimeSecond < 60)
+          {
+              return spendTimeSecond + '秒'
+          }
+          else
+          {
+              spendTimeSecond = spendTimeSecond - 60 * spendTimeMin;
+              return spendTimeMin + '分' + spendTimeSecond + '秒';
+          }
+          return
+      },
+      getPhoneInfo(data) {
+          console.log('getPhoneInfo:')
+          console.log(data)
+          let temp = data
+          let result = []
+          for(let index in temp)
+          {
+              console.log(temp[index]['msg']['task_id'] + '-------------' +this.task_id)
+              if(temp[index]['msg']['task_id'] === this.task_id)
+              {
+                  console.log('123')
+                  console.log(temp[index])
+                  result.push(temp[index])
+              }
+          }
+          let length = result.length;
+          if(length >= 2)
+          {
+              this.message_scoll1 = result[length - 1];
+              this.message_scoll2 = result[length - 2];
+          }
+          else if(length == 1)
+          {
+              this.message_scoll1 = result[0];
+              this.message_scoll2 = '';
+          }
+          else
+          {
+              this.message_scoll1 = '';
+              this.message_scoll2 = '';
+          }
+          // for(let index in result)
+          // {
+          //     if(result[index].msg.imsi_status === '8')
+          //     {
+          //         this.notifyMessage('',result[index]['msg']['imsi']+'\n'+this.imsi_status_dict.get(result[index]['msg']['imsi_status'])+'<br/>'+result[index]['msg']['phone']+'<br/>'+result[index]['head']['timestamp'])
+          //     }
+          // }
+          console.log(this.message_scoll1)
+          console.log(this.message_scoll2)
       },
       init() {
           console.log('phoneInformation init')
           this.getParams()
+          if(this.$store.getters.phoneInfo !== [])
+          {
+              this.getPhoneInfo(this.$store.getters.phoneInfo)
+          }
           // this.getMessage()
           this.getMessageByPost()
-          // this.$store.commit('forensic/getTreeCaseInfo','')
-          // this.$store.commit('forensic/getTreeTaskInfo',this.task_id)
           let task_show_dict = new Map([["ready", '准备中'], ["running", '运行中'], ["complete", '已完成'], ["failed", '失败'], ["canceled", '已取消']]);
           if(this.caseInfo !== undefined) {
               this.case_name = this.caseInfo.case_name
@@ -564,11 +625,16 @@ export default {
     },
     getCreateTable() {
         this.phoneNumber = 0
+        this.capturePhoneNumber = 0
         for (let index in this.bondsAllList)
         {
             if( this.bondsAllList[index].status === "8")
             {
                 this.phoneNumber++;
+            }
+            if( parseInt(this.bondsAllList[index].status) > 1)
+            {
+                this.capturePhoneNumber++;
             }
         }
       this.total1 = this.bondsAllList.length

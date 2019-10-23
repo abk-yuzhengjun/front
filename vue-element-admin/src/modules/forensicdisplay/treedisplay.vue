@@ -166,18 +166,14 @@
                 else if(this.$store.state.forensic.case_id !== '' && this.$store.state.forensic.task_id === '')
                 {
                     treeId = this.treeIdData[this.$store.state.forensic.case_id + ':' + ':' +':']
-                    console.log('expand Case: ' + treeId)
                 }
                 else if(this.$store.state.forensic.case_id !== '' && this.$store.state.forensic.task_id !== '')
                 {
                     treeId = this.treeIdData[this.$store.state.forensic.case_id + ':' + this.$store.state.forensic.task_id + ':' +':']
-                    console.log('expand Task: ' + treeId)
                 }
                 this.treeExpandAddr = []
                 this.treeExpandAddr.push(treeId)
                 this.$refs.tree.setCurrentKey(treeId)
-                console.log(this.treeExpandAddr)
-                console.log('highLightShowTree leave :' + this.$store.state.forensic.case_id + '*******' + this.$store.state.forensic.task_id+ "*******")
                 this.lastTreeId = treeId
             },
             jumpToEvidenceDisplayByTree(caseId) {
@@ -228,11 +224,11 @@
             jumpToAppDisplay(caseId, taskId, phone) {
                 this.$router.push(
                     {
-                        name: 'appdisplay',
+                        name: 'evidenceinformation',
                         query: {
                             caseId: caseId,
                             taskId: taskId,
-                            phone: phone
+                            // phone: phone
                         }
                     }
                 )
@@ -330,7 +326,6 @@
                 }
                 temp_list.push(index)
                 this.treeData = temp_list
-                console.log('tree data end')
             },
             handelNodeClick(data) {
                 console.log('click tree node')

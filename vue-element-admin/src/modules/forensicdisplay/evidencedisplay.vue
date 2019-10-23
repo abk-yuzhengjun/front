@@ -77,7 +77,7 @@
 <!--    <div style="width:100%;padding-left:20px;justify-content: flex-start">-->
 <!--      <el-button type="primary" size="mini" @click="jumpToTask">+创建任务</el-button>-->
 <!--    </div>-->
-    <div style="width: 100%;height: 65%; display: flex;flex-direction: column;padding-left:20px;padding-right:10px;">
+    <div style="width: 100%;height: 660px; display: flex;flex-direction: column;padding-left:20px;padding-right:10px;">
       <el-table
         :data="tempList"
         :header-cell-style="{color:'#666666',font: '14px Base'}"
@@ -88,25 +88,25 @@
         :default-sort="{prop:'time',order:'ascending'}"
         :highlight-current-row="true"
         width="100%"
-        height="1"
+        height="660px"
       >
         <!--        <el-table-column type="index" :index="indexMethod" label=" " min-width="100px" align="center" />-->
-        <el-table-column type="expand" min-width="5px">
-          <template slot-scope="props">
-            <el-form v-for="(item,index) in props.row.evidence_content" :key="index" label-position="left" inline
-                     class="demo-table-expand">
-              <el-form-item label="手机号">
-                <span> {{ item.phone }} </span>
-              </el-form-item>
-              <el-form-item label="imsi">
-                <span>{{ item.imsi }}</span>
-              </el-form-item>
-              <el-form-item label="app">
-                <span>{{ item.app_list }}</span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
+<!--        <el-table-column type="expand" min-width="5px">-->
+<!--          <template slot-scope="props">-->
+<!--            <el-form v-for="(item,index) in props.row.evidence_content" :key="index" label-position="left" inline-->
+<!--                     class="demo-table-expand">-->
+<!--              <el-form-item label="手机号">-->
+<!--                <span> {{ item.phone }} </span>-->
+<!--              </el-form-item>-->
+<!--              <el-form-item label="imsi">-->
+<!--                <span>{{ item.imsi }}</span>-->
+<!--              </el-form-item>-->
+<!--              <el-form-item label="app">-->
+<!--                <span>{{ item.app_list }}</span>-->
+<!--              </el-form-item>-->
+<!--            </el-form>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
         <el-table-column label="编号" min-width="13px" align="left">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.task_type === 2" size="medium" type="danger">取证</el-tag>
@@ -283,7 +283,6 @@
             }
         },
         created() {
-            console.log('created initing');
             this.getParams()
             this.updateTable();
             // this.init()
@@ -292,24 +291,17 @@
         watch: {
             '$route': 'updateTable',
             caseInfo() {
-                console.log('watch bondsAllList.......');
                 this.updateTable()
             }
         },
         computed: {
             ...mapGetters({ caseInfo:'caseInfo'}),
         },
-        sockets: {
-            webChangeTaskStatusAck: function (data) {
-                console.log('web-change-task-status-ack')
-                console.log(data)
-                this.$store.state.forensic.case_info = data
-            },
-            my_message: function (data) {
-                console.log('my_message')
-                console.log(data)
-            },
-        },
+        // sockets: {
+        //     webChangeTaskStatusAck: function (data) {
+        //         this.$store.state.forensic.case_info = data
+        //     }
+        // },
         methods: {
             format(percentage) {
                 let taskStatus = new Map([[100, "已完成"], [25, "进行中"], [1, "准备中"], [50, "已失败"], [0, "已取消"]])
@@ -352,7 +344,6 @@
                 this.case_name = this.caseInfo.case_name;
                 if(this.caseInfo.hasOwnProperty('task_list')) {
                     this.bondsAllList = this.caseInfo.task_list
-                    console.log('updateTable ALL table')
                     if (this.bondsAllList !== undefined && this.bondsAllList !== '') {
                         this.getCreateTable()
                     }
@@ -361,8 +352,6 @@
             init() {
                 this.getParams()
                 this.bondsAllList = ''
-                console.log('dialog')
-                console.log(this.dialogPropCase)
                 if (this.bondsAllList !== undefined && this.bondsAllList !== '') {
                     this.getCreateTable()
                 }

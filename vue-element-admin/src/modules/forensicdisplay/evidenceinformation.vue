@@ -99,18 +99,18 @@
           </el-col>
           <el-col :span="2">
             <div style="display: flex;flex-direction:row">
-              <span style="font-size: 16px;color: #333333;">{{this.message_scoll.phone}}</span>
+              <span style="font-size: 16px;color: #333333;" v-if=" this.message_scoll!== ''">{{this.message_scoll.msg.phone}}</span>
             </div>
           </el-col>
           <el-col :span="5">
             <div style="display: flex;flex-direction:row">
-              <span style="font-size: 16px;color: #333333;" v-if=" this.message_scoll.phone_status!== '8'">{{this.phone_status_dict.get(this.message_scoll.phone_status)}}</span>
-              <span style="font-size: 16px;color: #333333;" v-else-if=" this.message_scoll.phone_status === '8'">已上号&nbsp&nbsp&nbsp{{this.app_name_dict.get(this.message_scoll.app)}}&nbsp&nbsp&nbsp&nbsp{{this.app_status_dict.get(this.message_scoll.app_status)}}</span>
+              <span style="font-size: 16px;color: #333333;" v-if=" this.message_scoll!== ''">{{this.phone_status_dict.get(this.message_scoll.msg.phone_status)}}</span>
+              <span style="font-size: 16px;color: #333333;" v-else-if=" this.message_scoll!== '' && this.message_scoll.msg.phone_status=== '8'">已上号&nbsp&nbsp&nbsp{{this.app_name_dict.get(this.message_scoll.msg.app)}}&nbsp&nbsp&nbsp&nbsp{{this.app_status_dict.get(this.message_scoll.msg.app_status)}}</span>
             </div>
           </el-col>
           <el-col :span="8">
             <div style="display: flex;flex-direction:row">
-              <span style="font-size: 16px;color: #333333;">{{this.message_scoll.timestr}}</span>
+              <span style="font-size: 16px;color: #333333;" v-if=" this.message_scoll!== ''">{{this.message_scoll.head.timestamp}}</span>
             </div>
           </el-col>
         </el-row>
@@ -158,7 +158,7 @@
             <el-tag :type="phone_status_show_dict.get(item.phone_status)">{{phone_status_dict.get(item.phone_status)}}</el-tag>
           </el-col>
           <el-col :span="10">
-            <span style="font-size: 16px;color: #666666;"> 更新状态时间：{{item.update_ts}}</span>
+            <span style="font-size: 16px;color: #666666;"> 更新时间：{{item.update_ts}}</span>
           </el-col>
         </el-row>
       </el-tab-pane>
@@ -172,7 +172,7 @@
     </el-row>
 
 <!--    <el-divider></el-divider>-->
-    <div style="padding-left: 20px;padding-right: 20px;height: 350px">
+    <div style="padding-left: 20px;padding-right: 20px;height: 400px">
       <el-table
         :data="tempList"
         :show-header="false"
@@ -187,12 +187,12 @@
           type="index"
           min-width="5px">
         </el-table-column>
-        <el-table-column  min-width="6px" align="left">
+        <el-table-column  min-width="5px" align="left">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.app_name" style="width: 40px;height: 40px"></svg-icon>
           </template>
         </el-table-column>
-        <el-table-column  min-width="20px" align="left">
+        <el-table-column  min-width="15px" align="left">
           <template slot-scope="scope">
             <span style="font-size: 14px;color: #666666; font-weight: bold;">{{ app_name_dict.get(scope.row.app_name) }}</span>
           </template>
@@ -204,19 +204,19 @@
             <span style="font-size: 14px;color: #666666;">{{app_status_dict.get(scope.row.app_status)}}</span>
           </template>
         </el-table-column>
-        <el-table-column min-width="30px" align="left" >
+        <el-table-column min-width="20px" align="left" >
           <template slot-scope="scope">
-            <span style="font-size: 14px;color: #666666;">获取订单信息</span>
+            <span style="font-size: 14px;color: #666666;"></span>
           </template>
         </el-table-column>
-        <el-table-column min-width="30px" align="left" >
+        <el-table-column min-width="20px" align="left" >
           <template slot-scope="scope">
             <span style="font-size: 14px;color: #666666;">{{scope.row.update_ts}}</span>
           </template>
         </el-table-column>
         <el-table-column min-width="36px" align="center" >
           <template slot-scope="scope">
-            <el-button type="text">更多</el-button>
+            <el-button type="text" @click="jumpToAppInformation(scope.row,scope.index)">更多</el-button>
           </template>
         </el-table-column>
 
@@ -287,24 +287,19 @@ export default {
       phoneNumber: 0,
       evidenceNumber: 0,
       task_status: '',
-      message_scoll:{
-          phone:'',
-          app:'',
-          app_status: '',
-          phone_status: '',
-          timestr: '',
-       },
+      message_scoll:'',
       phone_status_dict: new Map([["", "暂无信息"], ["1", "控制中心下发取证任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["31", "2G主动式丢失目标"],
           ["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
-          ["51", "收到伪终端rand"],["52", "收到主动式sres"],["53", "伪终端鉴权成功"],["54", "伪终端鉴权失败"]]),
+          ["51", "收到伪终端rand"],["52", "收到主动式sres"],["53", "伪终端鉴权成功"],["54", "伪终端鉴权失败"],
+          ["6", "伪终端收到短信"]]),
       phone_status_show_dict: new Map([["", "primary"], ["1", "primary"], ["2", "warning"],["3", "warning"],["31", "info"],
             ["4", "primary"],["5", "primary"],
-            ["51", "primary"],["52", "primary"],["53", "success"],["54", "info"]]),
+            ["51", "primary"],["52", "primary"],["53", "success"],["54", "info"],
+            ["6", "success"]]),
       app_name_dict: new Map([['Taobao','淘宝'],['Meituanwaimai','美团外卖'],['Pinduoduo','拼多多'],['Tongchenglvyou','同城旅游'],['Baidutieba','百度贴吧'],['Cainiaoguoguo','菜鸟裹裹'],
             ['Haluochuxing','哈罗出行'],['Meituan','美团'],['Mango','芒果电单车'],['Mobike','摩拜单车'],['Sinaweibo','新浪微博'],['Xiechenglvxing','携程旅行'],['Qunar','去哪儿']]),
       task_status_dict: new Map([["ready", "准备中"], ["running", "运行中"], ["complete", "已完成"],["canceled",'已取消']]),
       task_status_show_dict: new Map([["ready", 'primary'], ["running", "danger"], ["complete", 'success'], ["failed", 'warning'], ["canceled", 'info']]),
-
       app_status_dict: new Map([["1", "控制中心给取证模块下发取证任务"], ["2", "取证模块点击验证码成功"], ["3", "取证模块点击验证码失败"], ["4", "伪终端收到验证码"],
           ["5", "登录失败"], ["6", "登录失败"], ["7", "取证完成"],["8", "取证失败"]]),
       app_show_dict: new Map([["1", "status-primary"], ["2", "status-success"], ["3", "status-info"], ["4", "status-warning"], ["5", "status-info"],
@@ -347,52 +342,56 @@ export default {
   watch: {
     '$route': 'init',
       caseInfo() {
-          console.log('watch evidenceInformation.......');
+          console.log('watch caseInfo.......');
           this.init()
+      },
+      evidenceInfo() {
+          console.log('watch evidenceInfo.......');
+          this.getEvidenceInfo(this.evidenceInfo);
       }
   },
   created() {
     this.init()
   },
     computed: {
-        ...mapGetters({ caseInfo:'caseInfo',taskInfo:'taskInfo'}),
+         ...mapGetters({ caseInfo:'caseInfo',taskInfo:'taskInfo',evidenceInfo:'evidenceInfo'}),
     },
-    sockets: {
-        webEvidenceUpdate: function (data) {
-            console.log('web-evidence-update')
-            console.log(data)
-            if(data['msg']['task_id'] !== this.task_id)
-            {
-                return
-            }
-            this.message_scoll.phone = data['msg']['phone']
-            this.message_scoll.app = data['msg']['app']
-            this.message_scoll.app_status = data['msg']['app_status']
-            this.message_scoll.phone_status = data['msg']['phone_status']
-            this.message_scoll.timestr = data['head']['timestamp']
-            if(this.message_scoll.phone_status !== '8')
-            {
-                this.notifyMessage('',this.message_scoll.phone+'\n'+this.phone_status_show_dict.get(this.message_scoll.phone_status)+'<br/>'+this.message_scoll.timestr)
-            }
-            else
-            {
-                this.notifyMessage('',this.message_scoll.phone+'\n'+this.phone_status_show_dict.get(this.message_scoll.phone_status)+'<br/>'+
-                    this.app_name_dict.get(this.message_scoll.app)+'\n'+ this.app_status_dict.get(this.message_scoll.app_status)+'<br/>'
-                    +this.message_scoll.timestr)
-            }
-            console.log(this.message_scoll)
-        },
-        webEvidenceUpdateData: function (data) {
-            console.log('webEvidenceUpdateData')
-            console.log(data)
-            this.$store.state.forensic.case_info = data
-        },
-        webChangeTaskStatusAck: function (data) {
-            console.log('web-change-task-status-ack 2')
-            console.log(data)
-            this.$store.state.forensic.case_info = data
-        },
-    },
+    // sockets: {
+    //     webEvidenceUpdate: function (data) {
+    //         console.log('web-evidence-update')
+    //         console.log(data)
+    //         if(data['msg']['task_id'] !== this.task_id)
+    //         {
+    //             return
+    //         }
+    //         this.message_scoll.phone = data['msg']['phone']
+    //         this.message_scoll.app = data['msg']['app']
+    //         this.message_scoll.app_status = data['msg']['app_status']
+    //         this.message_scoll.phone_status = data['msg']['phone_status']
+    //         this.message_scoll.timestr = data['head']['timestamp']
+    //         if(this.message_scoll.phone_status !== '8')
+    //         {
+    //             this.notifyMessage('',this.message_scoll.phone+'\n'+this.phone_status_show_dict.get(this.message_scoll.phone_status)+'<br/>'+this.message_scoll.timestr)
+    //         }
+    //         else
+    //         {
+    //             this.notifyMessage('',this.message_scoll.phone+'\n'+this.phone_status_show_dict.get(this.message_scoll.phone_status)+'<br/>'+
+    //                 this.app_name_dict.get(this.message_scoll.app)+'\n'+ this.app_status_dict.get(this.message_scoll.app_status)+'<br/>'
+    //                 +this.message_scoll.timestr)
+    //         }
+    //         console.log(this.message_scoll)
+    //     },
+    //     webEvidenceUpdateData: function (data) {
+    //         console.log('webEvidenceUpdateData')
+    //         console.log(data)
+    //         this.$store.state.forensic.case_info = data
+    //     },
+    //     webChangeTaskStatusAck: function (data) {
+    //         console.log('web-change-task-status-ack 2')
+    //         console.log(data)
+    //         this.$store.state.forensic.case_info = data
+    //     },
+    // },
   methods: {
       closeTaskDialog() {
           console.log('-------------Task----------------')
@@ -404,7 +403,6 @@ export default {
           const param = {
               user_id: this.$store.state.user.name
           }
-          console.log('12345')
           axios.post(path2, JSON.stringify(param))
               .then((res) => {
                   this.$store.commit('forensic/getCaseInfo', res.data)
@@ -423,8 +421,25 @@ export default {
               dangerouslyUseHTMLString: true
           });
       },
+      getEvidenceInfo(data) {
+          let temp = data
+          let length = temp.length;
+          if(length >= 1)
+          {
+              this.message_scoll = temp[length - 1];
+          }
+          else
+          {
+              this.message_scoll = '';
+          }
+          console.log(this.message_scoll)
+      },
     init() {
       this.getParams()
+        if(this.$store.getters.evidenceInfo !== [])
+        {
+            this.getEvidenceInfo(this.$store.getters.evidenceInfo)
+        }
       // this.getMessage()
       //this.getMessageByPost()
         // this.$store.commit('forensic/getTreeCaseInfo','')
@@ -448,14 +463,14 @@ export default {
                     this.tableDataName = ''
                     for (let index in this.task_info.evidence_content)
                     {
-                        if( this.task_info.evidence_content[index].phone_status === "7")
+                        if( this.task_info.evidence_content[index].phone_status === "52")
                         {
                             this.phoneNumber++;
                         }
                         for (let subIndex in this.task_info.evidence_content[index].app_list)
                         {
-                            console.log('----------------appStatus :' + this.task_info.evidence_content[index].app_list[subIndex].appStatus)
-                            if( this.task_info.evidence_content[index].app_list[subIndex].appStatus === "7")
+                            console.log('----------------appStatus :' + this.task_info.evidence_content[index].app_list[subIndex].app_status)
+                            if( this.task_info.evidence_content[index].app_list[subIndex].app_status === "7")
                             {
                                 this.evidenceNumber++;
                             }
@@ -512,8 +527,6 @@ export default {
               task_id: this.task_id,
               task_status: task_status
           }
-          console.log('param!');
-          console.log(param)
           axios.post(path2, param)
               .then((res) => {
                   console.log(res.data)
@@ -617,7 +630,6 @@ export default {
     getParams() {
       this.case_id = this.$route.query.caseId;
       this.task_id = this.$route.query.taskId;
-        console.log('123')
         this.$store.commit('forensic/getTreeCaseInfo', this.case_id)
         this.$store.commit('forensic/getTreeTaskInfo', this.task_id)
     },
@@ -626,7 +638,20 @@ export default {
         {
           name: 'casedisplay'
         })
-    }
+    },
+    jumpToAppInformation(row,index) {
+        this.$router.push(
+            {
+                name: 'appinformation',
+                query:{
+                    case_id: this.case_id,
+                    task_id: this.task_id,
+                    phone: this.activeName,
+                    appName:row.app_name
+                }
+            }
+        )
+      },
   }
 }
 </script>
