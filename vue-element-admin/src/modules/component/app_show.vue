@@ -4,16 +4,16 @@
       <el-tab-pane
         v-for="(item,idx) in appInfo.app_data"
         :key="idx"
-        :label="translate(item.class,idx)"
+        :label="translate(item.class,idx,item.data[0].class)"
         :value="item.class">
       <div v-if="appInfo.app_data[idx].class === 'orderNormalGoods'">
         <orderNormalGoods :goods="appInfo.app_data[idx]"></orderNormalGoods>
       </div>
-      <div v-else-if="appInfo.app_data[idx].class === 'orderPhoneDeposit'">
-        <orderPhoneDeposit :charge="appInfo.app_data[idx]"></orderPhoneDeposit>
+      <div v-else-if="appInfo.app_data[idx].class === 'recharge'">
+        <recharge :charge="appInfo.app_data[idx]"></recharge>
       </div>
-      <div v-else-if="appInfo.app_data[idx].class === 'deliveryAddress'">
-        <deliveryAdress :dvAdress="appInfo.app_data[idx]"></deliveryAdress>
+      <div v-else-if="appInfo.app_data[idx].class === 'address'">
+        <cs_address :dvAdress="appInfo.app_data[idx]"></cs_address>
       </div>
       <div v-else-if="appInfo.app_data[idx].class === 'orderHotel'">
         <orderHotel :htOrder="appInfo.app_data[idx]"></orderHotel>
@@ -21,8 +21,8 @@
       <div v-else-if="appInfo.app_data[idx].class === 'orderTrafficTicket'">
         <orderTrafficTicket :tkOrder="appInfo.app_data[idx]"></orderTrafficTicket>
       </div>
-      <div v-else-if="appInfo.app_data[idx].class === 'orderAttractionTicket'">
-        <orderAttractionTicket :tvOrder="appInfo.app_data[idx]"></orderAttractionTicket>
+      <div v-else-if="appInfo.app_data[idx].class === 'orderTravel'">
+        <orderTravel :tvOrder="appInfo.app_data[idx]"></orderTravel>
       </div>
       <div v-else-if="appInfo.app_data[idx].class === 'userInfo'">
         <userInfo :usrInfo="appInfo.app_data[idx]"></userInfo>
@@ -33,21 +33,28 @@
       <div v-else-if="appInfo.app_data[idx].class === 'attentionBarInfo'">
         <attentionBarInfo :barInfo="appInfo.app_data[idx]"></attentionBarInfo>
       </div>
-      <div v-else-if="appInfo.app_data[idx].class === 'senderAddress'">
-        <senderAddress :sdAdress="appInfo.app_data[idx]"></senderAddress>
-      </div>
       <div v-else-if="appInfo.app_data[idx].class === 'fansInfo'">
         <fansInfo :fInfo="appInfo.app_data[idx]"></fansInfo>
       </div>
-      <div v-else-if="appInfo.app_data[idx].class === 'traveller'">
-        <traveller :travellerData="appInfo.app_data[idx]"></traveller>
+      <div v-else-if="appInfo.app_data[idx].class === 'topContacts'">
+        <topContacts :contact="appInfo.app_data[idx]"></topContacts>
       </div>
-        <div v-else-if="appInfo.app_data[idx].class === 'traveller'">
-          <traveller :travellerData="appInfo.app_data[idx]"></traveller>
-        </div>
         <div v-else-if="appInfo.app_data[idx].class === 'invoiceTitle'">
           <invoiceTitle :invoiceData="appInfo.app_data[idx]"></invoiceTitle>
         </div>
+        <div v-else-if="appInfo.app_data[idx].class === 'orderBike'">
+          <orderBike :bike="appInfo.app_data[idx]"></orderBike>
+        </div>
+        <div v-else-if="appInfo.app_data[idx].class === 'orderHitch'">
+          <orderHitch :hitch="appInfo.app_data[idx]"></orderHitch>
+        </div>
+        <div v-else-if="appInfo.app_data[idx].class === 'orderKtv'">
+          <orderKTV :ktv="appInfo.app_data[idx]"></orderKTV>
+        </div>
+        <div v-else-if="appInfo.app_data[idx].class === 'orderMovie'">
+          <orderMovie :movie="appInfo.app_data[idx]"></orderMovie>
+        </div>
+
       <div v-else>
         no info
       </div>
@@ -59,22 +66,25 @@
 <script>
   import orderNormalGoods from "./table/goodsOrder";
   import fansInfo from "./table/fansInfo";
-  import senderAddress from "./table/senderAdress";
   import attentionInfo from "./table/attentionInfo";
   import attentionBarInfo from "./table/barAttInfo";
-  import orderPhoneDeposit from "./table/callCharge";
+  import recharge from "./table/callCharge";
   import orderHotel from "./table/hotelOrder";
-  import orderAttractionTicket from "./table/travelOrder";
-  import deliveryAdress from "./table/deliveryAdress";
+  import orderTravel from "./table/travelOrder";
+  import cs_address from "./table/address";
   import userInfo from "./table/userInfo";
   import orderTrafficTicket from "./table/ticketOrder";
-  import traveller from  "./table/traveller"
+  import topContacts from  "./table/topContacts"
   import invoiceTitle from "./table/invoiceTitle";
+  import orderBike from "./table/orderBike";
+  import orderHitch from "./table/orderHitch";
+  import orderKTV from "./table/orderKTV";
+  import orderMovie from "./table/orderMovie";
     export default {
         name: "app_show",
         props: ["appInfo"],
-        components: {orderNormalGoods,fansInfo,senderAddress,attentionInfo,attentionBarInfo,orderPhoneDeposit,
-            orderHotel,orderAttractionTicket,deliveryAdress,userInfo,orderTrafficTicket,traveller,invoiceTitle},
+        components: {orderNormalGoods,fansInfo,attentionInfo,attentionBarInfo,recharge,orderBike,orderKTV,orderHitch,orderMovie,
+            orderHotel,orderTravel,cs_address,userInfo,orderTrafficTicket,topContacts,invoiceTitle},
         data() {
             return {
                 activeName: 'order',
@@ -86,16 +96,21 @@
             handleClick(tab, event) {
                 console.log(tab, event);
             },
-            translate(english,idx) {
+            translate(english,idx,subClass) {
                 // console.log(english,idx);
               if(english === 'orderNormalGoods') {
                   return '普通订单'
               }
-              else if(english === 'orderPhoneDeposit') {
-                  return '话费充值'
-              }
-              if(english === 'deliveryAddress') {
-                  return '收货地址'
+              if(english === 'address' ) {
+                  if(subClass === 1){
+                      return '寄件地址'
+                  }
+                  else if(subClass === 2) {
+                      return '收件地址'
+                  }
+                  else if(subClass === 3) {
+                      return '地址信息'
+                  }
               }
               if(english === 'orderHotel') {
                   return '酒店订单'
@@ -103,7 +118,7 @@
               if(english === 'orderTrafficTicket') {
                   return '购票订单'
               }
-              if(english === 'orderAttractionTicket') {
+              if(english === 'orderTravel') {
                   return '旅行订单'
               }
               if(english === 'userInfo') {
@@ -118,16 +133,27 @@
               if(english === 'attentionBarInfo') {
                   return '贴吧信息'
               }
-              if(english === 'senderAddress') {
-                  return '寄件人信息'
-              }
-              if(english === 'traveller') {
+              if(english === 'topContacts') {
                   return '常用游客'
               }
               if(english === 'invoiceTitle') {
                   return '发票抬头'
               }
-
+              if(english === 'recharge') {
+                  return '话费订单'
+              }
+              if(english === 'orderBike') {
+                  return '骑行订单'
+              }
+              if(english === 'orderHitch') {
+                  return '顺风车订单'
+              }
+              if(english === 'orderMovie') {
+                  return '电影订单'
+              }
+              if(english === 'orderKtv') {
+                  return 'KTV订单'
+              }
             }
         },
         created() {

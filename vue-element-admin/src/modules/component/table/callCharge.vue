@@ -9,12 +9,12 @@
     width="300px">
     </el-table-column>
     <el-table-column
-      prop="deposit_phone_number"
+      prop="phone"
       label="号码"
       width="280px">
     </el-table-column>
     <el-table-column
-      prop="deposit_price"
+      prop="goods_price"
       label="充值金额"
       width="200px">
     </el-table-column>
@@ -23,25 +23,21 @@
       label="充值时间"
       width="300px">
     </el-table-column>
+
   </el-table>
 </template>
 
 <script>
     export default {
-        name: "orderPhoneDeposit",
+        name: "recharge",
         props: ["charge"],
         data(){
             return{
-                form:{
-                    "deposit_phone_number":"",
-                    "deposit_price":"",
-                    "order_times":"",
-                    "order_number":""
-                }
+
             }
         },
         created() {
-            console.log("callCharge",this.charge)
+            console.log("charge",this.charge)
         }
     }
 </script>

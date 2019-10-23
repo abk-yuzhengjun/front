@@ -22,6 +22,8 @@ import * as filters from './filters' // global filters
 
 import VueSocketIO from 'vue-socket.io'
 
+import moment from 'moment'
+
 import socketio from 'socket.io-client';
 /**
  * If you don't want to use mock-server
@@ -72,4 +74,6 @@ Vue.use(new VueSocketIO({
   }
 
 }))
-
+Vue.filter('dateFormat', function (dateStr,pattern = "YYYY-MM-DD HH:mm:ss") {
+  return moment(dateStr).format(pattern);
+})

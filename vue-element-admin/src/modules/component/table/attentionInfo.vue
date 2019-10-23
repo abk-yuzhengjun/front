@@ -6,12 +6,12 @@
     <el-table-column
       prop="attention_nickname"
       label="关注人"
-      width="600">
+      width="400">
     </el-table-column>
     <el-table-column
       prop="attention_intro"
       label="介绍"
-      width="480">
+      width="400">
     </el-table-column>
   </el-table>
 </template>

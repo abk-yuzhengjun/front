@@ -3,7 +3,7 @@
   <div class ="task_info">
     <el-form style="width:100%;margin:20px">
       <el-row >
-        <el-col span="18">
+        <el-col :span="18">
           <el-form-item label="">
           <svg-icon  :icon-class=postData.app_name
                     style="width: 40px;height: 40px;margin-right: 16px ;margin-bottom:10px"/>
@@ -30,7 +30,7 @@
         <el-row :gutter="1">
           <el-col :span="6">
             <el-form-item label="创建人:">
-              {{form.creactor}}
+              {{form.creator}}
             </el-form-item>
           </el-col>
           <el-col :span="14">
@@ -42,7 +42,7 @@
       <el-row>
         <el-col :span="6">
           <el-form-item  label="开始时间:" class="label_task_name">
-            {{form.start_time}}
+            {{form.start_time | dateFormat }}
           </el-form-item>
         </el-col >
         <el-col :span="14">
@@ -56,7 +56,7 @@
       <el-row>
         <el-col :span="6">
         <el-form-item label="结束时间:">
-          {{form.update_time}}
+          {{form.update_time | dateFormat}}
         </el-form-item>
       </el-col>
         <el-col :span="14">
@@ -85,6 +85,8 @@
 <script>
   import app_show from "../component/app_show";
   const axios = require('axios')
+
+
 export default {
   name: 'appinformation',
     components: {app_show},
@@ -122,9 +124,13 @@ export default {
         appInfoUpdate(data) {                                 //监听appInfoUpdate事件，方法是后台定义和提供的
             // console.log("postData:",this.postData.task_id,this.postData.app_name);
              console.log("from:",this.form);
+             if(null === this.form) {
+                 this.getAppInfo()
+             }
             if (data.task_id === this.postData.task_id){
                   for(var i= 0;i < this.form.app_data.length;i++){
                       if(this.form.app_data[i].class === data.class){
+
                           this.form.app_data[i].data.push(data.data)
                           console.log("update app :",this.form);
                           this.scroll.detail.push('获取到新的'+ this.translate(data.class)+'信息');
@@ -209,7 +215,7 @@ export default {
             if(english === 'orderNormalGoods') {
                 return '普通订单'
             }
-            if(english === 'orderPhoneDeposit') {
+            if(english === 'recharge') {
                 return '话费充值'
             }
             if(english === 'deliveryAddress') {
@@ -260,8 +266,9 @@ export default {
             axios.post(host + '/forensic/getAppInfo', this.postData)
                 .then(response=>{
                     this.form = response.data
+                    console.log("get app info axios:",response)
                     this.calc_cnt()
-                        console.log("get app info axios:",response)
+
                     }
                 )
                 .catch(function(error) {
