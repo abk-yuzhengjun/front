@@ -21,6 +21,12 @@
       width="80">
     </el-table-column>
     <el-table-column
+      v-if = "show.order_count"
+      prop="order_count"
+      label="订单数量"
+      width="80">
+    </el-table-column>
+    <el-table-column
       v-if = "show.name"
       prop="name"
       label="收货人"
@@ -29,7 +35,7 @@
     <el-table-column
       prop="phone"
       label="号码"
-      width="150"
+      width="100"
       v-if = "show.phone">
     </el-table-column>
     <el-table-column
@@ -41,8 +47,9 @@
     <el-table-column
       v-if = "show.order_times"
       prop= "order_times"
+      :formatter="formatTime"
       label="下单时间"
-      width="150">
+      width="200">
     </el-table-column>
     <el-table-column
       v-if = "show.order_state"
@@ -75,7 +82,8 @@
                     "goods_price":false,
                     "address":false,
                     "name":false,
-                    "phone":false
+                    "phone":false,
+                    "order_count":false,
 
                 }
             }
@@ -90,6 +98,15 @@
                      // console.log("ext :",key,this.show[key])
                 }
 
+            },
+            formatTime(row, column) {
+                const date = new Date(row[column.property])
+                return date.getFullYear() + '年' +
+                    date.getMonth() + '月' +
+                    date.getDate() + '日 ' +
+                    date.getHours() + ':' +
+                    date.getMinutes()+':' +
+                    date.getSeconds()
             }
         },
         created() {

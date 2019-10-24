@@ -16,11 +16,13 @@
     <el-table-column
       prop="check_in_time"
       label="入住时间"
+      :formatter="formatTime"
       width="280px">
     </el-table-column>
     <el-table-column
       prop="check_out_time"
       label="退房时间"
+      :formatter="formatTime"
       width="270px">
     </el-table-column>
     <el-table-column
@@ -44,6 +46,17 @@
                     "order_state": "",
                     "order_price": ""
                 }]
+            }
+        },
+        methods:{
+            formatTime(row, column) {
+                const date = new Date(row[column.property])
+                return date.getFullYear() + '年' +
+                    date.getMonth() + '月' +
+                    date.getDate() + '日 ' +
+                    date.getHours() + ':' +
+                    date.getMinutes()+':' +
+                    date.getSeconds()
             }
         }
     }

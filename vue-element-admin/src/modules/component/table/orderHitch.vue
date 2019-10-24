@@ -1,25 +1,25 @@
 <template>
   <el-table
     height="300"
-
     :data="hitch.data">
     <el-table-column
       v-if = show.start_address
       prop="start_address"
       label="起点"
-      width="250px">
+      width="200px">
     </el-table-column>
     <el-table-column
       v-if = show.end_address
       prop="end_address"
       label="终点"
-      width="250px">
+      width="200px">
     </el-table-column>
     <el-table-column
       v-if = show.carpooling_time
       prop="carpooling_time"
       label="拼车时间"
-      width="150px">
+      :formatter="formatTime"
+      width="200px">
     </el-table-column>
     <el-table-column
       v-if = show.carpooling_state
@@ -33,7 +33,6 @@
       label="订单状态"
       width="100px">
     </el-table-column>
-
   </el-table>
 </template>
 
@@ -54,10 +53,18 @@
         },
         methods:{
             existence_identification(){
-                for(var key in this.hitch['data'][0])
-                {
+                for(var key in this.hitch['data'][0]) {
                     this.show[key]=true;
                 }
+            },
+            formatTime(row, column) {
+                const date = new Date(row[column.property])
+                return date.getFullYear() + '年' +
+                    date.getMonth() + '月' +
+                    date.getDate() + '日 ' +
+                    date.getHours() + ':' +
+                    date.getMinutes()+':' +
+                    date.getSeconds()
             }
         },
         created() {
