@@ -6,12 +6,12 @@
     <el-table-column
       prop="bar_name"
       label="名称"
-      width="600">
+      width="400">
     </el-table-column>
     <el-table-column
       prop="experience_value"
       label="经验值"
-      width="480">
+      width="400">
     </el-table-column>
   </el-table>
 </template>

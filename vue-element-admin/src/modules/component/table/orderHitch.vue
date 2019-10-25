@@ -1,69 +1,59 @@
 <template>
   <el-table
     height="300"
-
-    :data="tkOrder.data">
+    :data="hitch.data">
     <el-table-column
-      v-if="show.traffic_ticket_name"
-      prop="traffic_ticket_name"
-      label="票名"
-      width="200">
+      v-if = show.start_address
+      prop="start_address"
+      label="起点"
+      width="200px">
     </el-table-column>
     <el-table-column
-      v-if="show.take_a_train"
-      prop="take_a_train"
-      label="班次"
-      width="130">
+      v-if = show.end_address
+      prop="end_address"
+      label="终点"
+      width="200px">
     </el-table-column>
     <el-table-column
-      v-if="show.departure_time"
-      prop="departure_time"
-      label="出发时间"
+      v-if = show.carpooling_time
+      prop="carpooling_time"
+      label="拼车时间"
       :formatter="formatTime"
-      width="250">
+      width="200px">
     </el-table-column>
     <el-table-column
-      v-if="show.arrival_time"
-      prop="arrival_time"
-      label="到达时间"
-      :formatter="formatTime"
-      width="250">
+      v-if = show.carpooling_state
+      prop="carpooling_state"
+      label="拼车状态"
+      width="150px">
     </el-table-column>
     <el-table-column
-      v-if="show.order_state"
+      v-if = show.order_state
       prop="order_state"
       label="订单状态"
-      width="250">
-    </el-table-column>
-    <el-table-column
-      v-if="show.order_price"
-      prop="order_price"
-      label="订单价格"
-      width="130">
+      width="100px">
     </el-table-column>
   </el-table>
 </template>
 
 <script>
     export default {
-        name: "orderTrafficTicket",
-        props: ["tkOrder"],
+        name: "orderHitch",
+        props: ["hitch"],
         data(){
             return {
-                show: {
-                    "traffic_ticket_name": "",
-                    "departure_time": "",
-                    "arrival_time": "",
-                    "take_a_train": "",
-                    "order_state": "",
-                    "order_price": ""
+                show:{
+                    "carpooling_time":"",
+                    "carpooling_state":"",
+                    "order_state":"",
+                    "start_address":"",
+                    "end_address":"",
                 }
             }
         },
         methods:{
             existence_identification(){
-                for(var key in this.tkOrder['data'][0])
-                {
+                for(var key in this.hitch['data'][0]) {
                     this.show[key]=true;
                 }
             },
@@ -80,6 +70,7 @@
         created() {
             this.existence_identification();
         }
+
     }
 </script>
 

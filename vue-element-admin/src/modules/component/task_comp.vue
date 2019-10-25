@@ -343,7 +343,7 @@
             },
             blackList() {
                 // console.log("v-show capture_type",this.form.number_content.capture_mode)
-                if (1=== this.form.task_info.task_type  && 2 === this.form.task_info.number_content.capture_mode ) {
+                if(1=== this.form.task_info.task_type  && 2 === this.form.task_info.number_content.capture_mode ) {
 
                     this.pluginControl.blackList = true
                 }
@@ -361,19 +361,19 @@
                 else if(1 === this.form.type){
                     this.pluginControl.task_name = false
                     this.pluginControl.case_name = true;
-                    this.case_info.case.case_id =this.form.case_list.case_id;
-                    this.case_info.case.case_name =this.form.case_list.case_name;
+                    this.case_info.case.case_id =this.form.task_info.case_id
+                    this.case_info.case.case_name =this.form.task_info.case_name;
                     this.form.task_info.number_content.imsi_black_list =[''];
                     this.form.task_info.dev_list=[];
-                    console.log('dialogshow   ------------------------1')
+                    // console.log('dialogshow   ------------------------1')
                 }
                 else if(2 === this.form.type){
                     this.pluginControl.task_name = false
                     this.pluginControl.case_name = true
-                    this.case_info.case.case_id =this.form.case_list.case_id;
-                    this.case_info.case.case_name =this.form.case_list.case_name;
+                    this.case_info.case.case_id =this.form.task_info.case_id;
+                    this.case_info.case.case_name =this.form.task_info.case_name;
                 }
-                console.log("form", this.form)
+                // console.log("form", this.form)
                 // console.log("this.pluginControl.task_name",this.pluginControl.task_name)
 
             }
