@@ -36,7 +36,7 @@
           </el-col>
           <el-col :span="4">
             <div style="display: flex;justify-content: flex-end">
-              <span style="font-size: 14px;color: #666666;">取号(上号/取号成功)</span>
+              <span style="font-size: 14px;color: #666666;">上号/取号成功</span>
             </div>
           </el-col>
           <!--          <el-col :span="1">-->
@@ -63,7 +63,7 @@
           </el-col>
           <el-col :span="2">
             <div style="display: flex;justify-content: flex-end">
-              <el-button :type="this.task_status_show_dict.get(taskInfo.task_status)" @click="updateTaskStatus" size="mini">{{task_status_dict.get(taskInfo.task_status)}}</el-button>
+              <el-button :type="this.task_status_show_dict.get(taskInfo.task_status)" v-if="taskInfo!==undefined" @click="updateTaskStatus" size="mini">{{task_status_dict.get(taskInfo.task_status)}}</el-button>
             </div>
           </el-col>
           <el-col :span="4">
@@ -79,13 +79,13 @@
           <el-col :span="6">
             <div style="display: flex;flex-direction:row">
               <span style="font-size: 14px;color: #666666;">取号范围:&nbsp </span>
-              <span style="font-size: 14px;color: #333333;">{{this.capture_mode_dict.get(taskInfo.number_content.capture_mode)}}</span>
+              <span style="font-size: 14px;color: #333333;" v-if="taskInfo!==undefined">{{this.capture_mode_dict.get(taskInfo.number_content.capture_mode)}}</span>
             </div>
           </el-col>
           <el-col :span="6">
             <div style="display: flex;flex-direction:row">
               <span style="font-size: 14px;color: #666666;">取号方式:&nbsp </span>
-              <span style="font-size: 14px;color: #333333;">{{this.capture_type_dict.get(taskInfo.number_content.capture_type)}}</span>
+              <span style="font-size: 14px;color: #333333;" v-if="taskInfo!==undefined">{{this.capture_type_dict.get(taskInfo.number_content.capture_type)}}</span>
             </div>
           </el-col>
         </el-row>
@@ -146,7 +146,7 @@
     <div style="width: 100%;display: flex;flex-direction: column;padding:10px;">
       <el-table
         :data="tempList"
-        :header-cell-style="{color:'#303133',font: '14px Base'}"
+        :header-cell-style="{color:'#666666',font: '14px Base'}"
         :cell-style="{font: '14px Base', color:'#333333'}"
         style="margin-bottom:14px;"
         :empty-text="emptyText"
@@ -156,15 +156,30 @@
         height="300px"
       >
         <el-table-column property="imsi" label="Imsi" min-width="200px" align="left" />
-        <el-table-column property="phone" label="手机号码" min-width="200px" align="left" />
+        <el-table-column property="phone" label="手机号码" min-width="200px" align="left">
+          <template slot-scope="scope">
+            <span v-if="scope.row.phone === undefined">未取到</span>
+            <span v-else>{{scope.row.phone}}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="状态" min-width="200px" align="left" >
           <template slot-scope="scope">
             <span :class="imsi_status_show_dict.get(scope.row.status)"></span>
             <el-tag :type="imsi_status_tag_show_dict.get(scope.row.status)">{{imsi_status_dict.get(scope.row.status)}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column property="gsm_imsi_capture_ts" label="2G上号时间" min-width="200px" align="left" />
-        <el-table-column property="lte_imsi_capture_ts" label="4G上号时间" min-width="200px" align="left" />
+        <el-table-column property="gsm_imsi_capture_ts" label="2G主动式上号时间" min-width="200px" align="left" >
+          <template slot-scope="scope">
+            <span v-if="scope.row.gsm_imsi_capture_ts === undefined">2G主动式未上号</span>
+            <span v-else>{{scope.row.gsm_imsi_capture_ts}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column property="lte_imsi_capture_ts" label="4G主动式上号时间" min-width="200px" align="left" >
+          <template slot-scope="scope">
+            <span v-if="scope.row.lte_imsi_capture_ts === undefined">4G主动式未上号</span>
+            <span v-else>{{scope.row.lte_imsi_capture_ts}}</span>
+          </template>
+        </el-table-column>
         <el-table-column property="phone_capture_ts" label="取号成功时间" min-width="200px" align="left" />
         <el-table-column  label="耗时" min-width="100px" align="left" >
           <template slot-scope="scope">
@@ -234,13 +249,14 @@ export default {
       task_status_show_dict: new Map([["ready", 'primary'], ["running", "danger"], ["complete", 'success'], ["failed", 'warning'], ["canceled", 'info']]),
       message_scoll1:'',
       message_scoll2:'',
-      imsi_status_dict:new Map([["", "未开始"], ["1", "控制中心下发取号任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
+      imsi_status_dict:new Map([["", "未开始"], ["1", "控制中心下发取号任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["31", "2G主动式丢失目标"],
+          ["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
           ["51", "收到伪终端rand"],["52", "收到主动式sres"],["53", "伪终端鉴权成功"],["54", "伪终端鉴权失败"],
           ["6", "伪终端发送取号短信成功"], ["7", "伪终端发送取号短信失败"],["8", "取号成功"]]),
-      imsi_status_show_dict:new Map([["1", "status-primary"], ["2", "status-primary"], ["3", "status-warning"], ["4", "status-success"],
+      imsi_status_show_dict:new Map([["1", "status-primary"], ["2", "status-primary"], ["3", "status-warning"],["31", "status-info"], ["4", "status-success"],
           ["51", "status-primary"],["52", "status-primary"],["53", "status-success"],["54", "status-info"],
           ["5", "status-danger"], ["6", "status-warning"], ["7", "status-info"], ["8", "status-success"]]),
-        imsi_status_tag_show_dict:new Map([["1", "primary"], ["2", "primary"], ["3", "warning"], ["4", "success"], ["5", "danger"],
+        imsi_status_tag_show_dict:new Map([["1", "primary"], ["2", "primary"], ["3", "warning"],["31", "info"], ["4", "success"], ["5", "danger"],
             ["51", "primary"],["52", "primary"],["53", "success"],["54", "info"],
             ["6", "warning"], ["7", "info"], ["8", "success"]]),
       dialogPropTask: {
@@ -290,9 +306,26 @@ export default {
       },
       phoneImsiInfo() {
           console.log('watch phoneImsiInfo.......');
+          console.log(this.phoneImsiInfo)
+          if(this.phoneImsiInfo.length === 0)
+          {
+              return;
+          }
+          console.log('update bonds')
           this.bondsAllList = this.phoneImsiInfo;
           this.tableDataName = '';
           this.getCreateTable()
+      },
+      taskStatusError() {
+        let errorInfo = this.taskStatusError.msg.cause;
+        if(errorInfo === 'Active device is not online.'){
+            errorInfo = '没有可用的主动式设备'
+        }
+          this.$message({
+              message: errorInfo,
+              type: 'warning'
+          });
+          this.$store.commit('phoneDetails/webSetTaskStatusErrorFlag', 1)
       }
   },
   created() {
@@ -300,84 +333,10 @@ export default {
   },
     computed: {
         ...mapGetters({ caseInfo:'caseInfo',taskInfo:'taskInfo',
-            phoneInfo:'phoneInfo',phoneImsiInfo:'phoneImsiInfo'}),
-        // phoneInfo() {
-        //     console.log('123 computed refresh')
-        //     return this.$store.state.getters.phoneInfo
-        // }
+            phoneInfo:'phoneInfo',phoneImsiInfo:'phoneImsiInfo',
+            taskStatusError: 'taskStatusError'}),
     },
     // sockets: {
-    //     webPhoneUpdate: function (data) {
-    //         console.log('web-phone-update')
-    //         console.log(data)
-    //         if(data['msg']['task_id'] !== this.task_id)
-    //         {
-    //             return
-    //         }
-    //         var message_vuex = {
-    //                 task_id : '',
-    //                 imsi:'',
-    //                 imsi_status:'',
-    //                 timestr:'',
-    //                 phone:'',
-    //         }
-    //         message_vuex.task_id = data['msg']['task_id']
-    //         message_vuex.imsi = data['msg']['imsi']
-    //         message_vuex.imsi_status = data['msg']['imsi_status']
-    //         message_vuex.phone = data['msg']['phone']
-    //         message_vuex.timestr = data['head']['timestamp']
-    //         this.$store.commit('phoneDetails/getPhoneInfo',  message_vuex)
-    //         if(data['msg']['imsi_status'] === '8')
-    //         {
-    //             this.notifyMessage('',data['msg']['imsi']+'\n'+this.imsi_status_dict.get(data['msg']['imsi_status'])+'<br/>'+data['msg']['phone']+'<br/>'+data['head']['timestamp'])
-    //         }
-    //
-    //         if(this.message_scoll1.flag === 0)
-    //         {
-    //             this.message_scoll1.imsi = data['msg']['imsi']
-    //             this.message_scoll1.imsi_status = data['msg']['imsi_status']
-    //             this.message_scoll1.phone = data['msg']['phone']
-    //             this.message_scoll1.timestr = data['head']['timestamp']
-    //             this.message_scoll1.flag = 1
-    //             console.log(1)
-    //             console.log(this.message_scoll1)
-    //         }
-    //         else if(this.message_scoll2.flag === 0)
-    //         {
-    //             this.message_scoll2.imsi = data['msg']['imsi']
-    //             this.message_scoll2.imsi_status = data['msg']['imsi_status']
-    //             this.message_scoll2.phone = data['msg']['phone']
-    //             this.message_scoll2.timestr = data['head']['timestamp']
-    //             this.message_scoll2.flag = 1
-    //             console.log(2)
-    //             console.log(this.message_scoll2)
-    //         }
-    //         else
-    //         {
-    //             this.message_scoll1.imsi = this.message_scoll2.imsi;
-    //             this.message_scoll1.imsi_status = this.message_scoll2.imsi_status;
-    //             this.message_scoll1.phone = this.message_scoll2.phone;
-    //             this.message_scoll1.timestr = this.message_scoll2.timestr;
-    //             this.message_scoll2.imsi = data['msg']['imsi']
-    //             this.message_scoll2.imsi_status = data['msg']['imsi_status']
-    //             this.message_scoll2.phone = data['msg']['phone']
-    //             this.message_scoll2.timestr = data['head']['timestamp']
-    //             console.log(3)
-    //             console.log(this.message_scoll2)
-    //         }
-    //
-    //     },
-    //     webPhoneUpdateData: function (data) {
-    //         this.bondsAllList = data;
-    //         this.tableDataName = '';
-    //         this.getCreateTable()
-    //     },
-    //     webChangeTaskStatusAck: function (data) {
-    //         console.log('web-change-task-status-ack 2')
-    //         console.log(data)
-    //         this.$store.state.forensic.case_info = data
-    //     },
-    //
     // },
   methods: {
       closeTaskDialog() {
@@ -426,10 +385,10 @@ export default {
           {
               begin4GTime = begin2GTime
           }
-
           let time2G = new Date(begin2GTime);
           let time4G = new Date(begin4GTime);
           let time1 = Math.min(time2G,time4G)
+          time1 = new Date(time1)
           let time2 = new Date(endTime);
           let spendTimeSecond = Math.abs(time1.getTime() - time2.getTime())/1000;
           let spendTimeMin = parseInt(spendTimeSecond/60);
@@ -446,16 +405,12 @@ export default {
       },
       getPhoneInfo(data) {
           console.log('getPhoneInfo:')
-          console.log(data)
           let temp = data
           let result = []
           for(let index in temp)
           {
-              console.log(temp[index]['msg']['task_id'] + '-------------' +this.task_id)
               if(temp[index]['msg']['task_id'] === this.task_id)
               {
-                  console.log('123')
-                  console.log(temp[index])
                   result.push(temp[index])
               }
           }
@@ -638,6 +593,7 @@ export default {
             }
         }
       this.total1 = this.bondsAllList.length
+        this.currentPage1 = 1;
       this.flag = 0
       this.handleCurrentChange1(this.currentPage1)
     },

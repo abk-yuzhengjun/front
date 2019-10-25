@@ -18,6 +18,7 @@
       width="100%"
       height="600px"
     >
+      <el-table-column property="head.pktid" label="id" min-width="50px" align="left" />
       <el-table-column property="msg.imsi" label="imsi" min-width="100px" align="left" />
       <el-table-column property="msg.phone" label="手机号码" min-width="100px" align="left" />
       <el-table-column label="状态" min-width="200px" align="left" >
@@ -61,10 +62,12 @@
                 caseID: '',
                 tempList: [],
                 emptyText: '',
-                imsi_status_dict:new Map([["", "未开始"], ["1", "控制中心下发取号任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
+                imsi_status_dict:new Map([["", "未开始"], ["1", "控制中心下发取号任务"], ["2", "4G主动式上号"],["3", "2G主动式上号"],["31", "2G主动式丢失目标"],
+                    ["4", "控制中心给伪终端发任务"],["5", "伪终端鉴权中"],
                     ["51", "收到伪终端rand"],["52", "收到主动式sres"],["53", "伪终端鉴权成功"],["54", "伪终端鉴权失败"],
                     ["6", "伪终端发送取号短信成功"], ["7", "伪终端发送取号短信失败"],["8", "取号成功"]]),
-                imsi_status_show_dict:new Map([["", "status-info"], ["1", "status-success"], ["2", "status-primary"],["3", "status-primary"],["4", "status-warning"],["5", "status-warning"],
+                imsi_status_show_dict:new Map([["", "status-info"], ["1", "status-success"], ["2", "status-primary"],["3", "status-primary"],["31", "status-info"],
+                    ["4", "status-warning"],["5", "status-warning"],
                     ["51", "status-warning"],["52", "status-warning"],["53", "status-success"],["54", "status-info"],
                     ["6", "status-success"], ["7", "status-info"],["8", "status-success"]]),
             }
@@ -89,25 +92,24 @@
                 this.task_id = this.$route.query.task_id
             },
             init() {
-                // this.getParams();
-                // let temp = []
-                // let temp2 = []
-                // temp = this.$store.state.phoneDetails.phone_info;
-                // let length = temp.length - 1;
-                // console.log(length);
-                // if(length >= 0)
-                // {
-                //     for (let index = length;index >= 0; index--)
-                //     {
-                //         console.log(temp[index])
-                //         if(temp[index].task_id === this.task_id) {
-                //             temp2.push(temp[index])
-                //         }
-                //     }
-                // }
-                this.bondsAllList = this.phoneInfo
+                this.getParams();
+                let temp = []
+                let temp2 = []
+                temp = this.phoneInfo
+                let length = temp.length - 1;
+                console.log(length)
+                if(length >= 0)
+                {
+                    for (let index = length;index >= 0; index--)
+                    {
+                        console.log('task_id1:' + temp[index].msg.task_id + 'task_id2:'+this.task_id)
+                        if(temp[index].msg.task_id === this.task_id) {
+                            temp2.push(temp[index])
+                        }
+                    }
+                }
+                this.bondsAllList = temp2
                 console.log('phoneDeatilsShow created!')
-                console.log(this.task_id)
                 console.log(this.bondsAllList)
                 this.getCreateTable()
             },
@@ -120,6 +122,7 @@
                 this.handleCurrentChange1(this.currentPage1)
             },
             handleCurrentChange1: function (currentPage) { // 页码切换
+                console.log(this.bondsAllList,currentPage)
                 this.currentPage1 = currentPage
                 // eslint-disable-next-line eqeqeq
                 if (this.flag === 0) {
@@ -130,6 +133,7 @@
             },
             // 分页方法（重点）
             currentChangePage(list, currentPage) {
+                console.log(list,currentPage)
                 let from = (currentPage - 1) * this.pageSize
                 this.tempList = []
                 const to = currentPage * this.pageSize
@@ -138,10 +142,13 @@
                         this.tempList.push(list[from])
                     }
                 }
+                console.log(this.tempList)
             },
             getCreateTable() {
                 this.total1 = this.bondsAllList.length
                 this.flag = 0
+                this.currentPage1 = 1;
+                console.log(this.total1,this.flag,this.currentPage1)
                 this.handleCurrentChange1(this.currentPage1)
             },
             doFilter() {

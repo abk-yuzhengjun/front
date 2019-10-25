@@ -27,7 +27,12 @@
           </template>
           <span style="font-size: 14px;padding-left: 4px" v-if="data.node_ind==='app'">{{ app_name_dict.get(node.label) }}</span>
           <span style="font-size: 14px;padding-left: 4px" v-else>{{ node.label }}</span>
+<!--          <span>-->
+<!--            <el-tag v-if="data.node_ind === 'task_number'" :type="task_status_show_dict.get(data.task_status)" size="mini">{{task_status_dict.get(data.task_status)}}</el-tag>-->
+<!--            <el-tag v-if="data.node_ind === 'task_evidence'" :type="task_status_show_dict.get(data.task_status)" size="mini">{{task_status_dict.get(data.task_status)}}</el-tag>-->
+<!--          </span>-->
         </span>
+
       </el-tree>
       </el-scrollbar>
     </div>
@@ -62,7 +67,9 @@
                 defaultProps: {
                     children: 'children',
                     label: 'label'
-                }
+                },
+                task_status_dict: new Map([["ready", "未开始"], ["running", "运行中"], ["complete", "已完成"], ["failed", "已失败"], ["canceled", "已取消"]]),
+                task_status_show_dict: new Map([["ready", 'primary'], ["running", "danger"], ["complete", 'success'], ["failed", 'warning'], ["canceled", 'info']]),
             }
         },
         watch: {
@@ -275,6 +282,7 @@
                                 id: treeId++,
                                 evidence: 0,
                                 node_ind:'task_number',
+                                task_status: this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].task_status,
                                 children: []
                             }
                             if (this.taskTableData[i].task_list[this.taskTableData[i].task_list.length - temp].task_type === 2) {

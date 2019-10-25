@@ -63,15 +63,21 @@ const getters = {
   phoneImsiInfo:state => {
     console.log('phoneImsiInfo Getter refresh')
     let temp = []
-    for (let index in state.phoneDetails.phone_imso_info)
+    for (let index in state.phoneDetails.phone_imsi_info)
     {
-      if(state.phoneDetails.phone_imso_info[index][0].task_id === state.forensic.task_id)
+      if(state.phoneDetails.phone_imsi_info[index].task_id === state.forensic.task_id)
       {
-          return state.phoneDetails.phone_imso_info[index];
+          return state.phoneDetails.phone_imsi_info;
       }
     }
     return temp
 
+  },
+  taskStatusError:state => {
+    console.log('taskStatusError Getter refresh')
+    if(state.phoneDetails.task_status_error_flag === 0) {
+      return state.phoneDetails.task_status_error
+    }
   }
 
 }

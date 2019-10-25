@@ -36,7 +36,7 @@
           </el-col>
           <el-col :span="4">
             <div style="display: flex;justify-content: flex-end">
-              <span style="font-size: 14px;color: #666666;">取证(上号/取证成功)</span>
+              <span style="font-size: 14px;color: #666666;">上号/取证成功</span>
             </div>
           </el-col>
           <!--          <el-col :span="1">-->
@@ -105,7 +105,7 @@
           <el-col :span="5">
             <div style="display: flex;flex-direction:row">
               <span style="font-size: 16px;color: #333333;" v-if=" this.message_scoll!== ''">{{this.phone_status_dict.get(this.message_scoll.msg.phone_status)}}</span>
-              <span style="font-size: 16px;color: #333333;" v-else-if=" this.message_scoll!== '' && this.message_scoll.msg.phone_status=== '8'">已上号&nbsp&nbsp&nbsp{{this.app_name_dict.get(this.message_scoll.msg.app)}}&nbsp&nbsp&nbsp&nbsp{{this.app_status_dict.get(this.message_scoll.msg.app_status)}}</span>
+              <span style="font-size: 16px;color: #333333;" v-else-if=" this.message_scoll!== '' && this.message_scoll.msg.phone_status=== ''">已上号&nbsp&nbsp&nbsp{{this.app_name_dict.get(this.message_scoll.msg.app)}}&nbsp&nbsp&nbsp&nbsp{{this.app_status_dict.get(this.message_scoll.msg.app_status)}}</span>
             </div>
           </el-col>
           <el-col :span="8">
@@ -301,8 +301,8 @@ export default {
       task_status_dict: new Map([["ready", "准备中"], ["running", "运行中"], ["complete", "已完成"],["canceled",'已取消']]),
       task_status_show_dict: new Map([["ready", 'primary'], ["running", "danger"], ["complete", 'success'], ["failed", 'warning'], ["canceled", 'info']]),
       app_status_dict: new Map([["1", "控制中心给取证模块下发取证任务"], ["2", "取证模块点击验证码成功"], ["3", "取证模块点击验证码失败"], ["4", "伪终端收到验证码"],
-          ["5", "登录失败"], ["6", "登录失败"], ["7", "取证完成"],["8", "取证失败"]]),
-      app_show_dict: new Map([["1", "status-primary"], ["2", "status-success"], ["3", "status-info"], ["4", "status-warning"], ["5", "status-info"],
+          ["5", "登录成功"], ["6", "登录失败"], ["7", "取证完成"],["8", "取证失败"]]),
+      app_show_dict: new Map([["1", "status-primary"], ["2", "status-success"], ["3", "status-info"], ["4", "status-warning"], ["5", "status-success"],
           ["6", "status-info"], ["7", "status-success"], ["8", "status-info"]]),
       dialogPropTask: {
             type: 0,
@@ -348,50 +348,26 @@ export default {
       evidenceInfo() {
           console.log('watch evidenceInfo.......');
           this.getEvidenceInfo(this.evidenceInfo);
+      },
+      taskStatusError() {
+          let errorInfo = this.taskStatusError.msg.cause;
+          if(errorInfo === 'Active device is not online.'){
+              errorInfo = '没有可用的主动式设备.'
+          }
+          this.$message({
+              message: errorInfo,
+              type: 'warning'
+          });
+          this.$store.commit('phoneDetails/webSetTaskStatusErrorFlag', 1)
       }
   },
   created() {
     this.init()
   },
     computed: {
-         ...mapGetters({ caseInfo:'caseInfo',taskInfo:'taskInfo',evidenceInfo:'evidenceInfo'}),
+         ...mapGetters({ caseInfo:'caseInfo',taskInfo:'taskInfo',
+             evidenceInfo:'evidenceInfo',taskStatusError:'taskStatusError'}),
     },
-    // sockets: {
-    //     webEvidenceUpdate: function (data) {
-    //         console.log('web-evidence-update')
-    //         console.log(data)
-    //         if(data['msg']['task_id'] !== this.task_id)
-    //         {
-    //             return
-    //         }
-    //         this.message_scoll.phone = data['msg']['phone']
-    //         this.message_scoll.app = data['msg']['app']
-    //         this.message_scoll.app_status = data['msg']['app_status']
-    //         this.message_scoll.phone_status = data['msg']['phone_status']
-    //         this.message_scoll.timestr = data['head']['timestamp']
-    //         if(this.message_scoll.phone_status !== '8')
-    //         {
-    //             this.notifyMessage('',this.message_scoll.phone+'\n'+this.phone_status_show_dict.get(this.message_scoll.phone_status)+'<br/>'+this.message_scoll.timestr)
-    //         }
-    //         else
-    //         {
-    //             this.notifyMessage('',this.message_scoll.phone+'\n'+this.phone_status_show_dict.get(this.message_scoll.phone_status)+'<br/>'+
-    //                 this.app_name_dict.get(this.message_scoll.app)+'\n'+ this.app_status_dict.get(this.message_scoll.app_status)+'<br/>'
-    //                 +this.message_scoll.timestr)
-    //         }
-    //         console.log(this.message_scoll)
-    //     },
-    //     webEvidenceUpdateData: function (data) {
-    //         console.log('webEvidenceUpdateData')
-    //         console.log(data)
-    //         this.$store.state.forensic.case_info = data
-    //     },
-    //     webChangeTaskStatusAck: function (data) {
-    //         console.log('web-change-task-status-ack 2')
-    //         console.log(data)
-    //         this.$store.state.forensic.case_info = data
-    //     },
-    // },
   methods: {
       closeTaskDialog() {
           console.log('-------------Task----------------')
@@ -463,7 +439,7 @@ export default {
                     this.tableDataName = ''
                     for (let index in this.task_info.evidence_content)
                     {
-                        if( this.task_info.evidence_content[index].phone_status === "52")
+                        if( this.task_info.evidence_content[index].phone_status === "53" || this.task_info.evidence_content[index].phone_status === "6")
                         {
                             this.phoneNumber++;
                         }

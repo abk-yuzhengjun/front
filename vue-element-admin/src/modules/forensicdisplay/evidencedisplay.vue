@@ -292,10 +292,21 @@
             '$route': 'updateTable',
             caseInfo() {
                 this.updateTable()
+            },
+            taskStatusError() {
+                let errorInfo = this.taskStatusError.msg.cause;
+                if(errorInfo === 'Active device is not online.'){
+                    errorInfo = '没有可用的主动式设备.'
+                }
+                this.$message({
+                    message: errorInfo,
+                    type: 'warning'
+                });
+                this.$store.commit('phoneDetails/webSetTaskStatusErrorFlag', 1)
             }
         },
         computed: {
-            ...mapGetters({ caseInfo:'caseInfo'}),
+            ...mapGetters({ caseInfo:'caseInfo',taskStatusError:'taskStatusError'}),
         },
         // sockets: {
         //     webChangeTaskStatusAck: function (data) {
