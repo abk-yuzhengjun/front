@@ -153,35 +153,34 @@
         :default-sort="{prop:'time',order:'ascending'}"
         :highlight-current-row="true"
         width="100%"
-        height="300px"
       >
-        <el-table-column property="imsi" label="Imsi" min-width="200px" align="left" />
-        <el-table-column property="phone" label="手机号码" min-width="200px" align="left">
+        <el-table-column property="imsi" label="Imsi" min-width="20px" align="left" />
+        <el-table-column property="phone" label="手机号码" min-width="20px" align="left">
           <template slot-scope="scope">
             <span v-if="scope.row.phone === undefined">未取到</span>
             <span v-else>{{scope.row.phone}}</span>
           </template>
         </el-table-column>
-        <el-table-column label="状态" min-width="200px" align="left" >
+        <el-table-column label="状态" min-width="20px" align="left" >
           <template slot-scope="scope">
             <span :class="imsi_status_show_dict.get(scope.row.status)"></span>
             <el-tag :type="imsi_status_tag_show_dict.get(scope.row.status)">{{imsi_status_dict.get(scope.row.status)}}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column property="gsm_imsi_capture_ts" label="2G主动式上号时间" min-width="200px" align="left" >
+        <el-table-column property="gsm_imsi_capture_ts" label="2G主动式上号时间" min-width="20px" align="left" >
           <template slot-scope="scope">
             <span v-if="scope.row.gsm_imsi_capture_ts === undefined">2G主动式未上号</span>
             <span v-else>{{scope.row.gsm_imsi_capture_ts}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="lte_imsi_capture_ts" label="4G主动式上号时间" min-width="200px" align="left" >
+        <el-table-column property="lte_imsi_capture_ts" label="4G主动式上号时间" min-width="20px" align="left" >
           <template slot-scope="scope">
             <span v-if="scope.row.lte_imsi_capture_ts === undefined">4G主动式未上号</span>
             <span v-else>{{scope.row.lte_imsi_capture_ts}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="phone_capture_ts" label="取号成功时间" min-width="200px" align="left" />
-        <el-table-column  label="耗时" min-width="100px" align="left" >
+        <el-table-column property="phone_capture_ts" label="取号成功时间" min-width="20px" align="left" />
+        <el-table-column  label="耗时" min-width="10px" align="left" >
           <template slot-scope="scope">
             <span>{{calcSpendTime(scope.row.gsm_imsi_capture_ts,scope.row.lte_imsi_capture_ts,scope.row.phone_capture_ts)}}</span>
           </template>
@@ -314,7 +313,16 @@ export default {
           console.log('update bonds')
           this.bondsAllList = this.phoneImsiInfo;
           this.tableDataName = '';
+          // this.currentPage1 = 1;
+          // let page = parseInt(this.phoneImsiInfo.length/this.pageSize)
+          // if(page * this.pageSize < this.phoneImsiInfo.length)
+          // {
+          //     page += 1
+          // }
+          // this.currentPage1 = page
           this.getCreateTable()
+
+
       },
       taskStatusError() {
         let errorInfo = this.taskStatusError.msg.cause;
@@ -592,8 +600,8 @@ export default {
                 this.capturePhoneNumber++;
             }
         }
-      this.total1 = this.bondsAllList.length
         this.currentPage1 = 1;
+      this.total1 = this.bondsAllList.length
       this.flag = 0
       this.handleCurrentChange1(this.currentPage1)
     },

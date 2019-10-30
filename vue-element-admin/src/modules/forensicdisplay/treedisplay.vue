@@ -38,8 +38,10 @@
     </div>
     <div style="width:1%; height: 100%; background:#F3F4F7;"/>
     <!--    </div>-->
-    <div style="width:82%; height: 100%; background:#FFFFFF;">
+    <div style="width:82%; ; background:#FFFFFF;">
+      <el-scrollbar style="height: 100%;width: 100%; padding-top: 5px">
         <router-view/>
+      </el-scrollbar>
     </div>
   </div>
 </template>

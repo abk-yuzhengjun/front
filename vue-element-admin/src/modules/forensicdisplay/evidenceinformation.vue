@@ -149,10 +149,6 @@
           <el-col :span="6">
             <span style="font-size: 16px;color: #666666;" >imsi:{{item.imsi}}</span>
           </el-col>
-
-<!--          <el-col :span="6">-->
-<!--            <span style="font-size: 16px;color: #666666;"> 取号时间：2019-9-20 10:18:49</span>-->
-<!--          </el-col>-->
           <el-col :span="6">
             <span style="font-size: 16px;color: #666666;">取证状态：&nbsp</span>
             <el-tag :type="phone_status_show_dict.get(item.phone_status)">{{phone_status_dict.get(item.phone_status)}}</el-tag>
@@ -172,11 +168,12 @@
     </el-row>
 
 <!--    <el-divider></el-divider>-->
-    <div style="padding-left: 20px;padding-right: 20px;height: 400px">
+    <div style="padding-left: 20px;padding-right: 20px;">
       <el-table
         :data="tempList"
         :show-header="false"
         :header-cell-style="{color:'#666666',font: '14px Base'}"
+        style="margin-bottom:14px;"
         :cell-style="{font: '14px Base', color:'#333333'}"
         :empty-text="emptyText"
         :default-sort="{prop:'time',order:'ascending'}"
@@ -192,29 +189,29 @@
             <svg-icon :icon-class="scope.row.app_name" style="width: 40px;height: 40px"></svg-icon>
           </template>
         </el-table-column>
-        <el-table-column  min-width="15px" align="left">
+        <el-table-column  min-width="20px" align="left">
           <template slot-scope="scope">
             <span style="font-size: 14px;color: #666666; font-weight: bold;">{{ app_name_dict.get(scope.row.app_name) }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column min-width="20px" align="left" >
+        <el-table-column min-width="15px" align="left" >
           <template slot-scope="scope">
             <span :class="app_show_dict.get(scope.row.app_status)"></span>
             <span style="font-size: 14px;color: #666666;">{{app_status_dict.get(scope.row.app_status)}}</span>
           </template>
         </el-table-column>
-        <el-table-column min-width="20px" align="left" >
-          <template slot-scope="scope">
-            <span style="font-size: 14px;color: #666666;"></span>
-          </template>
-        </el-table-column>
-        <el-table-column min-width="20px" align="left" >
+<!--        <el-table-column min-width="20px" align="left" >-->
+<!--          <template slot-scope="scope">-->
+<!--            <span style="font-size: 14px;color: #666666;"></span>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
+        <el-table-column min-width="15px" align="left" >
           <template slot-scope="scope">
             <span style="font-size: 14px;color: #666666;">{{scope.row.update_ts}}</span>
           </template>
         </el-table-column>
-        <el-table-column min-width="36px" align="center" >
+        <el-table-column min-width="10px" align="center" >
           <template slot-scope="scope">
             <el-button type="text" @click="jumpToAppInformation(scope.row,scope.index)">更多</el-button>
           </template>
@@ -530,6 +527,8 @@ export default {
           this.dialogPropTask.task_info.task_type = this.task_info.task_type
           this.dialogPropTask.task_info.evidence_content = this.task_info.evidence_content
           this.dialogPropTask.task_info.number_content = this.task_info.number_content
+          console.log('1122233')
+          console.log(this.dialogPropTask)
       },
     handleSizeChange1: function(pageSize) { // 每页条数切换
       // eslint-disable-next-line eqeqeq

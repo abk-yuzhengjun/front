@@ -77,7 +77,7 @@
 <!--    <div style="width:100%;padding-left:20px;justify-content: flex-start">-->
 <!--      <el-button type="primary" size="mini" @click="jumpToTask">+创建任务</el-button>-->
 <!--    </div>-->
-    <div style="width: 100%;height: 660px; display: flex;flex-direction: column;padding-left:20px;padding-right:10px;">
+    <div style="width: 100%; display: flex;flex-direction: column;padding-left:20px;padding-right:10px;">
       <el-table
         :data="tempList"
         :header-cell-style="{color:'#666666',font: '14px Base'}"
@@ -88,7 +88,6 @@
         :default-sort="{prop:'time',order:'ascending'}"
         :highlight-current-row="true"
         width="100%"
-        height="660px"
       >
         <!--        <el-table-column type="index" :index="indexMethod" label=" " min-width="100px" align="center" />-->
 <!--        <el-table-column type="expand" min-width="5px">-->

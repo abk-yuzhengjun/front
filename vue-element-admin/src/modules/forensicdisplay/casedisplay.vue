@@ -16,7 +16,6 @@
         :default-sort="{prop:'create_ts',order:'descending'}"
         :highlight-current-row="true"
         width="100%"
-        height="1"
       >
         <!--        <el-table-column type="index" :index="indexMethod" label=" " min-width="100px" align="center" />-->
 <!--        <el-table-column min-width="5px">-->
