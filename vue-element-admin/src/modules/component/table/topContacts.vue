@@ -52,6 +52,9 @@
                 }
             }
         },
+        watch: {
+            '$route': 'existence_identification'
+        },
         created() {
             this.existence_identification();
         }

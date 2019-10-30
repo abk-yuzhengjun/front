@@ -61,6 +61,7 @@
       </el-col>
         <el-col :span="14">
           <el-form-item label="最新消息:" >
+
             <div class="scroll-wrap">
               <ul class="scroll-content" :style="{ top }">
                 <li v-for="item in scroll.detail">{{item}}</li >
@@ -112,7 +113,14 @@ export default {
           },
 
           form: {
-
+              app:'',
+              creator:'',
+              deleted:'',
+              imsi:'',
+              phone:'',
+              start_time:'',
+              update_time:'',
+              app_data:[]
           },
 
           activeName: 'second',
@@ -120,20 +128,21 @@ export default {
       }
 
     },
+    watch: {
+        '$route': 'init'
+  },
     sockets: {
         appInfoUpdate(data) {                                 //监听appInfoUpdate事件，方法是后台定义和提供的
             // console.log("postData:",this.postData.task_id,this.postData.app_name);
-             console.log("from:",this.form);
-             if(null === this.form) {
-                 this.getAppInfo()
-             }
+            // console.log("from:",this.form);
+
             if (data.task_id === this.postData.task_id){
                   for(var i= 0;i < this.form.app_data.length;i++){
                       if(this.form.app_data[i].class === data.class){
 
                           this.form.app_data[i].data.push(data.data)
                           console.log("update app :",this.form);
-                          this.scroll.detail.push('获取到新的'+ this.translate(data.class)+'信息');
+                          this.scroll.detail.push(+'收到新的'+ this.translate(data.class)+'信息');
 
                           this.cnt += 1;
                           // this.message_tip(this.detail)
@@ -141,13 +150,22 @@ export default {
                       }
 
                 }
+                this.form.app_data[i] = data
+                this.scroll.detail.push('收到新的'+ this.translate(data.class)+'信息');
+                this.cnt += 1;
 
             }
-
         }
-
     },
     methods: {
+        init(){
+            this.getAppInfo()
+            this.ScrollUp()
+            this.formInit()
+        },
+        formInit(){
+          this.form.app_data=[]
+        },
         ScrollUp(){
             setInterval(_ => {
                 if (this.scroll.activeIndex < this.scroll.detail.length) {
@@ -206,7 +224,7 @@ export default {
             if(name === 'Xiechenglvxing'){
                 return '携程旅行'
             }
-            if(name === 'Qunaer'){
+            if(name === 'Qunar'){
                 return '去哪儿'
             }
         },
@@ -256,7 +274,7 @@ export default {
 
         getAppInfo() {
             const host = 'http://localhost:5000'
-            // console.log("query",this.$route.query)
+            console.log("query",this.$route.query)
             this.postData.task_id = this.$route.query.task_id
             this.postData.phone = this.$route.query.phone
             this.postData.app_name = this.$route.query.appName
@@ -265,6 +283,7 @@ export default {
 
             axios.post(host + '/forensic/getAppInfo', this.postData)
                 .then(response=>{
+                    if(null !== response.data)
                     this.form = response.data
                     console.log("get app info axios:",response)
                     this.calc_cnt()
@@ -283,8 +302,7 @@ export default {
     },
     created(){
       // console.log("app information create")
-        this.getAppInfo()
-        this.ScrollUp()
+       this.init()
 
     }
 }
@@ -335,7 +353,7 @@ export default {
   }
   .scroll-content {
     position: relative;
-    transition: top 0.5s;
+    transition: top 2s;
   }
   li{
     line-height: 50px;

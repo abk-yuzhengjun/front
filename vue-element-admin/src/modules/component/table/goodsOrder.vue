@@ -18,7 +18,7 @@
       v-if = "show.goods_price"
       prop="goods_price"
       label="订单价格"
-      width="80">
+      width="110">
     </el-table-column>
     <el-table-column
       v-if = "show.order_count"
@@ -30,12 +30,12 @@
       v-if = "show.name"
       prop="name"
       label="收货人"
-      width="120" >
+      width="110" >
     </el-table-column>
     <el-table-column
       prop="phone"
       label="号码"
-      width="100"
+      width="110"
       v-if = "show.phone">
     </el-table-column>
     <el-table-column
@@ -47,9 +47,8 @@
     <el-table-column
       v-if = "show.order_times"
       prop= "order_times"
-      :formatter="formatTime"
       label="下单时间"
-      width="200">
+      width="210">
     </el-table-column>
     <el-table-column
       v-if = "show.order_state"
@@ -108,6 +107,9 @@
                     date.getMinutes()+':' +
                     date.getSeconds()
             }
+        },
+        watch: {
+            '$route': 'existence_identification'
         },
         created() {
             this.existence_identification();

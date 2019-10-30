@@ -58,7 +58,8 @@
                     date.getMinutes()+':' +
                     date.getSeconds()
             }
-        }
+        },
+
     }
 </script>
 
