@@ -1,19 +1,17 @@
 <template>
   <el-table
     height="300"
-
     :data="fInfo.data">
     <el-table-column
       prop="fans_nickname"
       label="粉丝名"
-      width="600">
+      width="300">
     </el-table-column>
     <el-table-column
       prop="fans_state"
       label="状态"
-      width="480">
+      width="300">
     </el-table-column>
-
   </el-table>
 </template>
 

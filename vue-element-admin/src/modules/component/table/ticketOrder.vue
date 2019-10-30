@@ -20,20 +20,20 @@
       prop="departure_time"
       label="出发时间"
       :formatter="formatTime"
-      width="250">
+      width="200">
     </el-table-column>
     <el-table-column
       v-if="show.arrival_time"
       prop="arrival_time"
       label="到达时间"
       :formatter="formatTime"
-      width="250">
+      width="200">
     </el-table-column>
     <el-table-column
       v-if="show.order_state"
       prop="order_state"
       label="订单状态"
-      width="250">
+      width="200">
     </el-table-column>
     <el-table-column
       v-if="show.order_price"
@@ -76,6 +76,9 @@
                     date.getMinutes()+':' +
                     date.getSeconds()
             }
+        },
+        watch: {
+            '$route': 'existence_identification'
         },
         created() {
             this.existence_identification();

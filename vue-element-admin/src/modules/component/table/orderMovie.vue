@@ -4,16 +4,16 @@
 
     :data="movie.data">
     <el-table-column
+      v-if = show.movie_name
+      prop="movie_name"
+      label="影片名称"
+      width="200px">
+    </el-table-column>
+    <el-table-column
       v-if = show.movie_theater
       prop="movie_theater"
       label="电影院"
       width="200px">
-    </el-table-column>
-    <el-table-column
-      v-if = show.movie_name
-      prop="movie_name"
-      label="影片名称"
-      width="250px">
     </el-table-column>
     <el-table-column
       v-if = show.movie_session
@@ -66,6 +66,9 @@
                     this.show[key]=true;
                 }
             }
+        },
+        watch: {
+            '$route': 'existence_identification'
         },
         created() {
             this.existence_identification();

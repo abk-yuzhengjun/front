@@ -48,10 +48,9 @@
           </el-input>
           <el-select v-model="form.task_info.evidence_content[i].app_list" multiple placeholder="请选择" class="grid-list-2">
             <el-option
-              v-for="item in form.app_list"
-              :key="item"
-              :value="item"
-            />
+              v-for="(item,index) in form.app_list"
+              :key="index"
+              :value="item"/>
           </el-select>
           <el-button type="danger" @click.prevent="removeEvidentList(v)" icon="el-icon-minus" round></el-button>
         </div>
@@ -227,10 +226,54 @@
                     return 'Xiechenglvxing'
                 }
                 if(name === '去哪儿'){
-                    return 'Qunaer'
+                    return 'Qunar'
                 }
                 if(name === '拼多多'){
                     return 'Pinduoduo'
+                }
+
+
+
+            },
+            nameRetranslate(name){
+                if(name === 'Taobao'){
+                    return '淘宝'
+                }
+                if(name === 'Tongchenglvyou'){
+                    return '同程旅游'
+                }
+                if(name === 'Baidutieba'){
+                    return '百度贴吧'
+                }
+                if(name === 'Cainiaoguoguo'){
+                    return '菜鸟裹裹'
+                }
+                if(name === 'Haluochuxing'){
+                    return '哈啰出行'
+                }
+                if(name === 'Meituan'){
+                    return '美团'
+                }
+                if(name === 'Meituanwaimai'){
+                    return '美团外卖'
+                }
+                if(name === 'Mango'){
+                    return '芒果电单车'
+                }
+                if(name === 'Mobike'){
+                    return '摩拜单车'
+                }
+                if(name === 'Sinaweibo'){
+                    return '新浪微博'
+                }
+                if(name === 'Xiechenglvxing'){
+                    return '携程旅行'
+                }
+                if(name === 'Qunar'){
+                    return '去哪儿'
+                }
+                if(name === 'Pinduoduo'){
+                    return '拼多多'
                 }
 
 
@@ -256,18 +299,26 @@
                     });
                 });
             },
-            get_app_list(){
-                // var date = new Date();
-                // var nowTime = date.getUTCFullYear()+'-'+date.getUTCMonth()+'-'+date.getUTCDay()+
-                //     'T'+date.getUTCHours()+':'+date.getUTCMinutes()+':'+date.getUTCSeconds()+'.000:00';
-
+            list_from_list(){
                 for(var i = 0;i <this.form.task_info.evidence_content.length;i++){
-
-                    // this.form.task_info.evidence_content[i].update_ts = nowTime;
 
                     for(var j = 0;j < this.form.task_info.evidence_content[i].app_list.length;j++){
 
-                        var obj = {'app_name':'', 'app_status':'','update_ts':''};
+                        var obj ;
+                        obj = this.nameRetranslate(this.form.task_info.evidence_content[i].app_list[j].app_name);
+                        this.form.task_info.evidence_content[i].app_list[j] =obj
+
+                    }
+                }
+                console.log("list_from_list:",this.form.task_info)
+            },
+            get_app_list(){
+
+                for(var i = 0;i <this.form.task_info.evidence_content.length;i++){
+
+                    for(var j = 0;j < this.form.task_info.evidence_content[i].app_list.length;j++){
+
+                        var obj = {'app_name':'', 'app_status':'ready','update_ts':''};
                         obj['app_name'] = this.nameTranslate(this.form.task_info.evidence_content[i].app_list[j]);
                         this.form.task_info.evidence_content[i].app_list[j] =obj
 
@@ -342,7 +393,7 @@
                 }
             },
             blackList() {
-                // console.log("v-show capture_type",this.form.number_content.capture_mode)
+
                 if(1=== this.form.task_info.task_type  && 2 === this.form.task_info.number_content.capture_mode ) {
 
                     this.pluginControl.blackList = true
@@ -355,23 +406,25 @@
             dialogshow() {
 
                 if(0 === this.form.type){
-                    this.pluginControl.task_name = false
+                    this.pluginControl.task_name = false;
                     this.pluginControl.case_name = false
                 }
                 else if(1 === this.form.type){
-                    this.pluginControl.task_name = false
+                    this.pluginControl.task_name = false;
                     this.pluginControl.case_name = true;
-                    this.case_info.case.case_id =this.form.task_info.case_id
+                    this.case_info.case.case_id =this.form.task_info.case_id;
                     this.case_info.case.case_name =this.form.task_info.case_name;
                     this.form.task_info.number_content.imsi_black_list =[''];
                     this.form.task_info.dev_list=[];
+                    this.list_from_list();
                     // console.log('dialogshow   ------------------------1')
                 }
                 else if(2 === this.form.type){
-                    this.pluginControl.task_name = false
-                    this.pluginControl.case_name = true
+                    this.pluginControl.task_name = false;
+                    this.pluginControl.case_name = true;
                     this.case_info.case.case_id =this.form.task_info.case_id;
                     this.case_info.case.case_name =this.form.task_info.case_name;
+                    this.list_from_list();
                 }
                 // console.log("form", this.form)
                 // console.log("this.pluginControl.task_name",this.pluginControl.task_name)

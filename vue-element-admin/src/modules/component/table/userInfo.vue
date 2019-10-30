@@ -84,8 +84,11 @@
                 {
                     this.show[key]=true;
                 }
-                // console.log("usr show",this.show)
+                 console.log("usr show",this.show)
             }
+        },
+        watch: {
+            '$route': 'existence_identification'
         },
         created() {
             // console.log("usrInfo:",this.usrInfo)

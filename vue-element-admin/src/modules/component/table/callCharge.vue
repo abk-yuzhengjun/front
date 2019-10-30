@@ -48,6 +48,9 @@
                     date.getSeconds()
             }
         },
+        watch: {
+            '$route': 'existence_identification'
+        },
         created() {
             console.log("charge",this.charge)
         }
