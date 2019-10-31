@@ -144,7 +144,7 @@
                 this.getTreeMessage()
             },
             getTreeMessage() {
-                const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
+                const path2 = this.$store.getters.host + '/forensic/casetaskdisplay'
                 const param = {
                     user_id: this.$store.state.user.name
                 }
@@ -177,20 +177,6 @@
                         this.handleDelete(index, row)
                     })
                     .catch(() => {
-                    })
-            },
-            getMessageByPost2() {
-                const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
-                const param = {
-                    user_id: '14141341414141'
-                }
-                axios.post(path2, JSON.stringify(param))
-                    .then((res) => {
-                        this.bondsAllList = res.data
-                        this.getCreateTable()
-                    })
-                    .catch((error) => {
-                        alert(error)
                     })
             },
             handleSizeChange1: function (pageSize) { // 每页条数切换
@@ -267,7 +253,7 @@
                     })
             },
             handleDelete(index, row) {
-                const path = 'http://localhost:5000/caseManage/deleteCase'
+                const path = this.$store.getters.host + '/caseManage/deleteCase'
                 const param = {
                     user_id:this.$store.getters.name,
                     case_id:row.case_id

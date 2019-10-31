@@ -193,14 +193,14 @@ export const constantRoutes = [
             breadcrumb: false,
             // meta: { title: '取号动态信息展示' }
           },
-          {
-            path: 'appdisplay',
-            component: () => import('@/modules/forensicdisplay/appdisplay'),
-            name: 'appdisplay',
-            hidden: true,
-            breadcrumb: false,
-            // meta: { title: 'APP信息' }
-          },
+          // {
+          //   path: 'appdisplay',
+          //   component: () => import('@/modules/forensicdisplay/appdisplay'),
+          //   name: 'appdisplay',
+          //   hidden: true,
+          //   breadcrumb: false,
+          //   // meta: { title: 'APP信息' }
+          // },
           {
             path: 'appinformation',
             component: () => import('@/modules/forensicdisplay/appinformation'),

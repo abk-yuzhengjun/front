@@ -95,7 +95,6 @@
   import {mapState} from 'vuex'
   import {mapGetters} from 'vuex'
 
-  const host = 'http://localhost:5000';
   export default {
     name: 'CaseInfo',
     data() {
@@ -110,6 +109,7 @@
       }
     },
     created: function () {
+      const host = this.$store.getters.host
       axios.post(host + '/dashboard/caseinfo', {user_id: this.$store.state.user.name})
         .then((response) => {
           this.refreshCaseInfo(response.data);

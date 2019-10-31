@@ -218,6 +218,7 @@ import store from '../../store'
 import task_comp from '../component/task_comp'
 import { mapGetters } from 'vuex'
 
+
 export default {
   name: 'PhoneInformation',
   components: {task_comp},
@@ -362,7 +363,7 @@ export default {
           });
       },
       getTreeMessage() {
-          const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
+          const path2 = this.$store.getters.host + '/forensic/casetaskdisplay'
           const param = {
               user_id: this.$store.state.user.name
           }
@@ -450,6 +451,7 @@ export default {
       },
       init() {
           console.log('phoneInformation init')
+          console.log(this.$store.state.user.host)
           this.getParams()
           if(this.$store.getters.phoneInfo !== [])
           {
@@ -502,7 +504,7 @@ export default {
               })
       },
       handelTaskStatus(taskStatus) {
-          const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'
+          const path2 = this.$store.getters.host + '/caseManage/caseInfo/taskStateSubmit'
           this.taskStatusLoading = true
           console.log('start update loading status')
           const param = {
@@ -544,7 +546,7 @@ export default {
           console.log('task dialog')
       },
       getMessageByPost() {
-          const path = 'http://localhost:5000/forensic/phoneInformation'
+          const path = this.$store.getters.host + '/forensic/phoneInformation'
           const list = {
               task_id:this.task_id
           }
@@ -587,6 +589,7 @@ export default {
       }
     },
     getCreateTable() {
+          console.log(this.$store.getters.host)
         this.phoneNumber = 0
         this.capturePhoneNumber = 0
         for (let index in this.bondsAllList)

@@ -328,7 +328,7 @@ export default {
             }
         },
         taskStateSubmit(){
-            const host = 'http://localhost:5000'
+            const host = this.$store.getters.host
             this.taskStatusChange.case_id = this.tableData.case_id
             this.taskStatusChange.user_id = this.tableData.user_id
             this.taskStatusChange.task_id = this.currentRow.task_id
@@ -383,7 +383,7 @@ export default {
         },
 
       getList(){
-          const host = 'http://localhost:5000'
+          const host = this.$store.getters.host
 
           this.newForm.user_id = this.$store.getters.name
           console.log("query", this.$route.query)

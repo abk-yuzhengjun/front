@@ -130,20 +130,8 @@
           appIconGen(appname){
             return appIconMap.get(appname)
           },
-            getMessage() {
-                const path2 = 'http://localhost:5000/forensic/getTreeData/yuzhengjun'
-                axios.get(path2)
-                    .then((res) => {
-                        this.taskTableData = res.data
-                        this.getTreeData()
-                        this.setCurrentKey()
-                    })
-                    .catch((error) => {
-                        alert(error)
-                    })
-            },
             getMessageByPost2() {
-                const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
+                const path2 = this.$store.getters.host + '/forensic/casetaskdisplay'
                 const param = {
                     user_id: this.$store.state.user.name
                 }

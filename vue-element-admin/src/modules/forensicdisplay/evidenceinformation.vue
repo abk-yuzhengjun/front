@@ -372,7 +372,7 @@ export default {
           this.getTreeMessage()
       },
       getTreeMessage() {
-          const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
+          const path2 = this.$store.getters.host + '/forensic/casetaskdisplay'
           const param = {
               user_id: this.$store.state.user.name
           }
@@ -491,7 +491,7 @@ export default {
               })
       },
       handelTaskStatus(task_status) {
-          const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'
+          const path2 = this.$store.getters.host + '/caseManage/caseInfo/taskStateSubmit'
           this.taskStatusLoading = true
           console.log('start update loading status')
           const param = {

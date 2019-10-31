@@ -328,7 +328,7 @@
                 this.getTreeMessage()
             },
             getTreeMessage() {
-                const path2 = 'http://localhost:5000/forensic/casetaskdisplay'
+                const path2 = this.$store.getters.host + '/forensic/casetaskdisplay'
                 const param = {
                     user_id: this.$store.state.user.name
                 }
@@ -467,7 +467,7 @@
                     })
             },
             handleDelete(index, row) {
-                const path = 'http://localhost:5000/caseManage/deleteTask'
+                const path = this.$store.getters.host + '/caseManage/deleteTask'
                 const param = {
                     user_id:this.$store.getters.name,
                     case_id:this.case_id,
@@ -523,7 +523,7 @@
                         })
             },
             handelTaskStatus(index, row) {
-                const path2 = 'http://localhost:5000/caseManage/caseInfo/taskStateSubmit'
+                const path2 = this.$store.getters.host + '/caseManage/caseInfo/taskStateSubmit'
                 this.isloading[index] = true
                 // let taskStatus = 'ready'
                 // let status = new Map([[0, "ready"], [1, "running"], [2, "complete"], [3, "failed"], [4, "canceled"]])

@@ -20,7 +20,6 @@
 
 <script>
 const axios = require('axios')
-const host = 'http://localhost:5000'
 
 export default {
     name: 'case_comp',
@@ -56,7 +55,7 @@ export default {
             this.submitData()
         },
         updateCaseList(){
-
+            const host = this.$store.getters.host
             axios.post(host + '/caseManage/caseInfo/getListInfoGet', this.form)
                 .then(response=> {
                     console.log("update caseList",response)
@@ -72,7 +71,7 @@ export default {
                 })
         },
         submitData() {
-
+            const host = this.$store.getters.host
             this.form.user_id = this.$store.getters.name
             console.log('id', this.form.user_id)
             console.log('submitcase',this.form)

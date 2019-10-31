@@ -102,7 +102,6 @@
     import caseInfo from "../casemanager/caseInfo";
 
     const axios = require('axios')
-    const host = 'http://localhost:5000'
     export default {
         name: 'task_comp',
         props: ["taskData"],
@@ -334,7 +333,7 @@
 
             },
             submitData() {
-
+                const host = this.$store.getters.host
                 this.form.task_info.case_name = this.case_info.case.case_name
                 this.form.task_info.user_id = this.$store.getters.name
                 this.form.task_info.type = this.form.type

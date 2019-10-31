@@ -3,10 +3,11 @@ import { getToken, setToken, removeMyToken, setMyToken, setCookiUser} from '@/ut
 import router, { resetRouter } from '@/router'
 import axios from 'axios'
 import {getMyToken} from "../../utils/auth"
-const host = 'http://localhost:5000'
+// const host = 'http://localhost:5000'
 const state = {
   token: getToken(),
   name: 'admin',
+  host:'http://localhost:5000',
   avatar: '',
   introduction: '',
   roles: []
@@ -36,7 +37,7 @@ const actions = {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       // login({ username: username.trim(), password: password })
-      axios.post(host + '/login/', { username: username.trim(), password: password })
+      axios.post(state.host + '/login/', { username: username.trim(), password: password })
       .then(response => {
 
         //const { data } = response
@@ -68,7 +69,7 @@ const actions = {
       // console.log("username:", userInfo.name)
       // console.log("password:", userInfo.passWord)
       // console.log("passwordAgain:", userInfo.passwordAgain)
-      axios.post(host + '/login/userEdit', { username: userInfo.name.trim(), password: userInfo.passWord })
+      axios.post(state.host + '/login/userEdit', { username: userInfo.name.trim(), password: userInfo.passWord })
         .then(response => {
           console.log("userEdit response data res = ", response["data"]["result"])
           resolve(response["data"])
@@ -82,7 +83,7 @@ const actions = {
   queryAllUser({ commit }){
     // console.log("queryAllUser enter----------------")
     return new Promise((resolve, reject) => {
-      axios.post(host + '/login/queryAllUser')
+      axios.post(state.host + '/login/queryAllUser')
         .then(response => {
 
           resolve(response["data"])
@@ -95,7 +96,7 @@ const actions = {
 
   userDel({ commit }, userName){
     return new Promise((resolve, reject) => {
-      axios.post(host + '/login/userDel',  { username: userName.trim()})
+      axios.post(state.host + '/login/userDel',  { username: userName.trim()})
         .then(response => {
           console.log("userDel response data = ", response)
           resolve(response["data"])
@@ -107,7 +108,7 @@ const actions = {
   },
   userAdd({ commit }, account){
     return new Promise((resolve, reject) => {
-      axios.post(host + '/login/userAdd',  { userName: account.name.trim(), userPwd:account.pwd,
+      axios.post(state.host + '/login/userAdd',  { userName: account.name.trim(), userPwd:account.pwd,
                 role:account.role, icon:account.icon})
         .then(response => {
           console.log("userAdd response data = ", response)

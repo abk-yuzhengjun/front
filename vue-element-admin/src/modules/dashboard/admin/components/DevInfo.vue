@@ -140,13 +140,13 @@
   import axios from 'axios'
   import { mapState } from 'vuex'
   import { mapGetters } from 'vuex'
-  const host='http://localhost:5000';
 
   export default {
     name: "DevInfo",
     components: {
     },
     created:function () {
+      const host = this.$store.getters.host
       axios.post(host+'/dashboard/devinfo')
         .then(function (response) {
 

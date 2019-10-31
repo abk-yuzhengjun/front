@@ -273,7 +273,7 @@ export default {
         },
 
         getAppInfo() {
-            const host = 'http://localhost:5000'
+            const host = this.$store.getters.host
             console.log("query",this.$route.query)
             this.postData.task_id = this.$route.query.task_id
             this.postData.phone = this.$route.query.phone
