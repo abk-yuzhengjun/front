@@ -104,8 +104,10 @@
           </el-col>
           <el-col :span="5">
             <div style="display: flex;flex-direction:row">
-              <span style="font-size: 16px;color: #333333;" v-if=" this.message_scoll!== ''">{{this.phone_status_dict.get(this.message_scoll.msg.phone_status)}}</span>
+              <span style="font-size: 16px;color: #333333;" v-if=" this.message_scoll!== '' && this.message_scoll.msg.phone_status=== '53'">已上号&nbsp&nbsp&nbsp{{this.app_name_dict.get(this.message_scoll.msg.app)}}&nbsp&nbsp&nbsp&nbsp{{this.app_status_dict.get(this.message_scoll.msg.app_status)}}</span>
+              <span style="font-size: 16px;color: #333333;" v-else-if=" this.message_scoll!== '' && this.message_scoll.msg.phone_status=== '6'">已上号&nbsp&nbsp&nbsp{{this.app_name_dict.get(this.message_scoll.msg.app)}}&nbsp&nbsp&nbsp&nbsp{{this.app_status_dict.get(this.message_scoll.msg.app_status)}}</span>
               <span style="font-size: 16px;color: #333333;" v-else-if=" this.message_scoll!== '' && this.message_scoll.msg.phone_status=== ''">已上号&nbsp&nbsp&nbsp{{this.app_name_dict.get(this.message_scoll.msg.app)}}&nbsp&nbsp&nbsp&nbsp{{this.app_status_dict.get(this.message_scoll.msg.app_status)}}</span>
+              <span style="font-size: 16px;color: #333333;" v-else-if=" this.message_scoll!== ''">{{this.phone_status_dict.get(this.message_scoll.msg.phone_status)}}</span>
             </div>
           </el-col>
           <el-col :span="8">
@@ -182,23 +184,29 @@
       >
         <el-table-column
           type="index"
-          min-width="5px">
+          min-width="2px">
         </el-table-column>
-        <el-table-column  min-width="5px" align="left">
+        <el-table-column  min-width="2px" align="left">
           <template slot-scope="scope">
             <svg-icon :icon-class="scope.row.app_name" style="width: 40px;height: 40px"></svg-icon>
           </template>
         </el-table-column>
-        <el-table-column  min-width="20px" align="left">
+        <el-table-column  min-width="10px" align="left">
           <template slot-scope="scope">
             <span style="font-size: 14px;color: #666666; font-weight: bold;">{{ app_name_dict.get(scope.row.app_name) }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column min-width="15px" align="left" >
+        <el-table-column min-width="10px" align="left" >
           <template slot-scope="scope">
             <span :class="app_show_dict.get(scope.row.app_status)"></span>
             <span style="font-size: 14px;color: #666666;">{{app_status_dict.get(scope.row.app_status)}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column min-width="10px" align="left" >
+          <template slot-scope="scope">
+<!--            <span class="status-danger"></span>-->
+            <span style="font-size: 14px;color: #666666;">{{error_status_dict.get(scope.row.err_cause)}}</span>
           </template>
         </el-table-column>
 <!--        <el-table-column min-width="20px" align="left" >-->
@@ -206,24 +214,16 @@
 <!--            <span style="font-size: 14px;color: #666666;"></span>-->
 <!--          </template>-->
 <!--        </el-table-column>-->
-        <el-table-column min-width="15px" align="left" >
+        <el-table-column min-width="10px" align="left" >
           <template slot-scope="scope">
             <span style="font-size: 14px;color: #666666;">{{scope.row.update_ts}}</span>
           </template>
         </el-table-column>
-        <el-table-column min-width="10px" align="center" >
+        <el-table-column min-width="5px" align="center" >
           <template slot-scope="scope">
             <el-button type="text" @click="jumpToAppInformation(scope.row,scope.index)">更多</el-button>
           </template>
         </el-table-column>
-
-
-
-        <!--        <el-table-column label="操作" align="center" width="80">-->
-        <!--          <template slot-scope="scope">-->
-        <!--            <el-button size="mini" type="danger" @click="confirmDelete(scope.$index,scope.row)">删除</el-button>-->
-        <!--          </template>-->
-        <!--        </el-table-column>-->
       </el-table>
     </div>
       <el-pagination
@@ -301,6 +301,7 @@ export default {
           ["5", "登录成功"], ["6", "登录失败"], ["7", "取证完成"],["8", "取证失败"]]),
       app_show_dict: new Map([["1", "status-primary"], ["2", "status-success"], ["3", "status-info"], ["4", "status-warning"], ["5", "status-success"],
           ["6", "status-info"], ["7", "status-success"], ["8", "status-info"]]),
+      error_status_dict: new Map([["unregistered","该手机号未注册此APP"],["smscode error","验证码错误"],["smscode timeout","验证码超时"],["login error","登录错误"],["others error","其他错误"]]),
       dialogPropTask: {
             type: 0,
             dev_list: [],

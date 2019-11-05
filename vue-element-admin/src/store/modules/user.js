@@ -7,7 +7,7 @@ import {getMyToken} from "../../utils/auth"
 const state = {
   token: getToken(),
   name: 'admin',
-  host:'http://localhost:5000',
+  host:'http://10.10.100.152:5000',
   avatar: '',
   introduction: '',
   roles: []

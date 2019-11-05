@@ -157,7 +157,7 @@
         <el-table-column property="imsi" label="Imsi" min-width="20px" align="left" />
         <el-table-column property="phone" label="手机号码" min-width="20px" align="left">
           <template slot-scope="scope">
-            <span v-if="scope.row.phone === undefined">未取到</span>
+            <span v-if="scope.row.phone === undefined">------</span>
             <span v-else>{{scope.row.phone}}</span>
           </template>
         </el-table-column>
@@ -169,13 +169,13 @@
         </el-table-column>
         <el-table-column property="gsm_imsi_capture_ts" label="2G主动式上号时间" min-width="20px" align="left" >
           <template slot-scope="scope">
-            <span v-if="scope.row.gsm_imsi_capture_ts === undefined">2G主动式未上号</span>
+            <span v-if="scope.row.gsm_imsi_capture_ts === undefined">--------</span>
             <span v-else>{{scope.row.gsm_imsi_capture_ts}}</span>
           </template>
         </el-table-column>
         <el-table-column property="lte_imsi_capture_ts" label="4G主动式上号时间" min-width="20px" align="left" >
           <template slot-scope="scope">
-            <span v-if="scope.row.lte_imsi_capture_ts === undefined">4G主动式未上号</span>
+            <span v-if="scope.row.lte_imsi_capture_ts === undefined">--------</span>
             <span v-else>{{scope.row.lte_imsi_capture_ts}}</span>
           </template>
         </el-table-column>
