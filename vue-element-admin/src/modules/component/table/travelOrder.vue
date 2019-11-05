@@ -25,6 +25,7 @@
       v-if = "show.travel_date"
       prop="travel_date"
       label="日期"
+      :formatter="formatTime"
       width="300px">
     </el-table-column>
     <el-table-column
@@ -57,6 +58,15 @@
                 {
                     this.show[key]=true;
                 }
+            },
+            formatTime(row, column) {
+                const date = new Date(row[column.property])
+                return date.getFullYear() + '年' +
+                    date.getMonth() + '月' +
+                    date.getDate() + '日 ' +
+                    date.getHours() + ':' +
+                    date.getMinutes()+':' +
+                    date.getSeconds()
             }
         },
         watch: {

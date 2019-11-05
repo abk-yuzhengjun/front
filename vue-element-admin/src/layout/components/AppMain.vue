@@ -35,7 +35,7 @@ export default {
     methods:{
       getData() {
           const axios = require('axios')
-          const host = 'http://localhost:5000'
+          const host = this.$store.getters.host
           var data={user_id:''}
           data.user_id = this.$store.getters.name
 

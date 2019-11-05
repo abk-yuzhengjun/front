@@ -47,6 +47,7 @@
     <el-table-column
       v-if = "show.order_times"
       prop= "order_times"
+      :formatter="formatTime"
       label="下单时间"
       width="210">
     </el-table-column>

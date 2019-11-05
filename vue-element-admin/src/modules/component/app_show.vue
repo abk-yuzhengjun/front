@@ -91,8 +91,13 @@
                 idx:0,
             };
         },
-
+        watch: {
+            '$route': 'init'
+        },
         methods: {
+            init(){
+
+            },
             handleClick(tab, event) {
                 console.log(tab, event);
             },
